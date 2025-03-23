@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class JDBCtil {
+    
     public static void main(String[] args) {
         // Thông tin kết nối
         String url = "jdbc:mysql://localhost:3306/Face_Recognition"; // Thay "mydb" bằng tên database của bạn
