@@ -1,4 +1,4 @@
-package GUI;
+
 
 public class EmptyGUI {
     public void test() {  

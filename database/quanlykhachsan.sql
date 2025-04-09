@@ -276,9 +276,9 @@ VALUES
 -- Dữ liệu cho tài khoản 
 INSERT INTO TAIKHOAN (`MNV`, `MK`, `TDN`, `MNQ`, `TT`)
 VALUES 
-	(1, '$2a$12$DB1vW2l4LRiB1th6kZ5z5.2o5nRT6O3WhMhPqEK.FXsaczRZwyapy', 'admin', 1, 1),
-    (2, '$2a$12$2Zg5jzqo5YlWm6O9gxbbhOlu7eig/B0GBr27gzDIJsdiVT4jzmF/W', 'NV1', 2, 1),
-    (3, '$2a$12$2Zg5jzqo5YlWm6O9gxbbhOlu7eig/B0GBr27gzDIJsdiVT4jzmF/W', 'NV2', 3, 1);
+	(1, '$2a$12$DB1vW2l4LRiB1th6kZ5z5.2o5nRT6O3WhMhPqEK.FXsaczRZwyapy', 'admin', 1, 1), --admin
+    (2, '$2a$12$m6iLa3/gvkQsAziK3nB9.ew7QOv3uCMxm05UXpQiesoWhdMTFlN7.', 'NV1', 2, 1), --12345678
+    (3, '$2a$12$wGNwwp3.X89/BWOST.mdhORV2HQ5NjtQaZJGF4Ow6pqVuBEz8vJ4S', 'NV2', 3, 1); --12345678
 
 INSERT INTO `KHACHHANG` (`MKH`,`TKH`, `GT`, `CCCD`, `DIACHI`, `SDT`, `EMAIL`, `TT`, `NS`)
 VALUES
