@@ -93,7 +93,7 @@ public class FormLogin extends JFrame {
 
         // Tải hình ảnh và điều chỉnh kích thước
         try {
-            ImageIcon icon = new ImageIcon("src/GUI/icons/login.jpg");
+            ImageIcon icon = new ImageIcon("./src/icons/login.jpg");
             Image image = icon.getImage();
             Image scaledImage = image.getScaledInstance(330, 330, Image.SCALE_SMOOTH);
             lblImg.setIcon(new ImageIcon(scaledImage));
@@ -112,7 +112,7 @@ public class FormLogin extends JFrame {
         contentP.add(lblTitle);
 
         // Email Icon
-        ImageIcon userIcon = new ImageIcon("src/GUI/icons/user.png");
+        ImageIcon userIcon = new ImageIcon("./src/icons/user.png");
         Image img = userIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         userIcon = new ImageIcon(img);
 
@@ -164,16 +164,16 @@ public class FormLogin extends JFrame {
         SwingUtilities.invokeLater(() -> contentP.requestFocusInWindow());
 
         // Password Icon
-        ImageIcon passwordIcon = new ImageIcon("src/GUI/icons/lock.png");
+        ImageIcon passwordIcon = new ImageIcon("./src/icons/lock.png");
         Image passImg = passwordIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         passwordIcon = new ImageIcon(passImg);
 
         // Eye Icons for password visibility
-        final ImageIcon openEyeIcon = new ImageIcon("src/GUI/icons/openeye.png");
+        final ImageIcon openEyeIcon = new ImageIcon("./src/icons/openeye.png");
         Image openEyeImg = openEyeIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         final ImageIcon finalOpenEyeIcon = new ImageIcon(openEyeImg);
 
-        final ImageIcon closeEyeIcon = new ImageIcon("src/GUI/icons/closeeye.png");
+        final ImageIcon closeEyeIcon = new ImageIcon("./src/icons/closeeye.png");
         Image closeEyeImg = closeEyeIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         final ImageIcon finalCloseEyeIcon = new ImageIcon(closeEyeImg);
 
@@ -347,7 +347,7 @@ public class FormLogin extends JFrame {
                         panel.setPreferredSize(new java.awt.Dimension(300, 150));
 
                         // Biểu tượng dấu tích
-                        ImageIcon icon = new ImageIcon("src/GUI/icons/success.png");
+                        ImageIcon icon = new ImageIcon("./src/icons/success.png");
                         Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                         JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
                         iconLabel.setBounds(130, 10, 40, 40); // Căn giữa theo chiều ngang
@@ -402,7 +402,7 @@ public class FormLogin extends JFrame {
                         panel.setPreferredSize(new java.awt.Dimension(300, 150));
 
                         // Biểu tượng lỗi (dấu chéo đỏ)
-                        ImageIcon icon = new ImageIcon("src/GUI/icons/error.png");
+                        ImageIcon icon = new ImageIcon("./src/icons/error.png");
                         Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                         JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
                         iconLabel.setBounds(130, 10, 40, 40); // Căn giữa theo chiều ngang

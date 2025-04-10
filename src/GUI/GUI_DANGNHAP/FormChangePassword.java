@@ -58,15 +58,15 @@ public class FormChangePassword extends JFrame {
         lblTitle.setForeground(Color.BLACK);
         contentP.add(lblTitle);
 
-        ImageIcon passwordIcon = new ImageIcon("src/GUI/icons/lock.png");
+        ImageIcon passwordIcon = new ImageIcon("./src/icons/lock.png");
         Image passImg = passwordIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         passwordIcon = new ImageIcon(passImg);
 
-        final ImageIcon openEyeIcon = new ImageIcon("src/GUI/icons/openeye.png");
+        final ImageIcon openEyeIcon = new ImageIcon("./src/icons/openeye.png");
         Image openEyeImg = openEyeIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         final ImageIcon finalOpenEyeIcon = new ImageIcon(openEyeImg);
 
-        final ImageIcon closeEyeIcon = new ImageIcon("src/GUI/icons/closeeye.png");
+        final ImageIcon closeEyeIcon = new ImageIcon("./src/icons/closeeye.png");
         Image closeEyeImg = closeEyeIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
         final ImageIcon finalCloseEyeIcon = new ImageIcon(closeEyeImg);
 
@@ -275,7 +275,7 @@ public class FormChangePassword extends JFrame {
                         panel.setBackground(Color.WHITE);
                         panel.setPreferredSize(new java.awt.Dimension(300, 150));
 
-                        ImageIcon icon = new ImageIcon("src/GUI/icons/success.png");
+                        ImageIcon icon = new ImageIcon("./src/icons/success.png");
                         Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                         JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
                         iconLabel.setBounds(130, 10, 40, 40);
