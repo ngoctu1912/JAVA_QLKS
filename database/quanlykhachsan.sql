@@ -68,7 +68,6 @@ CREATE TABLE `TAIKHOANKH` (
     `TDN` VARCHAR(255) NOT NULL UNIQUE COMMENT 'Tên đăng nhập',
     `MNQ` INT(11) NOT NULL COMMENT 'Mã nhóm quyền',
     `TT` INT(11) NOT NULL DEFAULT 1 COMMENT 'Trạng thái',
-    `OTP` VARCHAR(50) DEFAULT NULL COMMENT 'Mã OTP',
     PRIMARY KEY(MKH, TDN),
     FOREIGN KEY (`MKH`) REFERENCES `KHACHHANG` (`MKH`),
     FOREIGN KEY (`MNQ`) REFERENCES `NHOMQUYEN` (`MNQ`)
@@ -287,7 +286,7 @@ VALUES
 -- Dữ liệu cho tài khoản 
 INSERT INTO TAIKHOAN (`MNV`, `MK`, `TDN`, `MNQ`, `TT`)
 VALUES 
-	(1, '$2a$12$DB1vW2l4LRiB1th6kZ5z5.2o5nRT6O3WhMhPqEK.FXsaczRZwyapy', 'admin', 1, 1), 
+	(1, '$2a$12$60DFtqG98rqeJdqnuAIHouOjuQH3Pwn.1O87WwDdF1agFTzuuavOS', 'admin', 1, 1), 
     (2, '$2a$12$m6iLa3/gvkQsAziK3nB9.ew7QOv3uCMxm05UXpQiesoWhdMTFlN7.', 'NV1', 2, 1), 
     (3, '$2a$12$wGNwwp3.X89/BWOST.mdhORV2HQ5NjtQaZJGF4Ow6pqVuBEz8vJ4S', 'NV2', 3, 1);
 
@@ -335,7 +334,9 @@ VALUES
     (39, 'Phạm Văn Kiên', 1, 123456827, 'Lạng Sơn', '0903210987', 'phamvankien@gmail.com', 1, '1986-01-15'),
     (40, 'Hoàng Thị Minh', 0, 123456828, 'Gia Lai', '0978901234', 'hoangthiminh@gmail.com', 1, '1995-07-12');
     
--- Dữ liệu tài khoản khách hàng(Bổ sung sau)
+INSERT INTO `TAIKHOANKH` (`MKH`, `MK`, `TDN`, `MNQ`, `TT`)
+VALUES
+	(1, '$2a$12$So0CDASr5Z8ScjqEp.6yi.1BbQNjn33X7Gx3iVfRzAew66hbtuLm2', 'KH1', 4, 1);
 
 INSERT INTO `PHONG` (`maP`, `tenP`, `loaiP`, `hinhAnh`, `giaP`, `chiTietLoaiPhong`, `tinhTrang`) 
 VALUES
