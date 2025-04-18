@@ -44,6 +44,7 @@ public class DoanhThuComponent extends JPanel {
         event.loadData();
     }
 
+    @SuppressWarnings("unused")
     private void initComponents() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(960, 600));
@@ -327,6 +328,7 @@ public class DoanhThuComponent extends JPanel {
         });
 
         MouseWheelListener scrollListener = new MouseWheelListener() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 mainScrollPane.dispatchEvent(new MouseWheelEvent(
