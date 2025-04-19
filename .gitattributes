@@ -1,0 +1,2 @@
+*.svg -text
+.gitattributes text eol=crlf
