@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class PanelBorderRadius extends JPanel {
     private int shadowSize = 3;
-    private Color backgroundColor = new Color(193, 237, 220); // Đồng bộ với bảng
+    private Color backgroundColor = new Color(255, 255, 255); // Đồng bộ với bảng
 
     public PanelBorderRadius() {
         setOpaque(false);

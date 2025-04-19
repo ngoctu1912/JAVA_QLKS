@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-public class SidebarPanel extends JPanel {
+public class SidebarPanel extends PanelBorderRadius {
     private IntegratedSearch searchPanel;
     public SidebarPanel(ActionListener addListener, ActionListener editListener,
                        ActionListener deleteListener, ActionListener detailsListener,
