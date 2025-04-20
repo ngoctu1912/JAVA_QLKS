@@ -22,8 +22,4 @@ public class KKTienIchFrame extends JFrame {
         new KKTienIchEvent(kiemKeComponent);
         return kiemKeComponent;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(KKTienIchFrame::new);
-    }
 }

@@ -4,118 +4,119 @@ import java.util.Date;
 import java.util.Objects;
 
 public class NhanVienDTO {
-
-    private int MNV;
-    private String HOTEN;
-    private int GIOITINH;
-    private String SDT;
-    private Date NGAYSINH;
-    private int TT;
-    private String EMAIL;
-    private int SNP;
-    private Date NVL;
-    private int LN;
+    private int maNhanVien;
+    private String hoTen;
+    private int gioiTinh;
+    private Date ngaySinh;
+    private String soDienThoai;
+    private String email;
+    private int trangThai;
+    private int soNgayPhep;
+    private Date ngayVaoLam;
+    private int luongNgay;
 
     public NhanVienDTO() {
     }
 
-    public NhanVienDTO(int MNV, String HOTEN, int GIOITINH, Date NGAYSINH, String SDT, int TT, String EMAIL, int SNP, Date NVL, int LN) {
-        this.MNV = MNV;
-        this.HOTEN = HOTEN;
-        this.GIOITINH = GIOITINH;
-        this.NGAYSINH = NGAYSINH;
-        this.SDT = SDT;
-        this.TT = TT;
-        this.EMAIL = EMAIL;
-        this.SNP = SNP;
-        this.NVL = NVL;
-        this.LN = LN;
+    public NhanVienDTO(int maNhanVien, String hoTen, int gioiTinh, Date ngaySinh,
+            String soDienThoai, String email, int trangThai,
+            int soNgayPhep, Date ngayVaoLam, int luongNgay) {
+        this.maNhanVien = maNhanVien;
+        this.hoTen = hoTen;
+        this.gioiTinh = gioiTinh;
+        this.ngaySinh = ngaySinh;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
+        this.trangThai = trangThai;
+        this.soNgayPhep = soNgayPhep;
+        this.ngayVaoLam = ngayVaoLam;
+        this.luongNgay = luongNgay;
     }
 
-    // Getters and Setters
-    public int getMNV() {
-        return MNV;
+    public int getMaNhanVien() {
+        return maNhanVien;
     }
 
-    public void setMNV(int MNV) {
-        this.MNV = MNV;
+    public void setMaNhanVien(int maNhanVien) {
+        this.maNhanVien = maNhanVien;
     }
 
-    public String getHOTEN() {
-        return HOTEN;
+    public String getHoTen() {
+        return hoTen;
     }
 
-    public void setHOTEN(String HOTEN) {
-        this.HOTEN = HOTEN;
+    public void setHoTen(String hoTen) {
+        this.hoTen = hoTen;
     }
 
-    public int getGIOITINH() {
-        return GIOITINH;
+    public int getGioiTinh() {
+        return gioiTinh;
     }
 
-    public void setGIOITINH(int GIOITINH) {
-        this.GIOITINH = GIOITINH;
+    public void setGioiTinh(int gioiTinh) {
+        this.gioiTinh = gioiTinh;
     }
 
-    public Date getNGAYSINH() {
-        return NGAYSINH;
+    public Date getNgaySinh() {
+        return ngaySinh;
     }
 
-    public void setNGAYSINH(Date NGAYSINH) {
-        this.NGAYSINH = NGAYSINH;
+    public void setNgaySinh(Date ngaySinh) {
+        this.ngaySinh = ngaySinh;
     }
 
-    public String getSDT() {
-        return SDT;
+    public String getSoDienThoai() {
+        return soDienThoai;
     }
 
-    public void setSDT(String SDT) {
-        this.SDT = SDT;
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
     }
 
-    public int getTT() {
-        return TT;
+    public String getEmail() {
+        return email;
     }
 
-    public void setTT(int TT) {
-        this.TT = TT;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getEMAIL() {
-        return EMAIL;
+    public int getTrangThai() {
+        return trangThai;
     }
 
-    public void setEMAIL(String EMAIL) {
-        this.EMAIL = EMAIL;
+    public void setTrangThai(int trangThai) {
+        this.trangThai = trangThai;
     }
 
-    public int getSNP() {
-        return SNP;
+    public int getSoNgayPhep() {
+        return soNgayPhep;
     }
 
-    public void setSNP(int SNP) {
-        this.SNP = SNP;
+    public void setSoNgayPhep(int soNgayPhep) {
+        this.soNgayPhep = soNgayPhep;
     }
 
-    public Date getNVL() {
-        return NVL;
+    public Date getNgayVaoLam() {
+        return ngayVaoLam;
     }
 
-    public void setNVL(Date NVL) {
-        this.NVL = NVL;
+    public void setNgayVaoLam(Date ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
     }
 
-    public int getLN() {
-        return LN;
+    public int getLuongNgay() {
+        return luongNgay;
     }
 
-    public void setLN(int LN) {
-        this.LN = LN;
+    public void setLuongNgay(int luongNgay) {
+        this.luongNgay = luongNgay;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+        return Objects.hash(maNhanVien, hoTen, gioiTinh, ngaySinh, soDienThoai,
+                email, trangThai, soNgayPhep, ngayVaoLam, luongNgay);
     }
 
     @Override
@@ -127,31 +128,31 @@ public class NhanVienDTO {
             return false;
         }
         NhanVienDTO other = (NhanVienDTO) obj;
-        return MNV == other.MNV &&
-               Objects.equals(HOTEN, other.HOTEN) &&
-               GIOITINH == other.GIOITINH &&
-               Objects.equals(NGAYSINH, other.NGAYSINH) &&
-               Objects.equals(SDT, other.SDT) &&
-               Objects.equals(EMAIL, other.EMAIL);
+        return maNhanVien == other.maNhanVien &&
+                gioiTinh == other.gioiTinh &&
+                trangThai == other.trangThai &&
+                soNgayPhep == other.soNgayPhep &&
+                luongNgay == other.luongNgay &&
+                Objects.equals(hoTen, other.hoTen) &&
+                Objects.equals(ngaySinh, other.ngaySinh) &&
+                Objects.equals(soDienThoai, other.soDienThoai) &&
+                Objects.equals(email, other.email) &&
+                Objects.equals(ngayVaoLam, other.ngayVaoLam);
     }
 
     @Override
     public String toString() {
         return "NhanVienDTO{" +
-               "MNV=" + MNV +
-               ", HOTEN='" + HOTEN + '\'' +
-               ", GIOITINH=" + GIOITINH +
-               ", NGAYSINH=" + NGAYSINH +
-               ", SDT='" + SDT + '\'' +
-               ", TT=" + TT +
-               ", EMAIL='" + EMAIL + '\'' +
-               ", SNP=" + SNP +
-               ", NVL=" + NVL +
-               ", LN=" + LN +
-               '}';
-    }
-
-    public int getColumnCount() {
-        return getClass().getDeclaredFields().length;
+                "maNhanVien=" + maNhanVien +
+                ", hoTen='" + hoTen + '\'' +
+                ", gioiTinh=" + gioiTinh +
+                ", ngaySinh=" + ngaySinh +
+                ", soDienThoai='" + soDienThoai + '\'' +
+                ", email='" + email + '\'' +
+                ", trangThai=" + trangThai +
+                ", soNgayPhep=" + soNgayPhep +
+                ", ngayVaoLam=" + ngayVaoLam +
+                ", luongNgay=" + luongNgay +
+                '}';
     }
 }

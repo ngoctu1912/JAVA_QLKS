@@ -8,7 +8,7 @@ public class ChiTietQuyenDTO {
     private String HANHDONG;
 
     public ChiTietQuyenDTO() {
-        
+
     }
 
     public ChiTietQuyenDTO(int MNQ, int MCN, String HANHDONG) {
@@ -73,9 +73,8 @@ public class ChiTietQuyenDTO {
 
     @Override
     public String toString() {
-        return "ChiTietQuyen{" + "Ma nhom quyen = " + MNQ + ", Ma chuc nang = " + MCN + ", Hanh dong = " + HANHDONG + '}';
+        return "ChiTietQuyen{" + "Ma nhom quyen = " + MNQ + ", Ma chuc nang = " + MCN + ", Hanh dong = " + HANHDONG
+                + '}';
     }
 
-    
-    
 }

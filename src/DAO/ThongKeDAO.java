@@ -2,8 +2,7 @@ package DAO;
 
 import DTO.ThongKeDTO;
 import DTO.KhachHangThongKeDTO;
-import config.JDBCUtil;
-
+import config.ConnectDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,14 +16,14 @@ public class ThongKeDAO implements DAOinterface<Object> {
 
     public ThongKeDAO() {
         try {
-            conn = JDBCUtil.getConnection();
+            conn = ConnectDB.getConnection();
             if (conn != null) {
                 System.out.println("Kết nối cơ sở dữ liệu thành công!");
             } else {
-                System.err.println("Không thể kết nối cơ sở dữ liệu: JDBCUtil.getConnection() trả về null");
+                System.err.println("Không thể kết nối cơ sở dữ liệu: ConnectDB.getConnection() trả về null");
             }
         } catch (Exception e) {
-            System.err.println("Lỗi khi lấy kết nối từ JDBCUtil: " + e.getMessage());
+            System.err.println("Lỗi khi lấy kết nối từ ConnectDB: " + e.getMessage());
             e.printStackTrace();
             conn = null;
         }
@@ -350,9 +349,9 @@ public class ThongKeDAO implements DAOinterface<Object> {
         return 0;
     }
 
-    public void closeConnection() {
-        JDBCUtil.closeConnection(conn);
-    }
+    // public void closeConnection() {
+    //     ConnectDB.closeConnection(conn);
+    // }
 
     @Override
     public int add(Object t) {

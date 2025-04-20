@@ -1,32 +1,35 @@
 package GUI_PHANQUYEN;
 
 import BUS.NhomQuyenBUS;
+import Component.IntegratedSearch;
 import DTO.NhomQuyenDTO;
 import DTO.DanhMucChucNangDTO;
-import helper.JTableExporter; // Thêm import
+import helper.JTableExporter;
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.awt.Component;
 
 public class PhanQuyenEvent {
     private PhanQuyenGUI gui;
     private NhomQuyenBUS nhomQuyenBUS;
     private ArrayList<DanhMucChucNangDTO> danhMucChucNangList;
-    private JTextField searchField;
+    private IntegratedSearch searchPanel;
 
-    public PhanQuyenEvent(PhanQuyenGUI gui, NhomQuyenBUS nhomQuyenBUS, ArrayList<DanhMucChucNangDTO> danhMucChucNangList, JTextField searchField) {
+    public PhanQuyenEvent(PhanQuyenGUI gui, NhomQuyenBUS nhomQuyenBUS, ArrayList<DanhMucChucNangDTO> danhMucChucNangList, IntegratedSearch searchPanel) {
         this.gui = gui;
         this.nhomQuyenBUS = nhomQuyenBUS;
         this.danhMucChucNangList = danhMucChucNangList;
-        this.searchField = searchField;
+        this.searchPanel = searchPanel;
     }
 
     public void openAddDialog() {
         String type = "create";
-        PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, gui, "Thêm nhóm quyền", true, type, null);
+        JFrame parentFrame = getParentFrame(gui);
+        PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, parentFrame, "Thêm nhóm quyền", true, type, null);
         dialog.setVisible(true);
         gui.loadNhomQuyenData();
     }
@@ -34,11 +37,11 @@ public class PhanQuyenEvent {
     public void openEditDialog() {
         NhomQuyenDTO selected = gui.getSelectedNhomQuyen();
         if (selected == null) {
-            // Thông báo đã được hiển thị trong getSelectedNhomQuyen, không cần làm gì thêm
             return;
         }
         String type = "update";
-        PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, gui, "Chỉnh sửa nhóm quyền", true, type, selected);
+        JFrame parentFrame = getParentFrame(gui);
+        PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, parentFrame, "Chỉnh sửa nhóm quyền", true, type, selected);
         dialog.setVisible(true);
         gui.loadNhomQuyenData();
     }
@@ -57,15 +60,18 @@ public class PhanQuyenEvent {
     public void showDetails() {
         NhomQuyenDTO selected = gui.getSelectedNhomQuyen();
         if (selected != null) {
-            PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, gui, "Chi tiết nhóm quyền", true, "view", selected);
+            JFrame parentFrame = getParentFrame(gui);
+            PhanQuyenDialog dialog = new PhanQuyenDialog(nhomQuyenBUS, gui, parentFrame, "Chi tiết nhóm quyền", true, "view", selected);
             dialog.setVisible(true);
         }
     }
 
     public void exportToExcel() {
         try {
-            JTableExporter.exportJTableToExcel(gui.getNhomQuyenTable());
-            JOptionPane.showMessageDialog(gui, "Xuất file Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            boolean success = JTableExporter.exportJTableToExcel(gui.getNhomQuyenTable());
+            if (success) {
+                JOptionPane.showMessageDialog(gui, "Xuất file Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(gui, "Lỗi khi xuất file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
@@ -74,7 +80,9 @@ public class PhanQuyenEvent {
 
     public void refreshTable() {
         gui.loadNhomQuyenData();
-        searchField.setText("");
+        if (searchPanel != null) {
+            searchPanel.getSearchField().setText("");
+        }
     }
 
     public DocumentListener getSearchListener() {
@@ -95,7 +103,10 @@ public class PhanQuyenEvent {
             }
 
             private void search() {
-                String searchText = searchField.getText();
+                if (searchPanel == null) {
+                    return;
+                }
+                String searchText = searchPanel.getSearchField().getText();
                 ArrayList<NhomQuyenDTO> searchResults = nhomQuyenBUS.search(searchText);
                 DefaultTableModel tableModel = gui.getTableModel();
                 tableModel.setRowCount(0);
@@ -104,5 +115,12 @@ public class PhanQuyenEvent {
                 }
             }
         };
+    }
+
+    private JFrame getParentFrame(Component component) {
+        while (component != null && !(component instanceof JFrame)) {
+            component = component.getParent();
+        }
+        return (JFrame) component;
     }
 }

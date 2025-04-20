@@ -51,7 +51,7 @@ public class DanhMucChucNangDTO {
         }
         final DanhMucChucNangDTO other = (DanhMucChucNangDTO) obj;
         return MCN == other.MCN &&
-            Objects.equals(TENCN, other.TENCN);
+                Objects.equals(TENCN, other.TENCN);
     }
 
     @Override

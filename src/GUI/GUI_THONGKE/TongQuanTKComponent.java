@@ -43,7 +43,6 @@ public class TongQuanTKComponent extends JPanel {
         tongQuanContentPanel = new JPanel();
         tongQuanContentPanel.setBackground(new Color(240, 245, 245));
         tongQuanContentPanel.setLayout(new BoxLayout(tongQuanContentPanel, BoxLayout.Y_AXIS));
-        // BỎ: Không đặt PreferredSize cố định để tránh cuộn quá đà
 
         JPanel doanhThuPanel = new DoanhThuComponent(thongKeBUS);
         JPanel khachHangPanel = new KhachHangComponent(thongKeBUS);
@@ -155,9 +154,9 @@ public class TongQuanTKComponent extends JPanel {
         tableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         tableScrollPane.getVerticalScrollBar().setBlockIncrement(50);
 
-        // Tùy chỉnh thanh cuộn
-        JScrollBar verticalScrollBar = tableScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUI(new BasicScrollBarUI() {
+        // Tùy chỉnh thanh cuộn cho tableScrollPane
+        JScrollBar tableVerticalScrollBar = tableScrollPane.getVerticalScrollBar();
+        tableVerticalScrollBar.setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
                 this.thumbColor = new Color(209, 207, 207);
@@ -193,13 +192,10 @@ public class TongQuanTKComponent extends JPanel {
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(trackColor);
-                g2.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
-                g2.dispose();
+                // Không vẽ track để có giao diện mảnh và sạch
             }
         });
-        verticalScrollBar.setPreferredSize(new Dimension(12, Integer.MAX_VALUE));
+        tableVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
         tongQuanContentPanel.add(tableScrollPane);
         tongQuanContentPanel.add(Box.createVerticalStrut(10));
@@ -248,14 +244,11 @@ public class TongQuanTKComponent extends JPanel {
             }
 
             @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(trackColor);
-                g2.fillRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height);
-                g2.dispose();
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track để có giao diện mảnh và sạch
             }
         });
-        mainVerticalScrollBar.setPreferredSize(new Dimension(12, Integer.MAX_VALUE));
+        mainVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
         add(navPanel, BorderLayout.NORTH);
         add(mainScrollPane, BorderLayout.CENTER);
@@ -275,8 +268,8 @@ public class TongQuanTKComponent extends JPanel {
 
     private void adjustTableSize() {
         int width = getWidth();
-        int tableHeight = doanhThuTable.getRowCount() * doanhThuTable.getRowHeight() + doanhThuTable.getTableHeader().getHeight() + 40; // Tính chiều cao động
-        tableScrollPane.setPreferredSize(new Dimension(width - 40, Math.min(tableHeight, 300))); // Giới hạn chiều cao tối đa
+        int tableHeight = doanhThuTable.getRowCount() * doanhThuTable.getRowHeight() + doanhThuTable.getTableHeader().getHeight() + 40;
+        tableScrollPane.setPreferredSize(new Dimension(width - 40, Math.min(tableHeight, 300)));
         tableScrollPane.revalidate();
         tableScrollPane.repaint();
     }

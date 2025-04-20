@@ -7,7 +7,7 @@ public class NhomQuyenDTO {
     private int MNQ;
     private String TEN;
 
-    public NhomQuyenDTO(int MNQ, String TEN){
+    public NhomQuyenDTO(int MNQ, String TEN) {
         this.MNQ = MNQ;
         this.TEN = TEN;
     }
@@ -29,7 +29,7 @@ public class NhomQuyenDTO {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         int hash = 3;
         hash = 37 * hash + this.MNQ;
         hash = 37 * hash + Objects.hashCode(this.TEN);
@@ -37,7 +37,7 @@ public class NhomQuyenDTO {
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -46,11 +46,11 @@ public class NhomQuyenDTO {
             return false;
         NhomQuyenDTO other = (NhomQuyenDTO) obj;
         return MNQ == other.MNQ &&
-               Objects.equals(TEN, other.TEN);
+                Objects.equals(TEN, other.TEN);
     }
 
-    @Override 
-    public String toString(){
-        return "NhomQuyenDTO{" + "MNQ=" + MNQ +", TEN='" + TEN + '\'' + '}';
+    @Override
+    public String toString() {
+        return "NhomQuyenDTO{" + "MNQ=" + MNQ + ", TEN='" + TEN + '\'' + '}';
     }
 }

@@ -24,7 +24,7 @@ public class PhongComponents {
         txtHinhAnh = new JTextField();
         txtGiaP = new JTextField();
         txtChiTietLoaiPhong = new JTextField();
-        cbTinhTrang = new JComboBox<>(new String[]{"1", "0"});
+        cbTinhTrang = new JComboBox<>(new String[] { "1", "0" });
 
         inputPanel.add(new JLabel("Mã Phòng:"));
         inputPanel.add(txtMaP);
@@ -57,13 +57,39 @@ public class PhongComponents {
         dialog.setVisible(true);
     }
 
-    public JTextField getTxtMaP() { return txtMaP; }
-    public JTextField getTxtTenP() { return txtTenP; }
-    public JTextField getTxtLoaiP() { return txtLoaiP; }
-    public JTextField getTxtHinhAnh() { return txtHinhAnh; }
-    public JTextField getTxtGiaP() { return txtGiaP; }
-    public JTextField getTxtChiTietLoaiPhong() { return txtChiTietLoaiPhong; }
-    public JComboBox<String> getCbTinhTrang() { return cbTinhTrang; }
-    public JButton getBtnOK() { return btnOK; }
-    public JDialog getDialog() { return dialog; }
+    public JTextField getTxtMaP() {
+        return txtMaP;
+    }
+
+    public JTextField getTxtTenP() {
+        return txtTenP;
+    }
+
+    public JTextField getTxtLoaiP() {
+        return txtLoaiP;
+    }
+
+    public JTextField getTxtHinhAnh() {
+        return txtHinhAnh;
+    }
+
+    public JTextField getTxtGiaP() {
+        return txtGiaP;
+    }
+
+    public JTextField getTxtChiTietLoaiPhong() {
+        return txtChiTietLoaiPhong;
+    }
+
+    public JComboBox<String> getCbTinhTrang() {
+        return cbTinhTrang;
+    }
+
+    public JButton getBtnOK() {
+        return btnOK;
+    }
+
+    public JDialog getDialog() {
+        return dialog;
+    }
 }

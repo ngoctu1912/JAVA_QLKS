@@ -1,6 +1,9 @@
 package GUI_PHANQUYEN;
 
 import BUS.NhomQuyenBUS;
+import Component.IntegratedSearch;
+import Component.PanelBorderRadius;
+import Component.SidebarPanel;
 import DTO.NhomQuyenDTO;
 import DTO.DanhMucChucNangDTO;
 import DAO.DanhMucChucNangDAO;
@@ -14,7 +17,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import com.formdev.flatlaf.FlatLightLaf;
 
-public class PhanQuyenGUI extends JFrame {
+public class PhanQuyenGUI extends JPanel {
     private NhomQuyenBUS nhomQuyenBUS;
     private JTable nhomQuyenTable;
     private DefaultTableModel tableModel;
@@ -42,19 +45,16 @@ public class PhanQuyenGUI extends JFrame {
     }
 
     private void initComponents() {
-        setTitle("Chức Năng Phân Quyền");
-        setSize(1300, 650);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(new Color(220, 245, 218));
+        setBackground(new Color(220, 245, 218));
+        setPreferredSize(new Dimension(1300, 650));
 
         JPanel wrapperPanel = new JPanel();
         wrapperPanel.setBackground(new Color(220, 245, 218));
         wrapperPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 10));
         wrapperPanel.setLayout(new BorderLayout());
 
-        // Create SidebarPanel first
+        // Create SidebarPanel
         sidebarPanel = new SidebarPanel(
             e -> eventHandler.openAddDialog(),
             e -> eventHandler.openEditDialog(),
@@ -62,20 +62,20 @@ public class PhanQuyenGUI extends JFrame {
             e -> eventHandler.showDetails(),
             e -> eventHandler.exportToExcel(),
             e -> eventHandler.refreshTable(),
-            null
+            null // DocumentListener attached later
         );
 
-        // Instantiate eventHandler with the searchField from SidebarPanel
-        eventHandler = new PhanQuyenEvent(this, nhomQuyenBUS, danhMucChucNangList, sidebarPanel.getSearchField());
+        // Initialize eventHandler with searchPanel
+        eventHandler = new PhanQuyenEvent(this, nhomQuyenBUS, danhMucChucNangList, sidebarPanel.getSearchPanel());
 
-        // Update SidebarPanel’s search listener
+        // Attach search listener to search field
         sidebarPanel.getSearchField().getDocument().addDocumentListener(eventHandler.getSearchListener());
-        System.out.println("DocumentListener attached to search field");
+        System.out.println("SidebarPanel initialized and search listener attached");
 
         wrapperPanel.add(sidebarPanel, BorderLayout.CENTER);
         add(wrapperPanel, BorderLayout.NORTH);
 
-        // Rest of the table setup
+        // Table setup
         tableModel = new DefaultTableModel(new String[]{"Mã nhóm quyền", "Tên nhóm quyền"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -164,9 +164,5 @@ public class PhanQuyenGUI extends JFrame {
 
     public SidebarPanel getSidebarPanel() {
         return sidebarPanel;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new PhanQuyenGUI().setVisible(true));
     }
 }

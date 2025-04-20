@@ -3,7 +3,6 @@ package BUS;
 import DAO.ThongKeDAO;
 import DTO.ThongKeDTO;
 import DTO.KhachHangThongKeDTO;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -77,6 +76,6 @@ public class ThongKeBUS {
     }
 
     public void closeConnection() {
-        thongKeDAO.closeConnection();
+        config.ConnectDB.closeConnection();
     }
 }

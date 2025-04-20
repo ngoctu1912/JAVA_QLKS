@@ -8,10 +8,6 @@ public class KhachHangFrame extends JFrame {
 
     public KhachHangFrame() {
         khachHangComponent = new KhachHangComponent();
-        setTitle("Quản lý khách hàng");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 500);
-
         // Thêm component vào frame
         add(khachHangComponent);
 
@@ -23,7 +19,8 @@ public class KhachHangFrame extends JFrame {
         eventHandler.setupEvents();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(KhachHangFrame::new);
+    // Getter for KhachHangComponent
+    public KhachHangComponent getKhachHangComponent() {
+        return khachHangComponent;
     }
 }

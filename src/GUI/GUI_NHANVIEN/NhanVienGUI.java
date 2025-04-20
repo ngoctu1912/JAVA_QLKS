@@ -2,8 +2,8 @@ package GUI_NHANVIEN;
 
 import BUS.NhanVienBUS;
 import DTO.NhanVienDTO;
-import GUI_PHANQUYEN.SidebarPanel;
-import GUI_PHANQUYEN.PanelBorderRadius;
+import Component.SidebarPanel;
+import Component.PanelBorderRadius;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -173,3 +173,4 @@ public class NhanVienGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new NhanVienGUI().setVisible(true));
     }
 }
+

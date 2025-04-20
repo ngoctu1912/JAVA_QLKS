@@ -1,7 +1,51 @@
+// package BUS;
+
+// import DAO.TienIchDAO;
+// import DTO.TienIchDTO;
+// import java.util.ArrayList;
+// import java.util.List;
+
+// public class TienIchBUS {
+//     private TienIchDAO tienIchDAO;
+
+//     public TienIchBUS() {
+//         this.tienIchDAO = new TienIchDAO();
+//     }
+
+//     public int add(TienIchDTO t) {
+//         return tienIchDAO.add(t);
+//     }
+
+//     public int update(TienIchDTO t) {
+//         return tienIchDAO.update(t);
+//     }
+
+//     public int delete(String maTI) {
+//         return tienIchDAO.delete(maTI);
+//     }
+
+//     public ArrayList<TienIchDTO> selectAll() {
+//         return tienIchDAO.selectAll();
+//     }
+
+//     public TienIchDTO selectById(String maTI) {
+//         return tienIchDAO.selectById(maTI);
+//     }
+
+//     public int getAutoIncrement() {
+//         return tienIchDAO.getAutoIncrement();
+//     }
+
+//     // Helper method to get amenities (if needed, adjust based on actual use case)
+//     public List<TienIchDTO> getAllAmenities() {
+//         return tienIchDAO.selectAll();
+//     }
+// }
+
 package BUS;
 
 import DAO.TienIchDAO;
-import DAO.ConnectDB;
+import config.ConnectDB;
 import DTO.TienIchDTO;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -70,5 +114,9 @@ public class TienIchBUS {
 
     public List<Object[]> getTienIchDetailsByRoom(String maPhong) throws SQLException {
         return tienIchDAO.getTienIchDetailsByRoom(maPhong);
+    }
+
+    public TienIchDTO selectById(String maTI) {
+        return tienIchDAO.selectById(maTI);
     }
 }
