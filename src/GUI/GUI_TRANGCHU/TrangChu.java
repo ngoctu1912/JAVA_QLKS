@@ -20,6 +20,7 @@ import DTO.TaiKhoanDTO;
 import DTO.TaiKhoanKHDTO;
 import GUI_PHANQUYEN.PhanQuyenGUI;
 import GUI_PHONG.FormPhong;
+import GUI_TAIKHOAN.TaiKhoanGUI;
 import GUI_THONGKE.TongQuanTKComponent;
 
 import javax.swing.*;
@@ -154,9 +155,18 @@ public class TrangChu extends JPanel {
                 currentContentPanel = new JPanel(new BorderLayout());
                 currentContentPanel.add(new PhanQuyenGUI(), BorderLayout.CENTER);
                 break;
+            
             case "TaiKhoanGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
-                currentContentPanel.add(new JLabel("TaiKhoanGUI chưa triển khai", SwingConstants.CENTER));
+                try {
+                    TaiKhoanGUI taiKhoanGUI = new TaiKhoanGUI();
+                    currentContentPanel.add(taiKhoanGUI, BorderLayout.CENTER);
+                    System.out.println("TaiKhoanGUI panel added successfully");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Lỗi khi tải TaiKhoanGUI: " + e.getMessage(), "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
                 break;
             case "ThongKeGUI":
                 currentContentPanel = new JPanel(new BorderLayout());

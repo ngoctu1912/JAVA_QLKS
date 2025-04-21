@@ -1,200 +1,323 @@
 package DAO;
 
-import DTO.NhanVienDTO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import config.ConnectDB;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import DTO.NhanVienDTO;
 
 public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
-
-    public static NhanVienDAO getInstance(){
+    public static NhanVienDAO getInstance() {
         return new NhanVienDAO();
     }
 
-    @Override
-    public int add(NhanVienDTO nv) {
-        String sql = "INSERT INTO NHANVIEN (HOTEN, GIOITINH, NGAYSINH, SDT, EMAIL, TT, SNP, NVL, LN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nv.getHoTen());
-            stmt.setInt(2, nv.getGioiTinh());
-            stmt.setDate(3, new java.sql.Date(nv.getNgaySinh().getTime()));
-            stmt.setString(4, nv.getSoDienThoai());
-            stmt.setString(5, nv.getEmail());
-            stmt.setInt(6, nv.getTrangThai());
-            stmt.setInt(7, nv.getSoNgayPhep());
-            stmt.setTimestamp(8, (Timestamp) nv.getNgayVaoLam());
-            stmt.setInt(9, nv.getLuongNgay());
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Lỗi thêm nhân viên: " + e.getMessage());
-        }
-        return 0;
-    }
 
     @Override
-    public int update(NhanVienDTO nv) {
-        String sql = "UPDATE NHANVIEN SET HOTEN = ?, GIOITINH = ?, NGAYSINH = ?, SDT = ?, EMAIL = ?, TT = ?, SNP = ?, NVL = ?, LN = ? WHERE MNV = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nv.getHoTen());
-            stmt.setInt(2, nv.getGioiTinh());
-            stmt.setDate(3, new java.sql.Date(nv.getNgaySinh().getTime()));
-            stmt.setString(4, nv.getSoDienThoai());
-            stmt.setString(5, nv.getEmail());
-            stmt.setInt(6, nv.getTrangThai());
-            stmt.setInt(7, nv.getSoNgayPhep());
-            stmt.setTimestamp(8, (Timestamp) nv.getNgayVaoLam());
-            stmt.setInt(9, nv.getLuongNgay());
-            stmt.setInt(10, nv.getMaNhanVien());
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Lỗi cập nhật nhân viên: " + e.getMessage());
-        }
-        return 0;
-    }
-
-    @Override
-    public int delete(String maNVStr) {
+    public int add(NhanVienDTO t) {
+        int result = 0;
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet generatedKeys = null;
         try {
-            int maNV = Integer.parseInt(maNVStr);
-            String sql = "DELETE FROM NHANVIEN WHERE MNV = ?";
-            try (Connection conn = ConnectDB.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, maNV);
-                return stmt.executeUpdate();
+            con = ConnectDB.getConnection();
+            String sql = "INSERT INTO `NHANVIEN`(`HOTEN`, `GIOITINH`, `SDT`, `NGAYSINH`, `TT`, `EMAIL`, `SNP`, `NVL`, `LN`) VALUES (?,?,?,?,?,?,?,?,?)";
+            pst = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            pst.setString(1, t.getHOTEN());
+            pst.setInt(2, t.getGIOITINH());
+            pst.setString(3, t.getSDT());
+            pst.setDate(4, t.getNGAYSINH() != null ? new java.sql.Date(t.getNGAYSINH().getTime()) : null);
+            pst.setInt(5, t.getTT());
+            pst.setString(6, t.getEMAIL());
+            pst.setInt(7, t.getSNP());
+            pst.setDate(8, new java.sql.Date(t.getNVL().getTime()));
+            pst.setInt(9, t.getLN());
+            result = pst.executeUpdate();
+
+            generatedKeys = pst.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                t.setMNV(generatedKeys.getInt(1));
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi xóa nhân viên: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            // Đóng tài nguyên
         }
-        return 0;
+        return result;
+    }
+
+    @Override
+    public int update(NhanVienDTO t) {
+        int result = 0;
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "UPDATE `NHANVIEN` SET `HOTEN`=?, `GIOITINH`=?, `SDT`=?, `NGAYSINH`=?, `TT`=?, `EMAIL`=?, `SNP`=?, `NVL`=?, `LN`=? WHERE `MNV`=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, t.getHOTEN());
+            pst.setInt(2, t.getGIOITINH());
+            pst.setString(3, t.getSDT());
+            pst.setDate(4, t.getNGAYSINH() != null ? new java.sql.Date(t.getNGAYSINH().getTime()) : null);
+            pst.setInt(5, t.getTT());
+            pst.setString(6, t.getEMAIL());
+            pst.setInt(7, t.getSNP());
+            pst.setDate(8, new java.sql.Date(t.getNVL().getTime()));
+            pst.setInt(9, t.getLN());
+            pst.setInt(10, t.getMNV());
+            result = pst.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            // Đóng tài nguyên
+        }
+        return result;
+    }
+    
+    @Override
+    public int delete(String t) {
+        int result = 0;
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "UPDATE NHANVIEN SET `TT` = -1 WHERE MNV = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, t);
+            result = pst.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
     }
 
     @Override
     public ArrayList<NhanVienDTO> selectAll() {
-        ArrayList<NhanVienDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM NHANVIEN";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        ArrayList<NhanVienDTO> result = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "SELECT * FROM NHANVIEN WHERE `TT` = 1";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
             while (rs.next()) {
-                NhanVienDTO nv = new NhanVienDTO();
-                nv.setMaNhanVien(rs.getInt("MNV"));
-                nv.setHoTen(rs.getString("HOTEN"));
-                nv.setGioiTinh(rs.getInt("GIOITINH"));
-                nv.setNgaySinh(rs.getDate("NGAYSINH"));
-                nv.setSoDienThoai(rs.getString("SDT"));
-                nv.setEmail(rs.getString("EMAIL"));
-                nv.setTrangThai(rs.getInt("TT"));
-                nv.setSoNgayPhep(rs.getInt("SNP"));
-                nv.setNgayVaoLam(rs.getTimestamp("NVL"));
-                nv.setLuongNgay(rs.getInt("LN"));
-                list.add(nv);
+                int MNV = rs.getInt("MNV");
+                String HOTEN = rs.getString("HOTEN");
+                int GIOITINH = rs.getInt("GIOITINH");
+                Date NGAYSINH = rs.getDate("NGAYSINH");
+                String SDT = rs.getString("SDT");
+                int TT = rs.getInt("TT");
+                String EMAIL = rs.getString("EMAIL");
+                int SNP = rs.getInt("SNP");
+                Date NVL = rs.getDate("NVL");
+                int LN = rs.getInt("LN");
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                result.add(nv);
             }
-        } catch (SQLException e) {
-            System.err.println("Lỗi lấy danh sách nhân viên: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return list;
+        return result;
     }
 
-    public ArrayList<NhanVienDTO> selectAllActive() {
-        ArrayList<NhanVienDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM NHANVIEN WHERE TT = 1";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+    public ArrayList<NhanVienDTO> selectAlll() {
+        ArrayList<NhanVienDTO> result = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "SELECT * FROM NHANVIEN";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
             while (rs.next()) {
-                NhanVienDTO nv = new NhanVienDTO();
-                nv.setMaNhanVien(rs.getInt("MNV"));
-                nv.setHoTen(rs.getString("HOTEN"));
-                nv.setGioiTinh(rs.getInt("GIOITINH"));
-                nv.setNgaySinh(rs.getDate("NGAYSINH"));
-                nv.setSoDienThoai(rs.getString("SDT"));
-                nv.setEmail(rs.getString("EMAIL"));
-                nv.setTrangThai(rs.getInt("TT"));
-                nv.setSoNgayPhep(rs.getInt("SNP"));
-                nv.setNgayVaoLam(rs.getTimestamp("NVL"));
-                nv.setLuongNgay(rs.getInt("LN"));
-                list.add(nv);
+                int MNV = rs.getInt("MNV");
+                String HOTEN = rs.getString("HOTEN");
+                int GIOITINH = rs.getInt("GIOITINH");
+                Date NGAYSINH = rs.getDate("NGAYSINH");
+                String SDT = rs.getString("SDT");
+                int TT = rs.getInt("TT");
+                String EMAIL = rs.getString("EMAIL");
+                int SNP = rs.getInt("SNP");
+                Date NVL = rs.getDate("NVL");
+                int LN = rs.getInt("LN");
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                result.add(nv);
             }
-        } catch (SQLException e) {
-            System.err.println("Lỗi lấy danh sách nhân viên đang hoạt động: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return list;
-    }    
+        return result;
+    }
+
+    public ArrayList<NhanVienDTO> selectAllNV() {
+        ArrayList<NhanVienDTO> result = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "SELECT * FROM NHANVIEN nv WHERE nv.TT = 1 AND NOT EXISTS (SELECT * FROM taikhoan tk WHERE tk.MNV = nv.MNV)";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                int MNV = rs.getInt("MNV");
+                String HOTEN = rs.getString("HOTEN");
+                int GIOITINH = rs.getInt("GIOITINH");
+                Date NGAYSINH = rs.getDate("NGAYSINH");
+                String SDT = rs.getString("SDT");
+                int TT = rs.getInt("TT");
+                String EMAIL = rs.getString("EMAIL");
+                int SNP = rs.getInt("SNP");
+                Date NVL = rs.getDate("NVL");
+                int LN = rs.getInt("LN");
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                result.add(nv);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
 
     @Override
-    public NhanVienDTO selectById(String maNVStr) {
+    public NhanVienDTO selectById(String t) {
+        NhanVienDTO result = null;
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
-            int maNV = Integer.parseInt(maNVStr);
+            con = ConnectDB.getConnection();
             String sql = "SELECT * FROM NHANVIEN WHERE MNV = ?";
-            try (Connection conn = ConnectDB.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, maNV);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        NhanVienDTO nv = new NhanVienDTO();
-                        nv.setMaNhanVien(rs.getInt("MNV"));
-                        nv.setHoTen(rs.getString("HOTEN"));
-                        nv.setGioiTinh(rs.getInt("GIOITINH"));
-                        nv.setNgaySinh(rs.getDate("NGAYSINH"));
-                        nv.setSoDienThoai(rs.getString("SDT"));
-                        nv.setEmail(rs.getString("EMAIL"));
-                        nv.setTrangThai(rs.getInt("TT"));
-                        nv.setSoNgayPhep(rs.getInt("SNP"));
-                        nv.setNgayVaoLam(rs.getTimestamp("NVL"));
-                        nv.setLuongNgay(rs.getInt("LN"));
-                        return nv;
-                    }
-                }
+            pst = con.prepareStatement(sql);
+            pst.setString(1, t);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                int MNV = rs.getInt("MNV");
+                String HOTEN = rs.getString("HOTEN");
+                int GIOITINH = rs.getInt("GIOITINH");
+                Date NGAYSINH = rs.getDate("NGAYSINH");
+                String SDT = rs.getString("SDT");
+                int TT = rs.getInt("TT");
+                String EMAIL = rs.getString("EMAIL");
+                int SNP = rs.getInt("SNP");
+                Date NVL = rs.getDate("NVL");
+                int LN = rs.getInt("LN");
+                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi lấy nhân viên theo ID: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return null;
+        return result;
+    }
+
+    public NhanVienDTO selectByEmail(String t) {
+        NhanVienDTO result = null;
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "SELECT * FROM NHANVIEN WHERE EMAIL = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, t);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                int MNV = rs.getInt("MNV");
+                String HOTEN = rs.getString("HOTEN");
+                int GIOITINH = rs.getInt("GIOITINH");
+                Date NGAYSINH = rs.getDate("NGAYSINH");
+                String SDT = rs.getString("SDT");
+                int TT = rs.getInt("TT");
+                String EMAIL = rs.getString("EMAIL");
+                int SNP = rs.getInt("SNP");
+                Date NVL = rs.getDate("NVL");
+                int LN = rs.getInt("LN");
+                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
     }
 
     @Override
     public int getAutoIncrement() {
-        String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES " +
-                     "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'NHANVIEN'";
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        int result = -1;
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = ConnectDB.getConnection();
+            String sql = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'quanlycuahangsach' AND TABLE_NAME = 'NHANVIEN'";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
             if (rs.next()) {
-                return rs.getInt("AUTO_INCREMENT");
+                result = rs.getInt("AUTO_INCREMENT");
             }
-        } catch (SQLException e) {
-            System.err.println("Lỗi lấy AUTO_INCREMENT nhân viên: " + e.getMessage());
-        }
-        return -1;
-    }
-
-    public NhanVienDTO selectNhanVienByUsername(String username) {
-        NhanVienDTO result = null;
-        String query = "SELECT NV.* FROM NHANVIEN NV " +
-                       "JOIN TAIKHOAN TK ON NV.MNV = TK.MNV " +
-                       "WHERE TK.TDN = ? AND NV.TT = 1";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    result = new NhanVienDTO();
-                    result.setMaNhanVien(rs.getInt("MNV"));
-                    result.setHoTen(rs.getString("HOTEN"));
-                    result.setGioiTinh(rs.getInt("GIOITINH"));
-                    result.setNgaySinh(rs.getDate("NGAYSINH"));
-                    result.setSoDienThoai(rs.getString("SDT"));
-                    result.setEmail(rs.getString("EMAIL"));
-                    result.setTrangThai(rs.getInt("TT"));
-                    result.setSoNgayPhep(rs.getInt("SNP"));
-                    result.setNgayVaoLam(rs.getTimestamp("NVL"));
-                    result.setLuongNgay(rs.getInt("LN"));
-                }
+        } catch (SQLException ex) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) ConnectDB.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException e) {
-            System.err.println("Lỗi lấy nhân viên theo username: " + e.getMessage());
         }
         return result;
     }

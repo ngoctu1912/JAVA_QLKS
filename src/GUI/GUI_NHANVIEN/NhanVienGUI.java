@@ -173,4 +173,3 @@ public class NhanVienGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new NhanVienGUI().setVisible(true));
     }
 }
-

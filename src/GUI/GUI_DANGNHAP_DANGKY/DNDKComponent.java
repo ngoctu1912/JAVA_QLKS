@@ -316,7 +316,7 @@ public class DNDKComponent {
         if (tkNV != null && tkNV.getTrangThai() == 1) {
             NhanVienDTO nv = NhanVienDAO.getInstance().selectById(String.valueOf(tkNV.getMaNV()));
             if (nv != null) {
-                String fullName = nv.getHoTen();
+                String fullName = nv.getHOTEN();
                 String role;
                 switch (tkNV.getMaNhomQuyen()) {
                     case 1:

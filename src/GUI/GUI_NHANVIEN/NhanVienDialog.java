@@ -251,5 +251,3 @@ public class NhanVienDialog extends JDialog {
         dispose();
     }
 }
-
-
