@@ -4,6 +4,7 @@ import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -26,6 +27,14 @@ public class InputDate extends JPanel {
         this.setBackground(Color.white);
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
         lbltitle = new JLabel(title);
+        // Định dạng font, cỡ chữ, kiểu chữ cho nhãn
+        Font timesNewRomanBold = Font.getFont("Times New Roman");
+        if (timesNewRomanBold != null) {
+            lbltitle.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
+        } else {
+            lbltitle.setFont(new Font(Font.SERIF, Font.BOLD, 20));
+        }
+        lbltitle.setForeground(new Color(0, 102, 153)); // Màu xanh đậm
         date = new JDateChooser();
         date.setDateFormatString("dd/MM/yyyy");
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -38,13 +47,21 @@ public class InputDate extends JPanel {
         this.setBackground(Color.white);
         this.setPreferredSize(new Dimension(w, h));
         lbltitle = new JLabel(title);
+        // Định dạng font, cỡ chữ, kiểu chữ cho nhãn
+        Font timesNewRomanBold = Font.getFont("Times New Roman");
+        if (timesNewRomanBold != null) {
+            lbltitle.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
+        } else {
+            lbltitle.setFont(new Font(Font.SERIF, Font.BOLD, 20));
+        }
+        lbltitle.setForeground(new Color(0, 102, 153)); // Màu xanh đậm
         date = new JDateChooser();
         date.setDateFormatString("dd/MM/yyyy");
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         this.add(lbltitle);
         this.add(date);
     }
-    
+
     public JDateChooser getDateChooser() {
         return this.date;
     }

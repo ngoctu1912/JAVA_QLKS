@@ -1,71 +1,63 @@
 package Component;
 
-import javax.swing.*;
-import javax.swing.event.DocumentListener;
+import BUS.NhomQuyenBUS;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.util.HashMap;
+import javax.swing.*;
 
-public class SidebarPanel extends PanelBorderRadius {
-    private IntegratedSearch searchPanel;
+public final class SidebarPanel extends JToolBar {
 
-    public SidebarPanel(ActionListener addListener, ActionListener editListener,
-                       ActionListener deleteListener, ActionListener detailsListener,
-                       ActionListener exportListener, ActionListener refreshListener,
-                       DocumentListener searchListener) {
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(1300, 100));
+    public ButtonToolBar btnAdd, btnDelete, btnEdit, btnDetail, btnNhapExcel, btnXuatExcel, btnHuyPhieu;
+    public JSeparator separator1;
+    private IntegratedSearch searchComponent;
+    public HashMap<String, ButtonToolBar> btn = new HashMap<>();
+    private final NhomQuyenBUS nhomquyenBus = new NhomQuyenBUS();
 
-        // Initialize searchPanel without filter options
-        searchPanel = new IntegratedSearch();
-        if (refreshListener != null) {
-            searchPanel.btnReset.addActionListener(refreshListener);
-        }
-
-        // Button Panel (Left)
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-
-        // Add Button
-        JButton addButton = createButton("THÊM", "icons/add.svg", addListener);
-        JButton editButton = createButton("SỬA", "icons/edit.svg", editListener);
-        JButton deleteButton = createButton("XÓA", "icons/delete.svg", deleteListener);
-        JButton detailsButton = createButton("CHI TIẾT", "icons/detail.svg", detailsListener);
-        JButton exportButton = createButton("XUẤT EXCEL", "icons/export_excel.svg", exportListener);
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(detailsButton);
-        buttonPanel.add(exportButton);
-
-        // Add components to main panel
-        add(buttonPanel, BorderLayout.WEST);
-        add(searchPanel, BorderLayout.EAST);
+    public SidebarPanel(int manhomquyen, String chucnang, String[] listBtn) {
+        initData();
+        initComponent(manhomquyen, chucnang, listBtn);
     }
 
-    private JButton createButton(String text, String iconPath, ActionListener listener) {
-        JButton button = new JButton(text);
-        button.setIcon(new FlatSVGIcon(iconPath));
-        button.setForeground(Color.BLACK);
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setBorder(null);
-        button.setPreferredSize(new Dimension(80, 80));
-        if (listener != null) {
-            button.addActionListener(listener);
+    public void initData() {
+        btn.put("create", new ButtonToolBar("THÊM", "add.svg", "create"));
+        btn.put("delete", new ButtonToolBar("XÓA", "delete.svg", "delete"));
+        btn.put("update", new ButtonToolBar("SỬA", "edit.svg", "update"));
+        btn.put("cancel", new ButtonToolBar("HUỶ", "cancel.svg", "delete"));
+        btn.put("detail", new ButtonToolBar("CHI TIẾT", "detail.svg", "view"));
+        btn.put("export", new ButtonToolBar("XUẤT EXCEL", "export_excel.svg", "view"));
+        // Thêm các button khác nếu cần
+    }
+
+    private void initComponent(int manhomquyen, String chucnang, String[] listBtn) {
+        this.setBackground(Color.WHITE);
+        this.setRollover(true);
+        
+        for (String btnKey : listBtn) {
+            ButtonToolBar button = btn.get(btnKey);
+            if (button != null) {
+                // Kiểm tra quyền cho từng action (create, update, delete...)
+                if (nhomquyenBus.checkPermission(manhomquyen, chucnang, button.getPermisson())) {
+                    this.add(button);
+                }
+                // Ẩn nút nếu không có quyền
+            }
         }
-        return button;
+    }
+    
+    public void addSearchComponent(String[] searchOptions) {
+        this.searchComponent = new IntegratedSearch(searchOptions);
+        this.add(searchComponent);
     }
 
     public JTextField getSearchField() {
-        return searchPanel.getSearchField();
+        return this.searchComponent.txtSearchForm;
     }
 
-    public IntegratedSearch getSearchPanel() {
-        return searchPanel;
+    public JButton getResetButton() {
+        return this.searchComponent.btnReset;
+    }
+
+    public IntegratedSearch getSearchComponent() {
+        return this.searchComponent;
     }
 }

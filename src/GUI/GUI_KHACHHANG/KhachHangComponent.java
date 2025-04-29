@@ -1,405 +1,121 @@
-// package GUI_KHACHHANG;
-
-// import BUS.KhachHangBUS;
-// import DTO.KhachHangDTO;
-// import javax.swing.*;
-// import javax.swing.plaf.basic.BasicScrollBarUI;
-// import javax.swing.table.*;
-// import java.awt.*;
-// import java.util.List;
-
-// public class KhachHangComponent extends JPanel {
-//     private final JTable customerTable;
-//     private final DefaultTableModel tableModel;
-//     private final KhachHangBUS khachHangBUS;
-//     private final JPanel buttonPanel;
-//     private final JTextField searchField;
-//     private final JButton searchButton;
-//     private final JButton refreshButton;
-
-//     public KhachHangComponent() {
-//         this.khachHangBUS = new KhachHangBUS();
-
-//         setLayout(new BorderLayout());
-//         setBackground(new Color(240, 245, 245));
-
-//         // Panel chứa các nút
-//         buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-//         buttonPanel.setBackground(new Color(240, 245, 245));
-//         String[] buttonLabels = {"Thêm", "Sửa", "Xóa", "Chi tiết", "Nhập Excel", "Xuất Excel"};
-//         for (String label : buttonLabels) {
-//             JButton button = new JButton(label);
-//             button.setFont(new Font("SansSerif", Font.BOLD, 14));
-//             button.setBackground(Color.WHITE);
-//             button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-//             buttonPanel.add(button);
-//         }
-
-//         // Thêm trường tìm kiếm
-//         searchField = new JTextField(20);
-//         searchField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-//         searchButton = new JButton("Nhập nội dung tìm kiếm...");
-//         searchButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
-//         buttonPanel.add(searchField);
-//         buttonPanel.add(searchButton);
-
-//         // Thêm nút "Làm mới"
-//         refreshButton = new JButton("Làm mới");
-//         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-//         refreshButton.setBackground(Color.WHITE);
-//         refreshButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-//         buttonPanel.add(refreshButton);
-
-//         // Tạo bảng khách hàng
-//         String[] columnNames = {"STT", "Mã khách hàng", "Tên khách hàng", "Giới tính", "CCCD", "Địa chỉ", "Số điện thoại", "Email", "Trạng thái", "Ngày sinh"};
-//         tableModel = new DefaultTableModel(columnNames, 0) {
-//             @Override
-//             public boolean isCellEditable(int row, int column) {
-//                 return false;
-//             }
-//         };
-
-//         customerTable = new JTable(tableModel) {
-//             @Override
-//             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-//                 Component c = super.prepareRenderer(renderer, row, column);
-//                 c.setBackground(new Color(183, 228, 199)); // Màu nền xanh nhạt
-//                 c.setForeground(Color.BLACK);
-//                 ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
-//                 return c;
-//             }
-
-//             @Override
-//             public JTableHeader getTableHeader() {
-//                 JTableHeader header = super.getTableHeader();
-//                 header.setPreferredSize(new Dimension(0, 40));
-//                 return header;
-//             }
-//         };
-
-//         customerTable.setRowHeight(40);
-//         customerTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
-//         customerTable.setShowVerticalLines(false);
-//         customerTable.setShowHorizontalLines(false);
-//         customerTable.setIntercellSpacing(new Dimension(0, 0));
-//         customerTable.setBorder(BorderFactory.createEmptyBorder());
-
-//         // Định dạng tiêu đề bảng
-//         JTableHeader header = customerTable.getTableHeader();
-//         header.setFont(new Font("SansSerif", Font.BOLD, 15));
-//         header.setBackground(Color.WHITE);
-//         header.setForeground(Color.BLACK);
-//         header.setReorderingAllowed(false);
-//         header.setBorder(BorderFactory.createEmptyBorder());
-
-//         UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
-//         header.setOpaque(false);
-
-//         // Đặt độ rộng cột
-//         customerTable.getColumnModel().getColumn(0).setPreferredWidth(50); // STT
-//         customerTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Mã khách hàng
-//         customerTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Tên khách hàng
-//         customerTable.getColumnModel().getColumn(3).setPreferredWidth(80); // Giới tính
-//         customerTable.getColumnModel().getColumn(4).setPreferredWidth(100); // CCCD
-//         customerTable.getColumnModel().getColumn(5).setPreferredWidth(200); // Địa chỉ
-//         customerTable.getColumnModel().getColumn(6).setPreferredWidth(120); // Số điện thoại
-//         customerTable.getColumnModel().getColumn(7).setPreferredWidth(150); // Email
-//         customerTable.getColumnModel().getColumn(8).setPreferredWidth(80); // Trạng thái
-//         customerTable.getColumnModel().getColumn(9).setPreferredWidth(100); // Ngày sinh
-
-//         // Tạo thanh cuộn
-//         JScrollPane scrollPane = new JScrollPane(customerTable);
-//         scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-//         scrollPane.getViewport().setBackground(new Color(240, 245, 245));
-
-//         // Tùy chỉnh thanh cuộn
-//         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-//         verticalScrollBar.setUI(new BasicScrollBarUI() {
-//             @Override
-//             protected void configureScrollBarColors() {
-//                 this.thumbColor = new Color(209, 207, 207);
-//                 this.trackColor = new Color(245, 245, 245);
-//             }
-
-//             @Override
-//             protected JButton createDecreaseButton(int orientation) {
-//                 return createZeroButton();
-//             }
-
-//             @Override
-//             protected JButton createIncreaseButton(int orientation) {
-//                 return createZeroButton();
-//             }
-
-//             private JButton createZeroButton() {
-//                 JButton button = new JButton();
-//                 button.setPreferredSize(new Dimension(0, 0));
-//                 button.setMinimumSize(new Dimension(0, 0));
-//                 button.setMaximumSize(new Dimension(0, 0));
-//                 return button;
-//             }
-
-//             @Override
-//             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-//                 Graphics2D g2 = (Graphics2D) g.create();
-//                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//                 g2.setPaint(thumbColor);
-//                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-//                 g2.dispose();
-//             }
-
-//             @Override
-//             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-//                 // Không vẽ track
-//             }
-//         });
-//         verticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
-
-//         // Thêm các thành phần vào panel chính
-//         add(buttonPanel, BorderLayout.NORTH);
-//         add(scrollPane, BorderLayout.CENTER);
-
-//         // Tải dữ liệu khách hàng
-//         loadAllCustomers();
-//     }
-
-//     public void loadAllCustomers() {
-//         tableModel.setRowCount(0);
-
-//         try {
-//             List<KhachHangDTO> customers = khachHangBUS.getAllCustomers();
-//             int rowCount = 0;
-//             for (KhachHangDTO customer : customers) {
-//                 rowCount++;
-//                 // Chuyển đổi giới tính và trạng thái thành chuỗi dễ đọc
-//                 String gioiTinh = (customer.getGT() == 1) ? "Nam" : "Nữ";
-//                 String trangThai = (customer.getTT() == 1) ? "Hoạt động" : "Ngưng hoạt động";
-//                 tableModel.addRow(new Object[] {
-//                     rowCount,
-//                     customer.getMKH(),
-//                     customer.getTKH(),
-//                     gioiTinh,
-//                     customer.getCCCD(),
-//                     customer.getDIACHI(),
-//                     customer.getSDT(),
-//                     customer.getEMAIL(),
-//                     trangThai,
-//                     customer.getNgayThamGia()
-//                 });
-//             }
-//         } catch (Exception e) {
-//             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
-//         }
-//     }
-
-//     // Getter để truy cập các thành phần
-//     public JTable getCustomerTable() { return customerTable; }
-//     public DefaultTableModel getTableModel() { return tableModel; }
-//     public JPanel getButtonPanel() { return buttonPanel; }
-//     public JTextField getSearchField() { return searchField; }
-//     public JButton getSearchButton() { return searchButton; }
-//     public JButton getRefreshButton() { return refreshButton; }
-// }
-
 package GUI_KHACHHANG;
 
-import DAO.KhachHangDAO;
 import DTO.KhachHangDTO;
+
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.table.*;
 import java.awt.*;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class KhachHangComponent extends JPanel {
-    private final JTable customerTable;
-    private final DefaultTableModel tableModel;
-    private final KhachHangDAO khachHangDAO;
-    private final JPanel buttonPanel;
-    private final JTextField searchField;
-    private final JButton searchButton;
-    private final JButton refreshButton;
+public class KhachHangComponent {
+    private JTextField txtMaKH, txtTenKH, txtCCCD, txtDiaChi, txtSoDienThoai, txtEmail;
+    private JComboBox<String> cbGioiTinh, cbTrangThai;
+    private JFormattedTextField txtNgaySinh;
+    private JDialog dialog;
+    private JButton btnOK, btnCancel;
 
-    public KhachHangComponent() {
-        this.khachHangDAO = KhachHangDAO.getInstance();
+    public KhachHangComponent(JFrame parent) {
+        dialog = new JDialog(parent, "Nhập Thông Tin Khách Hàng", true);
+        dialog.setSize(400, 400);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setLayout(new BorderLayout());
 
-        setLayout(new BorderLayout());
-        setBackground(new Color(240, 245, 245));
+        JPanel inputPanel = new JPanel(new GridLayout(9, 2, 10, 10));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Panel chứa các nút
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        buttonPanel.setBackground(new Color(240, 245, 245));
-        String[] buttonLabels = {"Thêm", "Sửa", "Xóa", "Chi tiết", "Nhập Excel", "Xuất Excel"};
-        for (String label : buttonLabels) {
-            JButton button = new JButton(label);
-            button.setFont(new Font("SansSerif", Font.BOLD, 14));
-            button.setBackground(Color.WHITE);
-            button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            buttonPanel.add(button);
-        }
+        txtMaKH = new JTextField();
+        txtTenKH = new JTextField();
+        txtCCCD = new JTextField();
+        txtDiaChi = new JTextField();
+        txtSoDienThoai = new JTextField();
+        txtEmail = new JTextField();
+        cbGioiTinh = new JComboBox<>(new String[] { "Nữ", "Nam" });
+        cbTrangThai = new JComboBox<>(new String[] { "Hoạt động", "Ngưng hoạt động" });
 
-        // Thêm trường tìm kiếm
-        searchField = new JTextField(20);
-        searchField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        searchButton = new JButton("Tìm kiếm");
-        searchButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        buttonPanel.add(searchField);
-        buttonPanel.add(searchButton);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        txtNgaySinh = new JFormattedTextField(dateFormat);
+        txtNgaySinh.setValue(new Date());
 
-        // Thêm nút "Làm mới"
-        refreshButton = new JButton("Làm mới");
-        refreshButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        refreshButton.setBackground(Color.WHITE);
-        refreshButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        buttonPanel.add(refreshButton);
+        inputPanel.add(new JLabel("Mã KH:"));
+        inputPanel.add(txtMaKH);
+        inputPanel.add(new JLabel("Tên KH:"));
+        inputPanel.add(txtTenKH);
+        inputPanel.add(new JLabel("Giới Tính:"));
+        inputPanel.add(cbGioiTinh);
+        inputPanel.add(new JLabel("CCCD:"));
+        inputPanel.add(txtCCCD);
+        inputPanel.add(new JLabel("Địa Chỉ:"));
+        inputPanel.add(txtDiaChi);
+        inputPanel.add(new JLabel("SĐT:"));
+        inputPanel.add(txtSoDienThoai);
+        inputPanel.add(new JLabel("Email:"));
+        inputPanel.add(txtEmail);
+        inputPanel.add(new JLabel("Trạng Thái:"));
+        inputPanel.add(cbTrangThai);
+        inputPanel.add(new JLabel("Ngày Sinh:"));
+        inputPanel.add(txtNgaySinh);
 
-        // Tạo bảng khách hàng
-        String[] columnNames = {"STT", "Mã khách hàng", "Tên khách hàng", "Giới tính", "CCCD", "Địa chỉ", "Số điện thoại", "Email", "Trạng thái", "Ngày sinh"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        JPanel buttonPanel = new JPanel();
+        btnOK = new JButton("OK");
+        btnCancel = new JButton("Cancel");
+        buttonPanel.add(btnOK);
+        buttonPanel.add(btnCancel);
 
-        customerTable = new JTable(tableModel) {
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                Component c = super.prepareRenderer(renderer, row, column);
-                c.setBackground(new Color(183, 228, 199)); // Màu nền xanh nhạt
-                c.setForeground(Color.BLACK);
-                ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
-                return c;
-            }
+        dialog.add(inputPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
-            @Override
-            public JTableHeader getTableHeader() {
-                JTableHeader header = super.getTableHeader();
-                header.setPreferredSize(new Dimension(0, 40));
-                return header;
-            }
-        };
-
-        customerTable.setRowHeight(40);
-        customerTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        customerTable.setShowVerticalLines(false);
-        customerTable.setShowHorizontalLines(false);
-        customerTable.setIntercellSpacing(new Dimension(0, 0));
-        customerTable.setBorder(BorderFactory.createEmptyBorder());
-
-        // Định dạng tiêu đề bảng
-        JTableHeader header = customerTable.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 15));
-        header.setBackground(Color.WHITE);
-        header.setForeground(Color.BLACK);
-        header.setReorderingAllowed(false);
-        header.setBorder(BorderFactory.createEmptyBorder());
-
-        UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
-        header.setOpaque(false);
-
-        // Đặt độ rộng cột
-        customerTable.getColumnModel().getColumn(0).setPreferredWidth(50); // STT
-        customerTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Mã khách hàng
-        customerTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Tên khách hàng
-        customerTable.getColumnModel().getColumn(3).setPreferredWidth(80); // Giới tính
-        customerTable.getColumnModel().getColumn(4).setPreferredWidth(100); // CCCD
-        customerTable.getColumnModel().getColumn(5).setPreferredWidth(200); // Địa chỉ
-        customerTable.getColumnModel().getColumn(6).setPreferredWidth(120); // Số điện thoại
-        customerTable.getColumnModel().getColumn(7).setPreferredWidth(150); // Email
-        customerTable.getColumnModel().getColumn(8).setPreferredWidth(80); // Trạng thái
-        customerTable.getColumnModel().getColumn(9).setPreferredWidth(100); // Ngày sinh
-
-        // Tạo thanh cuộn
-        JScrollPane scrollPane = new JScrollPane(customerTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        scrollPane.getViewport().setBackground(new Color(240, 245, 245));
-
-        // Tùy chỉnh thanh cuộn
-        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(209, 207, 207);
-                this.trackColor = new Color(245, 245, 245);
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setPaint(thumbColor);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Không vẽ track
-            }
-        });
-        verticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
-
-        // Thêm các thành phần vào panel chính
-        add(buttonPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-
-        // Tải dữ liệu khách hàng
-        loadAllCustomers();
+        btnCancel.addActionListener(e -> dialog.dispose());
     }
 
-    public void loadAllCustomers() {
-        tableModel.setRowCount(0);
-
-        try {
-            List<KhachHangDTO> customers = khachHangDAO.selectAll();
-            int rowCount = 0;
-            for (KhachHangDTO customer : customers) {
-                rowCount++;
-                // Chuyển đổi giới tính và trạng thái thành chuỗi dễ đọc
-                String gioiTinh = (customer.getGioiTinh() == 1) ? "Nam" : "Nữ";
-                String trangThai = (customer.getTrangThai() == 1) ? "Hoạt động" : "Ngưng hoạt động";
-                tableModel.addRow(new Object[] {
-                    rowCount,
-                    String.valueOf(customer.getMaKhachHang()), // Convert int to String for display
-                    customer.getTenKhachHang(),
-                    gioiTinh,
-                    customer.getCccd(),
-                    customer.getDiaChi(),
-                    customer.getSoDienThoai(),
-                    customer.getEmail(),
-                    trangThai,
-                    customer.getNgaySinh()
-                });
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
-        }
+    public void showDialog() {
+        dialog.setVisible(true);
     }
 
-    // Getter để truy cập các thành phần
-    public JTable getCustomerTable() { return customerTable; }
-    public DefaultTableModel getTableModel() { return tableModel; }
-    public JPanel getButtonPanel() { return buttonPanel; }
-    public JTextField getSearchField() { return searchField; }
-    public JButton getSearchButton() { return searchButton; }
-    public JButton getRefreshButton() { return refreshButton; }
+    public JTextField getTxtMaKH() {
+        return txtMaKH;
+    }
+
+    public JTextField getTxtTenKH() {
+        return txtTenKH;
+    }
+
+    public JTextField getTxtCCCD() {
+        return txtCCCD;
+    }
+
+    public JTextField getTxtDiaChi() {
+        return txtDiaChi;
+    }
+
+    public JTextField getTxtSoDienThoai() {
+        return txtSoDienThoai;
+    }
+
+    public JTextField getTxtEmail() {
+        return txtEmail;
+    }
+
+    public JComboBox<String> getCbGioiTinh() {
+        return cbGioiTinh;
+    }
+
+    public JComboBox<String> getCbTrangThai() {
+        return cbTrangThai;
+    }
+
+    public JFormattedTextField getTxtNgaySinh() {
+        return txtNgaySinh;
+    }
+
+    public JButton getBtnOK() {
+        return btnOK;
+    }
+
+    public JButton getBtnCancel() {
+        return btnCancel;
+    }
+
+    public JDialog getDialog() {
+        return dialog;
+    }
 }

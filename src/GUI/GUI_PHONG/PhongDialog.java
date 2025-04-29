@@ -1,37 +1,52 @@
 package GUI_PHONG;
 
 import BUS.PhongBUS;
+import DTO.PhongDTO;
 import Component.ButtonCustom;
 import Component.HeaderTitle;
 import Component.InputForm;
 import Component.InputImage;
-import DTO.PhongDTO;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import Component.NumericDocumentFilter;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.util.ArrayList;
 
-public class PhongDialog extends JDialog {
-    private static final String IMAGE_DIR = "images"; // Relative path to images╚
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.PlainDocument;
+
+public class PhongDialog extends JDialog implements ActionListener {
+    private static final String IMAGE_DIR = "images";
     private PhongBUS phongBUS;
     private PhongDTO phong;
     private boolean isEditMode;
     private boolean isViewMode;
-
     private HeaderTitle titlePage;
-    private JPanel pnmain, pnCenter, pnbottom, pninfosanpham, pninfosanphamright;
-    private InputForm maPhong, tenPhong, giaPhong, chiTietLoaiPhong;
-    private JComboBox<String> loaiPhong, tinhTrang;
-    private InputImage hinhanh;
-    private ButtonCustom btnThem, btnHuyBo;
+    private JPanel pnCenter, pnInfoPhong, pnInfoPhongRight, pnBottom, tinhTrangPanel, loaiPhongPanel;
+    private InputForm txtMaP, txtTenP, txtGiaP, txtChiTietLoaiPhong;
+    private JComboBox<String> cbLoaiP; // Thay txtLoaiP bằng JComboBox
+    private JComboBox<String> cbTinhTrang;
+    private InputImage hinhAnh;
+    private ButtonCustom btnSave, btnCancel;
 
     public PhongDialog(JFrame parent, PhongDTO phong, boolean isEditMode, boolean isViewMode) {
         super(parent, isViewMode ? "CHI TIẾT PHÒNG" : (isEditMode ? "SỬA PHÒNG" : "THÊM PHÒNG MỚI"), true);
@@ -40,240 +55,325 @@ public class PhongDialog extends JDialog {
         this.isEditMode = isEditMode;
         this.isViewMode = isViewMode;
 
-        // Ensure the images directory exists
         File imageDir = new File(IMAGE_DIR);
         if (!imageDir.exists()) {
             imageDir.mkdirs();
         }
 
-        initComponents();
+        System.out.println("PhongDialog initialized: isEditMode=" + isEditMode + ", isViewMode=" + isViewMode + ", phong=" + (phong != null ? phong.getMaP() : "null"));
+
+        initComponents(isViewMode ? "CHI TIẾT PHÒNG" : (isEditMode ? "SỬA PHÒNG" : "THÊM PHÒNG MỚI"));
         if (isEditMode || isViewMode) {
-            loadData(phong);
+            if (phong != null) {
+                setInfo(phong);
+            } else {
+                JOptionPane.showMessageDialog(this, "Không có dữ liệu phòng để hiển thị!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                dispose();
+            }
         } else {
-            autoGenerateMaPhong();
+            initCreate();
         }
 
         if (isViewMode) {
-            setFieldsEditable(false);
-            btnThem.setVisible(false);
-            btnHuyBo.setText("Đóng");
+            initView();
         }
+
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
-    private void initComponents() {
-        setSize(new Dimension(1150, 510)); // Increased height by 30px (480 -> 510)
+    private void initComponents(String title) {
+        setSize(new Dimension(1200, 550));
         setLayout(new BorderLayout(0, 0));
-        setLocationRelativeTo(getOwner());
 
-        titlePage = new HeaderTitle(isViewMode ? "CHI TIẾT PHÒNG" : (isEditMode ? "SỬA PHÒNG" : "THÊM PHÒNG MỚI"));
+        // Tiêu đề
+        titlePage = new HeaderTitle(title.toUpperCase());
+        titlePage.setColor("167AC6");
         add(titlePage, BorderLayout.NORTH);
 
-        pnmain = new JPanel(new CardLayout());
+        // Phần chính
         pnCenter = new JPanel(new BorderLayout());
-        pnmain.add(pnCenter);
-        add(pnmain, BorderLayout.CENTER);
+        pnCenter.setBackground(Color.WHITE);
+        add(pnCenter, BorderLayout.CENTER);
 
-        pninfosanpham = new JPanel(new GridLayout(3, 2, 10, 10));
-        pninfosanpham.setBackground(Color.WHITE);
-        pninfosanpham.setBorder(new EmptyBorder(10, 10, 10, 10));
-        pnCenter.add(pninfosanpham, BorderLayout.CENTER);
+        // Phần thông tin phòng
+        pnInfoPhong = new JPanel(new GridLayout(3, 2, 15, 15));
+        pnInfoPhong.setBackground(Color.WHITE);
+        pnInfoPhong.setBorder(new EmptyBorder(20, 20, 20, 20));
+        pnCenter.add(pnInfoPhong, BorderLayout.CENTER);
 
-        pninfosanphamright = new JPanel();
-        pninfosanphamright.setBackground(Color.WHITE);
-        pninfosanphamright.setPreferredSize(new Dimension(300, 600));
-        pninfosanphamright.setBorder(new EmptyBorder(0, 10, 0, 10));
-        pnCenter.add(pninfosanphamright, BorderLayout.WEST);
+        // Phần hình ảnh (bên trái)
+        pnInfoPhongRight = new JPanel();
+        pnInfoPhongRight.setBackground(Color.WHITE);
+        pnInfoPhongRight.setPreferredSize(new Dimension(350, 600));
+        pnInfoPhongRight.setBorder(new EmptyBorder(0, 20, 0, 20));
+        pnCenter.add(pnInfoPhongRight, BorderLayout.WEST);
 
-        maPhong = new InputForm("Mã Phòng");
-        maPhong.setEditable(false);
-        tenPhong = new InputForm("Tên Phòng");
-        loaiPhong = new JComboBox<>(new String[]{"Đơn", "Đôi", "Gia đình", "VIP", "Suite"});
-        loaiPhong.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        loaiPhong.setBackground(Color.WHITE);
-        loaiPhong.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-        giaPhong = new InputForm("Giá Phòng");
-        chiTietLoaiPhong = new InputForm("Chi Tiết Loại Phòng");
-        tinhTrang = new JComboBox<>(new String[]{"Trống", "Đã đặt"});
-        tinhTrang.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        tinhTrang.setBackground(Color.WHITE);
-        tinhTrang.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        // Khởi tạo các trường nhập liệu
+        txtMaP = new InputForm("Mã Phòng");
+        txtMaP.setEditable(false);
+        txtTenP = new InputForm("Tên Phòng");
+        
+        // Tạo JComboBox cho "Loại Phòng"
+        cbLoaiP = new JComboBox<>(new String[] { "Đơn", "Đôi", "Gia đình", "VIP", "Suite" });
 
-        // Add ActionListener to loaiPhong to update chiTietLoaiPhong
-        loaiPhong.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedLoaiPhong = (String) loaiPhong.getSelectedItem();
-                switch (selectedLoaiPhong) {
-                    case "Đơn":
-                        chiTietLoaiPhong.setText("1 giường đơn");
-                        break;
-                    case "Đôi":
-                        chiTietLoaiPhong.setText("1 giường đôi");
-                        break;
-                    case "Gia đình":
-                        chiTietLoaiPhong.setText("2 giường đôi");
-                        break;
-                    case "VIP":
-                        chiTietLoaiPhong.setText("1 giường king");
-                        break;
-                    case "Suite":
-                        chiTietLoaiPhong.setText("1 giường king + sofa");
-                        break;
-                    default:
-                        chiTietLoaiPhong.setText("");
-                }
-            }
-        });
-
-        pninfosanpham.add(maPhong);
-        pninfosanpham.add(tenPhong);
-        pninfosanpham.add(createComboBoxPanel("Loại Phòng", loaiPhong));
-        pninfosanpham.add(giaPhong);
-        pninfosanpham.add(chiTietLoaiPhong);
-        pninfosanpham.add(createComboBoxPanel("Tình Trạng", tinhTrang));
-
-        hinhanh = new InputImage("Hình minh họa");
-        pninfosanphamright.add(hinhanh);
-
-        pnbottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        pnbottom.setBorder(new EmptyBorder(20, 0, 10, 0));
-        pnbottom.setBackground(Color.WHITE);
-        pnCenter.add(pnbottom, BorderLayout.SOUTH);
-
-        btnThem = new ButtonCustom(isEditMode ? "Cập nhật" : "Thêm phòng", "success", 14);
-        btnThem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                savePhong();
-            }
-        });
-        btnHuyBo = new ButtonCustom("Huỷ bỏ", "danger", 14);
-        btnHuyBo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-        pnbottom.add(btnThem);
-        pnbottom.add(btnHuyBo);
-    }
-
-    private JPanel createComboBoxPanel(String label, JComboBox<String> comboBox) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
+        // Tạo panel tùy chỉnh cho "Loại Phòng"
+        loaiPhongPanel = new JPanel(new GridBagLayout());
+        loaiPhongPanel.setBackground(Color.WHITE);
+        loaiPhongPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel lbl = new JLabel(label + ":");
-        lbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lbl.setForeground(new Color(0, 102, 153));
+        // Nhãn "Loại Phòng"
+        JLabel lblLoaiP = new JLabel("Loại Phòng:");
+        Font timesNewRomanBold = Font.getFont("Times New Roman");
+        if (timesNewRomanBold != null) {
+            lblLoaiP.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
+        } else {
+            lblLoaiP.setFont(new Font(Font.SERIF, Font.BOLD, 20));
+        }
+        lblLoaiP.setForeground(new Color(0, 102, 153));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
-        panel.add(lbl, gbc);
+        loaiPhongPanel.add(lblLoaiP, gbc);
 
+        // JComboBox
+        Font timesNewRomanPlain = Font.getFont("Times New Roman");
+        if (timesNewRomanPlain != null) {
+            cbLoaiP.setFont(new Font(timesNewRomanPlain.getFamily(), Font.PLAIN, 20));
+        } else {
+            cbLoaiP.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        }
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.7;
-        panel.add(comboBox, gbc);
+        loaiPhongPanel.add(cbLoaiP, gbc);
 
-        return panel;
+        // Thêm ActionListener để tự động điền "Chi Tiết Loại Phòng"
+        cbLoaiP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedLoaiP = (String) cbLoaiP.getSelectedItem();
+                switch (selectedLoaiP) {
+                    case "Đơn":
+                        txtChiTietLoaiPhong.setText("1 giường đơn");
+                        break;
+                    case "Đôi":
+                        txtChiTietLoaiPhong.setText("1 giường đôi");
+                        break;
+                    case "Gia đình":
+                        txtChiTietLoaiPhong.setText("2 giường đôi");
+                        break;
+                    case "VIP":
+                        txtChiTietLoaiPhong.setText("1 giường king");
+                        break;
+                    case "Suite":
+                        txtChiTietLoaiPhong.setText("1 giường king + sofa");
+                        break;
+                    default:
+                        txtChiTietLoaiPhong.setText("");
+                        break;
+                }
+            }
+        });
+
+        txtGiaP = new InputForm("Giá Phòng");
+        PlainDocument giaDoc = (PlainDocument) txtGiaP.getTxtForm().getDocument();
+        giaDoc.setDocumentFilter(new NumericDocumentFilter());
+        txtChiTietLoaiPhong = new InputForm("Chi Tiết Loại Phòng");
+
+        // Tạo JComboBox cho "Tình Trạng"
+        cbTinhTrang = new JComboBox<>(new String[] { "0 - Trống", "1 - Đã đặt" });
+
+        // Tạo panel tùy chỉnh cho "Tình Trạng"
+        tinhTrangPanel = new JPanel(new GridBagLayout());
+        tinhTrangPanel.setBackground(Color.WHITE);
+        tinhTrangPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        GridBagConstraints gbcTinhTrang = new GridBagConstraints();
+        gbcTinhTrang.insets = new Insets(5, 5, 5, 5);
+        gbcTinhTrang.fill = GridBagConstraints.HORIZONTAL;
+
+        // Nhãn "Tình Trạng"
+        JLabel lblTinhTrang = new JLabel("Tình Trạng:");
+        if (timesNewRomanBold != null) {
+            lblTinhTrang.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
+        } else {
+            lblTinhTrang.setFont(new Font(Font.SERIF, Font.BOLD, 20));
+        }
+        lblTinhTrang.setForeground(new Color(0, 102, 153));
+        gbcTinhTrang.gridx = 0;
+        gbcTinhTrang.gridy = 0;
+        gbcTinhTrang.weightx = 0.3;
+        tinhTrangPanel.add(lblTinhTrang, gbcTinhTrang);
+
+        // JComboBox
+        if (timesNewRomanPlain != null) {
+            cbTinhTrang.setFont(new Font(timesNewRomanPlain.getFamily(), Font.PLAIN, 20));
+        } else {
+            cbTinhTrang.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        }
+        gbcTinhTrang.gridx = 1;
+        gbcTinhTrang.gridy = 0;
+        gbcTinhTrang.weightx = 0.7;
+        tinhTrangPanel.add(cbTinhTrang, gbcTinhTrang);
+
+        hinhAnh = new InputImage("Hình Ảnh");
+
+        // Thêm các trường vào panel
+        pnInfoPhong.add(txtMaP);
+        pnInfoPhong.add(txtTenP);
+        pnInfoPhong.add(loaiPhongPanel); // Thay txtLoaiP bằng loaiPhongPanel
+        pnInfoPhong.add(txtGiaP);
+        pnInfoPhong.add(txtChiTietLoaiPhong);
+        pnInfoPhong.add(tinhTrangPanel);
+        pnInfoPhongRight.add(hinhAnh);
+
+        // Phần nút (căn giữa)
+        pnBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pnBottom.setBorder(new EmptyBorder(20, 0, 20, 0));
+        pnBottom.setBackground(Color.WHITE);
+        pnCenter.add(pnBottom, BorderLayout.SOUTH);
+
+        if (!isViewMode) {
+            btnSave = new ButtonCustom(isEditMode ? "Lưu thông tin" : "Thêm phòng", "success", 14);
+            btnSave.addActionListener(this);
+            pnBottom.add(btnSave);
+        }
+
+        btnCancel = new ButtonCustom(isViewMode ? "Đóng" : "Hủy bỏ", "danger", 14);
+        btnCancel.addActionListener(this);
+        pnBottom.add(btnCancel);
     }
 
-    private void setFieldsEditable(boolean editable) {
-        tenPhong.setEditable(editable);
-        loaiPhong.setEnabled(editable);
-        giaPhong.setEditable(editable);
-        chiTietLoaiPhong.setEditable(editable);
-        tinhTrang.setEnabled(editable);
-        hinhanh.setEnabled(editable);
+    private void initCreate() {
+        // Tạo mã phòng tăng dần từ P601
+        ArrayList<PhongDTO> listPhong = phongBUS.getAllPhong();
+        int nextId = 601; // Bắt đầu từ P601
+        if (!listPhong.isEmpty()) {
+            // Tìm mã phòng lớn nhất
+            int maxId = 0;
+            for (PhongDTO p : listPhong) {
+                String maP = p.getMaP();
+                if (maP != null && maP.startsWith("P")) {
+                    try {
+                        int id = Integer.parseInt(maP.substring(1));
+                        if (id > maxId) {
+                            maxId = id;
+                        }
+                    } catch (NumberFormatException e) {
+                        // Bỏ qua nếu mã phòng không đúng định dạng
+                    }
+                }
+            }
+            nextId = maxId + 1; // Tăng lên 1
+        }
+        txtMaP.setText("P" + nextId);
+
+        txtTenP.setText("");
+        cbLoaiP.setSelectedItem("Đơn"); // Mặc định chọn "Đơn"
+        txtGiaP.setText("");
+        txtChiTietLoaiPhong.setText("1 giường đơn"); // Tương ứng với "Đơn"
+        cbTinhTrang.setSelectedItem("0 - Trống");
+        hinhAnh.setUrl_img(null);
+        System.out.println("initCreate called: maP=" + txtMaP.getText());
     }
 
-    private void autoGenerateMaPhong() {
-        int nextId = phongBUS.getAutoIncrement();
-        maPhong.setText("P" + String.format("%03d", nextId));
+    private void initView() {
+        txtMaP.setEditable(false);
+        txtTenP.setEditable(false);
+        cbLoaiP.setEnabled(false); // Vô hiệu hóa JComboBox
+        txtGiaP.setEditable(false);
+        txtChiTietLoaiPhong.setEditable(false);
+        cbTinhTrang.setEnabled(false);
+        System.out.println("initView called");
     }
 
-    private void loadData(PhongDTO phong) {
-        maPhong.setText(phong.getMaP());
-        tenPhong.setText(phong.getTenP());
-        loaiPhong.setSelectedItem(phong.getLoaiP());
-        giaPhong.setText(String.valueOf(phong.getGiaP()));
-        chiTietLoaiPhong.setText(phong.getChiTietLoaiPhong());
-        tinhTrang.setSelectedItem(phong.getTinhTrang() == 1 ? "Đã đặt" : "Trống");
-        hinhanh.setUrl_img(phong.getHinhAnh()); // Relative path (e.g., "images/P001.jpg")
+    private void setInfo(PhongDTO phong) {
+        txtMaP.setText(phong.getMaP() != null ? phong.getMaP() : "");
+        txtTenP.setText(phong.getTenP() != null ? phong.getTenP() : "");
+        cbLoaiP.setSelectedItem(phong.getLoaiP() != null ? phong.getLoaiP() : "Đơn");
+        txtGiaP.setText(phong.getGiaP() > 0 ? String.valueOf(phong.getGiaP()) : "");
+        txtChiTietLoaiPhong.setText(phong.getChiTietLoaiPhong() != null ? phong.getChiTietLoaiPhong() : "");
+        cbTinhTrang.setSelectedItem(phong.getTinhTrang() == 0 ? "0 - Trống" : "1 - Đã đặt");
+        hinhAnh.setUrl_img(phong.getHinhAnh() != null && !phong.getHinhAnh().isEmpty() ? phong.getHinhAnh() : null);
+        System.out.println("setInfo called: maP=" + phong.getMaP() + ", tenP=" + phong.getTenP());
+    }
+
+    private PhongDTO getInfo() {
+        String maP = txtMaP.getText();
+        String tenP = txtTenP.getText();
+        String loaiP = (String) cbLoaiP.getSelectedItem(); // Lấy giá trị từ JComboBox
+        int giaP = txtGiaP.getText().isEmpty() ? 0 : Integer.parseInt(txtGiaP.getText());
+        String chiTietLoaiPhong = txtChiTietLoaiPhong.getText();
+        int tinhTrang = Integer.parseInt(((String) cbTinhTrang.getSelectedItem()).split(" - ")[0]);
+        String hinhAnhPath = hinhAnh.getUrl_img() != null ? hinhAnh.getUrl_img() : "";
+        return new PhongDTO(maP, tenP, loaiP, hinhAnhPath, giaP, chiTietLoaiPhong, tinhTrang);
     }
 
     private String saveImage(String maP, String sourceImagePath) throws IOException {
-        if (sourceImagePath == null || sourceImagePath.trim().isEmpty() || !sourceImagePath.endsWith("temp.jpg")) {
+        if (sourceImagePath == null || sourceImagePath.trim().isEmpty()) {
             return "";
         }
-
-        // Destination path: images/<maP>.jpg
         String destImagePath = Paths.get(IMAGE_DIR, maP + ".jpg").toString();
-        File tempFile = new File(sourceImagePath);
+        File sourceFile = new File(sourceImagePath);
         File destFile = new File(destImagePath);
-
-        // Rename temp.jpg to <maP>.jpg
-        if (tempFile.exists()) {
-            Files.move(tempFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        if (sourceFile.exists()) {
+            Files.copy(sourceFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }
-
-        // Return the relative path to store in PhongDTO.hinhAnh
         return destImagePath;
     }
 
-    private void savePhong() {
-        if (tenPhong.getText().trim().isEmpty()) {
+    private boolean checkInput() {
+        if (txtTenP.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tên phòng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
-
-        String giaText = giaPhong.getText().trim();
-        if (giaText.isEmpty()) {
+        if (txtGiaP.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Giá phòng không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
-
-        int giaP;
         try {
-            giaP = NumberFormat.getNumberInstance().parse(giaText).intValue();
+            int giaP = Integer.parseInt(txtGiaP.getText());
             if (giaP < 0) {
-                throw new NumberFormatException("Giá phòng phải lớn hơn hoặc bằng 0");
+                JOptionPane.showMessageDialog(this, "Giá phòng phải là số nguyên dương!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
-        } catch (ParseException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Giá phòng phải là số nguyên dương!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
-
-        PhongDTO newPhong = new PhongDTO();
-        newPhong.setMaP(maPhong.getText());
-        newPhong.setTenP(tenPhong.getText());
-        newPhong.setLoaiP((String) loaiPhong.getSelectedItem());
-        newPhong.setGiaP(giaP);
-        newPhong.setChiTietLoaiPhong(chiTietLoaiPhong.getText());
-        newPhong.setTinhTrang(tinhTrang.getSelectedItem().equals("Đã đặt") ? 1 : 0);
-
-        try {
-            String imagePath = saveImage(newPhong.getMaP(), hinhanh.getUrl_img());
-            newPhong.setHinhAnh(imagePath);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu hình ảnh: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (hinhAnh.getUrl_img() == null || hinhAnh.getUrl_img().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Chưa chọn hình ảnh!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+        return true;
+    }
 
-        try {
-            if (isEditMode) {
-                phongBUS.updatePhong(newPhong);
-                JOptionPane.showMessageDialog(this, "Cập nhật phòng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                phongBUS.addPhong(newPhong);
-                JOptionPane.showMessageDialog(this, "Thêm phòng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == btnCancel) {
             dispose();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else if (source == btnSave && checkInput()) {
+            PhongDTO newPhong = getInfo();
+            try {
+                String imagePath = saveImage(newPhong.getMaP(), newPhong.getHinhAnh());
+                newPhong.setHinhAnh(imagePath);
+                if (isEditMode) {
+                    phongBUS.updatePhong(newPhong);
+                    JOptionPane.showMessageDialog(this, "Cập nhật phòng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    phongBUS.addPhong(newPhong);
+                    JOptionPane.showMessageDialog(this, "Thêm phòng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                }
+                dispose();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi lưu hình ảnh: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

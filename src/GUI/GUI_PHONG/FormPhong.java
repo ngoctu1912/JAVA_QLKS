@@ -1,721 +1,253 @@
-// package GUI_PHONG;
-
-// import DTO.PhongDTO;
-// import BUS.PhongBUS;
-// import Component.SidebarPanel;
-// import Component.IntegratedSearch;
-
-// import javax.swing.*;
-// import javax.swing.event.DocumentListener;
-// import javax.swing.event.DocumentEvent;
-// import javax.swing.plaf.basic.BasicScrollBarUI;
-// import javax.swing.table.DefaultTableModel;
-// import javax.swing.table.JTableHeader;
-// import javax.swing.table.DefaultTableCellRenderer;
-// import javax.swing.table.TableColumnModel;
-// import java.awt.*;
-// import java.util.ArrayList;
-
-// public class FormPhong extends JFrame {
-//     private JTable table;
-//     private PhongBUS phongBUS;
-//     private ArrayList<PhongDTO> filteredRooms;
-//     private DefaultTableCellRenderer centerRenderer;
-//     private SidebarPanel sidebarPanel;
-//     private PhongEventHandler eventHandler;
-//     private DocumentListener searchListener;
-
-//     public FormPhong() {
-//         setTitle("Quản lý phòng");
-//         setSize(1300, 800);
-//         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//         setLocationRelativeTo(null);
-//         setLayout(new BorderLayout());
-
-//         try {
-//             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-
-//         phongBUS = new PhongBUS();
-//         filteredRooms = loadAllRooms();
-//         logRoomData("constructor");
-
-//         initComponents();
-//         loadTableData();
-//         eventHandler = new PhongEventHandler(this);
-//     }
-
-//     private ArrayList<PhongDTO> loadAllRooms() {
-//         ArrayList<PhongDTO> rooms = phongBUS.getAllPhong();
-//         if (rooms == null) {
-//             System.out.println("Error: phongBUS.getAllPhong() returned null.");
-//             return new ArrayList<>();
-//         }
-//         return rooms;
-//     }
-
-//     private void logRoomData(String context) {
-//         if (filteredRooms.isEmpty()) {
-//             System.out.println("Warning: No rooms loaded from the database in " + context + ".");
-//         } else {
-//             System.out.println("Successfully loaded " + filteredRooms.size() + " rooms from the database in " + context + ".");
-//             int bookedCount = 0;
-//             int availableCount = 0;
-//             for (PhongDTO p : filteredRooms) {
-//                 if (p != null) {
-//                     String status = p.getTinhTrang() == 1 ? "Đã đặt" : "Trống";
-//                     if (status.equals("Đã đặt")) bookedCount++;
-//                     else availableCount++;
-//                     System.out.println("Room: " + p.getMaP() + ", " + p.getTenP() + ", " + p.getLoaiP() + ", " + p.getGiaP() + ", Status: " + status);
-//                 }
-//             }
-//             System.out.println(context + " - Booked: " + bookedCount + ", Available: " + availableCount);
-//         }
-//     }
-
-//     private void initComponents() {
-//         // Main panel
-//         JPanel mainPanel = new JPanel(new BorderLayout());
-//         mainPanel.setBackground(new Color(240, 245, 245));
-//         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-//         // Sidebar panel
-//         sidebarPanel = new SidebarPanel(
-//             e -> eventHandler.openAddDialog(),
-//             e -> eventHandler.openEditDialog(),
-//             e -> eventHandler.deleteRoom(),
-//             e -> openDetailDialog(),
-//             e -> eventHandler.exportToExcel(),
-//             e -> loadTableData(),
-//             getSearchListener()
-//         );
-//         mainPanel.add(sidebarPanel, BorderLayout.NORTH);
-
-//         // Table panel
-//         JPanel tablePanel = new JPanel(new BorderLayout());
-//         tablePanel.setBackground(new Color(240, 245, 245));
-//         tablePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-//         centerRenderer = new DefaultTableCellRenderer();
-//         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-//         DefaultTableModel tableModel = new DefaultTableModel(
-//             new String[]{"STT", "Mã Phòng", "Tên Phòng", "Loại Phòng", "Giá Phòng", "Chi Tiết Loại Phòng", "Tình Trạng"}, 0
-//         ) {
-//             @Override
-//             public boolean isCellEditable(int row, int column) {
-//                 return false;
-//             }
-//         };
-
-//         table = new JTable(tableModel);
-//         table.setBackground(new Color(0xA1D6E2));
-//         table.setFocusable(false);
-//         table.setAutoCreateRowSorter(true);
-//         table.setRowHeight(30);
-//         table.setShowGrid(false);
-//         table.setShowHorizontalLines(true);
-//         table.setShowVerticalLines(false);
-//         table.setGridColor(Color.WHITE);
-
-//         // Customize table header
-//         JTableHeader header = table.getTableHeader();
-//         header.setBackground(Color.WHITE);
-//         header.setForeground(Color.BLACK);
-//         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 30));
-//         header.setDefaultRenderer(new DefaultTableCellRenderer() {
-//             @Override
-//             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//                 JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//                 label.setBackground(Color.WHITE);
-//                 label.setForeground(Color.BLACK);
-//                 label.setBorder(BorderFactory.createEmptyBorder());
-//                 label.setHorizontalAlignment(JLabel.CENTER);
-//                 return label;
-//             }
-//         });
-
-//         // Set column alignment and widths
-//         TableColumnModel columnModel = table.getColumnModel();
-//         columnModel.getColumn(0).setPreferredWidth(50);
-//         columnModel.getColumn(1).setPreferredWidth(100);
-//         columnModel.getColumn(2).setPreferredWidth(180);
-//         columnModel.getColumn(3).setPreferredWidth(100);
-//         columnModel.getColumn(4).setPreferredWidth(100);
-//         columnModel.getColumn(5).setPreferredWidth(200);
-//         columnModel.getColumn(6).setPreferredWidth(100);
-
-//         for (int i = 0; i < tableModel.getColumnCount(); i++) {
-//             if (i != 2) {
-//                 columnModel.getColumn(i).setCellRenderer(centerRenderer);
-//             }
-//         }
-
-//         // Custom renderer for status column
-//         table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-//             @Override
-//             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//                 if (column == 6) {
-//                     c.setForeground(value.toString().equals("Đã đặt") ? Color.RED : value.toString().equals("Trống") ? new Color(0, 128, 0) : Color.BLACK);
-//                 } else {
-//                     c.setForeground(Color.BLACK);
-//                 }
-//                 ((JLabel) c).setHorizontalAlignment(column == 2 ? JLabel.LEFT : JLabel.CENTER);
-//                 return c;
-//             }
-//         });
-
-//         // Scroll pane with customized scroll bars
-//         JScrollPane scrollPane = new JScrollPane(table);
-//         customizeScrollBar(scrollPane.getVerticalScrollBar());
-//         customizeScrollBar(scrollPane.getHorizontalScrollBar());
-//         tablePanel.add(scrollPane, BorderLayout.CENTER);
-//         mainPanel.add(tablePanel, BorderLayout.CENTER);
-//         add(mainPanel, BorderLayout.CENTER);
-
-//         // Mouse listener for double-click
-//         table.addMouseListener(new java.awt.event.MouseAdapter() {
-//             @Override
-//             public void mouseClicked(java.awt.event.MouseEvent e) {
-//                 int row = table.rowAtPoint(e.getPoint());
-//                 if (row >= 0) {
-//                     table.setRowSelectionInterval(row, row);
-//                     if (e.getClickCount() == 2) {
-//                         openDetailDialog();
-//                     }
-//                 }
-//             }
-//         });
-//     }
-
-//     private void customizeScrollBar(JScrollBar scrollBar) {
-//         scrollBar.setUI(new BasicScrollBarUI() {
-//             @Override
-//             protected void configureScrollBarColors() {
-//                 this.thumbColor = new Color(209, 207, 207);
-//                 this.trackColor = new Color(245, 245, 245);
-//             }
-
-//             @Override
-//             protected JButton createDecreaseButton(int orientation) {
-//                 return createZeroButton();
-//             }
-
-//             @Override
-//             protected JButton createIncreaseButton(int orientation) {
-//                 return createZeroButton();
-//             }
-
-//             private JButton createZeroButton() {
-//                 JButton button = new JButton();
-//                 button.setPreferredSize(new Dimension(0, 0));
-//                 button.setMinimumSize(new Dimension(0, 0));
-//                 button.setMaximumSize(new Dimension(0, 0));
-//                 return button;
-//             }
-
-//             @Override
-//             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-//                 Graphics2D g2 = (Graphics2D) g.create();
-//                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//                 g2.setPaint(thumbColor);
-//                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-//                 g2.dispose();
-//             }
-
-//             @Override
-//             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-//                 // Minimal track rendering
-//             }
-//         });
-//         scrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
-//     }
-
-//     private DocumentListener getSearchListener() {
-//         if (searchListener == null) {
-//             searchListener = new DocumentListener() {
-//                 @Override
-//                 public void insertUpdate(DocumentEvent e) {
-//                     performSearch();
-//                 }
-
-//                 @Override
-//                 public void removeUpdate(DocumentEvent e) {
-//                     performSearch();
-//                 }
-
-//                 @Override
-//                 public void changedUpdate(DocumentEvent e) {
-//                     performSearch();
-//                 }
-//             };
-//         }
-//         return searchListener;
-//     }
-
-//     private void performSearch() {
-//         String keyword = sidebarPanel.getSearchField().getText().trim().toLowerCase();
-//         filteredRooms = loadAllRooms();
-
-//         if (!keyword.isEmpty() && !keyword.equals("nhập nội dung tìm kiếm...")) {
-//             ArrayList<PhongDTO> temp = new ArrayList<>();
-//             for (PhongDTO p : filteredRooms) {
-//                 if (p == null) continue;
-//                 boolean matchesKeyword =
-//                     (p.getMaP() != null && p.getMaP().toLowerCase().contains(keyword)) ||
-//                     (p.getTenP() != null && p.getTenP().toLowerCase().contains(keyword)) ||
-//                     (p.getLoaiP() != null && p.getLoaiP().toLowerCase().contains(keyword)) ||
-//                     String.valueOf(p.getGiaP()).toLowerCase().contains(keyword) ||
-//                     (p.getChiTietLoaiPhong() != null && p.getChiTietLoaiPhong().toLowerCase().contains(keyword)) ||
-//                     (p.getTinhTrang() == 1 && "đã đặt".contains(keyword)) ||
-//                     (p.getTinhTrang() == 0 && "trống".contains(keyword));
-//                 if (matchesKeyword) {
-//                     temp.add(p);
-//                 }
-//             }
-//             filteredRooms = temp;
-//             System.out.println("Searched rooms (Keyword: " + keyword + "): " + filteredRooms.size());
-//         }
-
-//         logRoomData("performSearch");
-//         updateTable();
-//     }
-
-//     private void updateTable() {
-//         DefaultTableModel model = (DefaultTableModel) table.getModel();
-//         model.setRowCount(0);
-
-//         if (filteredRooms == null) {
-//             System.out.println("Error: filteredRooms is null in updateTable.");
-//             return;
-//         }
-
-//         int stt = 1;
-//         for (PhongDTO p : filteredRooms) {
-//             if (p != null) {
-//                 String status = p.getTinhTrang() == 1 ? "Đã đặt" : "Trống";
-//                 model.addRow(new Object[]{
-//                     stt++,
-//                     p.getMaP(),
-//                     p.getTenP(),
-//                     p.getLoaiP(),
-//                     p.getGiaP() + "đ",
-//                     p.getChiTietLoaiPhong(),
-//                     status
-//                 });
-//             }
-//         }
-//         System.out.println("Table updated with " + (stt - 1) + " rows.");
-//     }
-
-//     public void loadTableData() {
-//         filteredRooms = loadAllRooms();
-//         logRoomData("loadTableData");
-
-//         JTextField searchField = sidebarPanel.getSearchField();
-//         searchField.getDocument().removeDocumentListener(searchListener);
-//         searchField.setText("");
-//         searchField.getDocument().addDocumentListener(searchListener);
-
-//         updateTable();
-//     }
-
-//     private void openDetailDialog() {
-//         int row = table.getSelectedRow();
-//         if (row >= 0) {
-//             String maP = (String) table.getValueAt(row, 1);
-//             PhongDTO room = phongBUS.getPhongById(maP);
-//             if (room != null) {
-//                 // Open PhongDialog in view mode (isEditMode = false, isViewMode = true)
-//                 new PhongDialog(this, room, false, true).setVisible(true);
-//             } else {
-//                 JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin phòng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//             }
-//         }
-//     }
-
-//     public JTable getTable() { return table; }
-//     public SidebarPanel getSidebarPanel() { return sidebarPanel; }
-//     public PhongBUS getPhongBUS() { return phongBUS; }
-//     public ArrayList<PhongDTO> getFilteredRooms() { return filteredRooms; }
-//     public void setFilteredRooms(ArrayList<PhongDTO> rooms) { this.filteredRooms = rooms; }
-
-//     public static void main(String[] args) {
-//         try {
-//             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-//         SwingUtilities.invokeLater(() -> new FormPhong().setVisible(true));
-//     }
-// }
-
 package GUI_PHONG;
 
-import DTO.PhongDTO;
 import BUS.PhongBUS;
-import Component.SidebarPanel;
+import DTO.PhongDTO;
 import Component.IntegratedSearch;
+import Component.PanelBorderRadius;
+import Component.SidebarPanel;
+import Component.TableSorter;
+import helper.JTableExporter;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class FormPhong extends JPanel {
-    private JTable table;
-    private PhongBUS phongBUS;
-    private ArrayList<PhongDTO> filteredRooms;
-    private DefaultTableCellRenderer centerRenderer;
+public final class FormPhong extends JPanel {
+    private PanelBorderRadius main, functionBar;
+    private JPanel pnlBorder1, pnlBorder2, pnlBorder3, pnlBorder4, contentCenter;
+    private JFrame owner;
+    private JTable tablePhong;
+    private JScrollPane scrollTablePhong;
     private SidebarPanel sidebarPanel;
+    private IntegratedSearch search;
+    private DefaultTableModel tblModel;
+    private PhongBUS phongBUS = new PhongBUS();
+    private ArrayList<PhongDTO> listPhong = phongBUS.getAllPhong();
+    private Color BackgroundColor = new Color(240, 245, 245);
     private PhongEventHandler eventHandler;
-    private DocumentListener searchListener;
 
-    public FormPhong() {
-        setLayout(new BorderLayout());
-        setBackground(new Color(240, 245, 245));
-
-        try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        phongBUS = new PhongBUS();
-        filteredRooms = loadAllRooms();
-        logRoomData("constructor");
-
-        initComponents();
+    public FormPhong(JFrame parentFrame, int manhomquyen, String chucnang) {
+        this.owner = parentFrame;
+        initComponent(manhomquyen, chucnang);
+        this.eventHandler = new PhongEventHandler(this);
         loadTableData();
-        eventHandler = new PhongEventHandler(this);
     }
 
-    private ArrayList<PhongDTO> loadAllRooms() {
-        ArrayList<PhongDTO> rooms = phongBUS.getAllPhong();
-        if (rooms == null) {
-            System.out.println("Error: phongBUS.getAllPhong() returned null.");
-            return new ArrayList<>();
-        }
-        return rooms;
-    }
-
-    private void logRoomData(String context) {
-        if (filteredRooms.isEmpty()) {
-            System.out.println("Warning: No rooms loaded from the database in " + context + ".");
-        } else {
-            System.out.println(
-                    "Successfully loaded " + filteredRooms.size() + " rooms from the database in " + context + ".");
-            int bookedCount = 0;
-            int availableCount = 0;
-            for (PhongDTO p : filteredRooms) {
-                if (p != null) {
-                    String status = p.getTinhTrang() == 1 ? "Đã đặt" : "Trống";
-                    if (status.equals("Đã đặt"))
-                        bookedCount++;
-                    else
-                        availableCount++;
-                    System.out.println("Room: " + p.getMaP() + ", " + p.getTenP() + ", " + p.getLoaiP() + ", "
-                            + p.getGiaP() + ", Status: " + status);
-                }
-            }
-            System.out.println(context + " - Booked: " + bookedCount + ", Available: " + availableCount);
-        }
-    }
-
-    private void initComponents() {
-        // Main panel
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(240, 245, 245));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Sidebar panel
-        sidebarPanel = new SidebarPanel(
-                e -> eventHandler.openAddDialog(),
-                e -> eventHandler.openEditDialog(),
-                e -> eventHandler.deleteRoom(),
-                e -> openDetailDialog(),
-                e -> eventHandler.exportToExcel(),
-                e -> loadTableData(),
-                getSearchListener());
-        mainPanel.add(sidebarPanel, BorderLayout.NORTH);
-
-        // Table panel
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(new Color(240, 245, 245));
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
-        DefaultTableModel tableModel = new DefaultTableModel(
-                new String[] { "STT", "Mã Phòng", "Tên Phòng", "Loại Phòng", "Giá Phòng", "Chi Tiết Loại Phòng",
-                        "Tình Trạng" },
-                0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        table = new JTable(tableModel);
-        table.setBackground(new Color(0xA1D6E2));
-        table.setFocusable(false);
-        table.setAutoCreateRowSorter(true);
-        table.setRowHeight(30);
-        table.setShowGrid(false);
-        table.setShowHorizontalLines(true);
-        table.setShowVerticalLines(false);
-        table.setGridColor(Color.WHITE);
-
-        // Customize table header
-        JTableHeader header = table.getTableHeader();
-        header.setBackground(Color.WHITE);
-        header.setForeground(Color.BLACK);
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 30));
-        header.setDefaultRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-                        column);
-                label.setBackground(Color.WHITE);
-                label.setForeground(Color.BLACK);
-                label.setBorder(BorderFactory.createEmptyBorder());
-                label.setHorizontalAlignment(JLabel.CENTER);
-                return label;
-            }
-        });
-
-        // Set column alignment and widths
-        TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(50);
-        columnModel.getColumn(1).setPreferredWidth(100);
-        columnModel.getColumn(2).setPreferredWidth(180);
-        columnModel.getColumn(3).setPreferredWidth(100);
-        columnModel.getColumn(4).setPreferredWidth(100);
-        columnModel.getColumn(5).setPreferredWidth(200);
-        columnModel.getColumn(6).setPreferredWidth(100);
-
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            if (i != 2) {
-                columnModel.getColumn(i).setCellRenderer(centerRenderer);
-            }
-        }
-
-        // Custom renderer for status column
-        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (column == 6) {
-                    c.setForeground(value.toString().equals("Đã đặt") ? Color.RED
-                            : value.toString().equals("Trống") ? new Color(0, 128, 0) : Color.BLACK);
-                } else {
-                    c.setForeground(Color.BLACK);
-                }
-                ((JLabel) c).setHorizontalAlignment(column == 2 ? JLabel.LEFT : JLabel.CENTER);
-                return c;
-            }
-        });
-
-        // Scroll pane with customized scroll bars
-        JScrollPane scrollPane = new JScrollPane(table);
-        customizeScrollBar(scrollPane.getVerticalScrollBar());
-        customizeScrollBar(scrollPane.getHorizontalScrollBar());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(tablePanel, BorderLayout.CENTER);
-
-        add(mainPanel, BorderLayout.CENTER);
-
-        // Mouse listener for double-click
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                int row = table.rowAtPoint(e.getPoint());
-                if (row >= 0) {
-                    table.setRowSelectionInterval(row, row);
-                    if (e.getClickCount() == 2) {
-                        openDetailDialog();
-                    }
-                }
-            }
-        });
-    }
-
-    private void customizeScrollBar(JScrollBar scrollBar) {
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(209, 207, 207);
-                this.trackColor = new Color(245, 245, 245);
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setPaint(thumbColor);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Minimal track rendering
-            }
-        });
-        scrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
-    }
-
-    private DocumentListener getSearchListener() {
-        if (searchListener == null) {
-            searchListener = new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    performSearch();
-                }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    performSearch();
-                }
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    performSearch();
-                }
-            };
-        }
-        return searchListener;
-    }
-
-    private void performSearch() {
-        String keyword = sidebarPanel.getSearchField().getText().trim().toLowerCase();
-        filteredRooms = loadAllRooms();
-
-        if (!keyword.isEmpty() && !keyword.equals("nhập nội dung tìm kiếm...")) {
-            ArrayList<PhongDTO> temp = new ArrayList<>();
-            for (PhongDTO p : filteredRooms) {
-                if (p == null)
-                    continue;
-                boolean matchesKeyword = (p.getMaP() != null && p.getMaP().toLowerCase().contains(keyword)) ||
-                        (p.getTenP() != null && p.getTenP().toLowerCase().contains(keyword)) ||
-                        (p.getLoaiP() != null && p.getLoaiP().toLowerCase().contains(keyword)) ||
-                        String.valueOf(p.getGiaP()).toLowerCase().contains(keyword) ||
-                        (p.getChiTietLoaiPhong() != null && p.getChiTietLoaiPhong().toLowerCase().contains(keyword)) ||
-                        (p.getTinhTrang() == 1 && "đã đặt".contains(keyword)) ||
-                        (p.getTinhTrang() == 0 && "trống".contains(keyword));
-                if (matchesKeyword) {
-                    temp.add(p);
-                }
-            }
-            filteredRooms = temp;
-            System.out.println("Searched rooms (Keyword: " + keyword + "): " + filteredRooms.size());
-        }
-
-        logRoomData("performSearch");
-        updateTable();
-    }
-
-    private void updateTable() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0);
-
-        if (filteredRooms == null) {
-            System.out.println("Error: filteredRooms is null in updateTable.");
-            return;
-        }
-
-        int stt = 1;
-        for (PhongDTO p : filteredRooms) {
-            if (p != null) {
-                String status = p.getTinhTrang() == 1 ? "Đã đặt" : "Trống";
-                model.addRow(new Object[] {
-                        stt++,
-                        p.getMaP(),
-                        p.getTenP(),
-                        p.getLoaiP(),
-                        p.getGiaP() + "đ",
-                        p.getChiTietLoaiPhong(),
-                        status
-                });
-            }
-        }
-        System.out.println("Table updated with " + (stt - 1) + " rows.");
-    }
-
-    public void loadTableData() {
-        filteredRooms = loadAllRooms();
-        logRoomData("loadTableData");
-
-        JTextField searchField = sidebarPanel.getSearchField();
-        searchField.getDocument().removeDocumentListener(searchListener);
-        searchField.setText("");
-        searchField.getDocument().addDocumentListener(searchListener);
-
-        updateTable();
-    }
-
-    private void openDetailDialog() {
-        int row = table.getSelectedRow();
-        if (row >= 0) {
-            String maP = (String) table.getValueAt(row, 1);
-            PhongDTO room = phongBUS.getPhongById(maP);
-            if (room != null) {
-                // Open PhongDialog in view mode (isEditMode = false, isViewMode = true)
-                new PhongDialog(SwingUtilities.getWindowAncestor(this), room, false, true).setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin phòng!", "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
+    public JFrame getOwner() {
+        return owner;
     }
 
     public JTable getTable() {
-        return table;
-    }
-
-    public SidebarPanel getSidebarPanel() {
-        return sidebarPanel;
+        return tablePhong;
     }
 
     public PhongBUS getPhongBUS() {
         return phongBUS;
     }
 
-    public ArrayList<PhongDTO> getFilteredRooms() {
-        return filteredRooms;
+    public SidebarPanel getSidebarPanel() {
+        return sidebarPanel;
     }
 
-    public void setFilteredRooms(ArrayList<PhongDTO> rooms) {
-        this.filteredRooms = rooms;
+    public void loadTableData() {
+        listPhong = phongBUS.getAllPhong();
+        loadDataTable(listPhong);
+    }
+
+    private void initComponent(int manhomquyen, String chucnang) {
+        this.setBackground(BackgroundColor);
+        this.setLayout(new BorderLayout(0, 0));
+        this.setOpaque(true);
+
+        // Khởi tạo bảng
+        tablePhong = new JTable();
+        tablePhong.setBackground(new Color(0xA1D6E2));
+        scrollTablePhong = new JScrollPane();
+        tblModel = new DefaultTableModel();
+        String[] header = new String[] { "STT", "Mã Phòng", "Tên Phòng", "Loại Phòng", "Giá Phòng",
+                "Chi Tiết Loại Phòng", "Tình Trạng" };
+        tblModel.setColumnIdentifiers(header);
+        tablePhong.setModel(tblModel);
+        scrollTablePhong.setViewportView(tablePhong);
+
+        // Căn giữa các cột
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        TableColumnModel columnModel = tablePhong.getColumnModel();
+        for (int i = 0; i < header.length; i++) {
+            if (i != 2) { // Không căn giữa cột "Tên Phòng"
+                columnModel.getColumn(i).setCellRenderer(centerRenderer);
+            }
+        }
+
+        // Thiết lập kích thước cột
+        tablePhong.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tablePhong.getColumnModel().getColumn(5).setPreferredWidth(200);
+        tablePhong.getColumnModel().getColumn(6).setPreferredWidth(100);
+        tablePhong.setFocusable(false);
+        tablePhong.setAutoCreateRowSorter(true);
+        TableSorter.configureTableColumnSorter(tablePhong, 4, TableSorter.VND_CURRENCY_COMPARATOR);
+        tablePhong.setDefaultEditor(Object.class, null);
+
+        // Tùy chỉnh chiều cao dòng và đường phân cách
+        tablePhong.setRowHeight(30);
+        tablePhong.getTableHeader().setPreferredSize(new Dimension(tablePhong.getTableHeader().getPreferredSize().width, 30));
+        tablePhong.setShowHorizontalLines(true);
+        tablePhong.setShowVerticalLines(false);
+        tablePhong.setGridColor(Color.WHITE);
+        tablePhong.setIntercellSpacing(new Dimension(0, 1));
+        tablePhong.setFocusable(false);
+        tablePhong.setAutoCreateRowSorter(true);
+        tablePhong.setDefaultEditor(Object.class, null);
+
+        // Tùy chỉnh tiêu đề
+        tablePhong.getTableHeader().setBackground(Color.WHITE);
+        tablePhong.getTableHeader().setForeground(Color.BLACK);
+        tablePhong.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        ((DefaultTableCellRenderer) tablePhong.getTableHeader().getDefaultRenderer())
+                .setHorizontalAlignment(JLabel.CENTER);
+
+        // Nền bảng
+        scrollTablePhong.setBackground(Color.WHITE);
+
+        initPadding();
+
+        contentCenter = new JPanel();
+        contentCenter.setBackground(BackgroundColor);
+        contentCenter.setLayout(new BorderLayout(10, 10));
+        this.add(contentCenter, BorderLayout.CENTER);
+
+        // Thanh chức năng bo góc với PanelBorderRadius
+        functionBar = new PanelBorderRadius();
+        functionBar.setPreferredSize(new Dimension(0, 100));
+        functionBar.setLayout(new GridLayout(1, 2, 50, 0));
+        functionBar.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        String[] actions = { "create", "update", "delete", "detail", "export" };
+        sidebarPanel = new SidebarPanel(manhomquyen, chucnang, actions);
+        for (String action : actions) {
+            JButton button = sidebarPanel.btn.get(action);
+            if (button != null) {
+                button.setPreferredSize(new Dimension(70, 50));
+            }
+        }
+        functionBar.add(sidebarPanel);
+
+        // Cập nhật IntegratedSearch với các tùy chọn tìm kiếm mới
+        search = new IntegratedSearch(new String[] { "Tất cả", "Mã Phòng", "Tên Phòng", "Loại Phòng", "Chi Tiết Loại Phòng", "Tình Trạng" });
+        search.txtSearchForm.setPreferredSize(new Dimension(100, search.txtSearchForm.getPreferredSize().height));
+        search.btnReset.setPreferredSize(new Dimension(120, 25));
+        search.txtSearchForm.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                search();
+            }
+        });
+
+        search.btnReset.addActionListener(e -> {
+            search.txtSearchForm.setText("");
+            search.cbxChoose.setSelectedIndex(0);
+            listPhong = phongBUS.getAllPhong();
+            loadTableData();
+        });
+        functionBar.add(search);
+
+        contentCenter.add(functionBar, BorderLayout.NORTH);
+
+        // Phần main chứa bảng
+        main = new PanelBorderRadius();
+        BoxLayout boxly = new BoxLayout(main, BoxLayout.Y_AXIS);
+        main.setLayout(boxly);
+        main.setBorder(new EmptyBorder(0, 0, 0, 0));
+        contentCenter.add(main, BorderLayout.CENTER);
+        main.add(scrollTablePhong);
+    }
+
+    private void loadDataTable(ArrayList<PhongDTO> result) {
+        tblModel.setRowCount(0);
+        int stt = 1;
+        for (PhongDTO phong : result) {
+            String status = phong.getTinhTrang() == 1 ? "Đã đặt" : "Trống";
+            tblModel.addRow(new Object[] {
+                    stt++,
+                    phong.getMaP(),
+                    phong.getTenP(),
+                    phong.getLoaiP(),
+                    phong.getGiaP() + "đ",
+                    phong.getChiTietLoaiPhong(),
+                    status
+            });
+        }
+    }
+
+    private void search() {
+        String keyword = search.txtSearchForm.getText().trim().toLowerCase();
+        String type = (String) search.cbxChoose.getSelectedItem();
+        ArrayList<PhongDTO> result = new ArrayList<>();
+
+        if (type.equals("Tất cả")) {
+            result = phongBUS.getAllPhong();
+            result.removeIf(phong -> {
+                String tinhTrang = phong.getTinhTrang() == 1 ? "đã đặt" : "trống";
+                return !phong.getMaP().toLowerCase().contains(keyword) &&
+                        !phong.getTenP().toLowerCase().contains(keyword) &&
+                        !phong.getLoaiP().toLowerCase().contains(keyword) &&
+                        !phong.getChiTietLoaiPhong().toLowerCase().contains(keyword) &&
+                        !tinhTrang.contains(keyword);
+            });
+        } else if (type.equals("Mã Phòng")) {
+            result = phongBUS.getAllPhong();
+            result.removeIf(phong -> !phong.getMaP().toLowerCase().contains(keyword));
+        } else if (type.equals("Tên Phòng")) {
+            result = phongBUS.getAllPhong();
+            result.removeIf(phong -> !phong.getTenP().toLowerCase().contains(keyword));
+        } else if (type.equals("Loại Phòng")) {
+            result = phongBUS.getAllPhong();
+            result.removeIf(phong -> !phong.getLoaiP().toLowerCase().contains(keyword));
+        } else if (type.equals("Chi Tiết Loại Phòng")) {
+            result = phongBUS.getAllPhong();
+            result.removeIf(phong -> !phong.getChiTietLoaiPhong().toLowerCase().contains(keyword));
+        } else if (type.equals("Tình Trạng")) {
+            result = phongBUS.getAllPhong();
+            if (keyword.contains("trống")) {
+                result.removeIf(phong -> phong.getTinhTrang() != 0);
+            } else if (keyword.contains("đã đặt")) {
+                result.removeIf(phong -> phong.getTinhTrang() != 1);
+            } else {
+                // Nếu từ khóa không khớp, không lọc
+                result = phongBUS.getAllPhong();
+            }
+        }
+
+        loadDataTable(result);
+    }
+
+    private void initPadding() {
+        pnlBorder1 = new JPanel();
+        pnlBorder1.setPreferredSize(new Dimension(0, 10));
+        pnlBorder1.setBackground(BackgroundColor);
+        this.add(pnlBorder1, BorderLayout.NORTH);
+
+        pnlBorder2 = new JPanel();
+        pnlBorder2.setPreferredSize(new Dimension(0, 10));
+        pnlBorder2.setBackground(BackgroundColor);
+        this.add(pnlBorder2, BorderLayout.SOUTH);
+
+        pnlBorder3 = new JPanel();
+        pnlBorder3.setPreferredSize(new Dimension(10, 0));
+        pnlBorder3.setBackground(BackgroundColor);
+        this.add(pnlBorder3, BorderLayout.EAST);
+
+        pnlBorder4 = new JPanel();
+        pnlBorder4.setPreferredSize(new Dimension(10, 0));
+        pnlBorder4.setBackground(BackgroundColor);
+        this.add(pnlBorder4, BorderLayout.WEST);
     }
 }

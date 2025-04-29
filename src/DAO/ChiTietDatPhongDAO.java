@@ -25,8 +25,7 @@ public class ChiTietDatPhongDAO implements DAOinterface<ChiTietDatPhongDTO> {
             pstmt.setInt(8, ctdp.getTinhTrang());
             return pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi thêm chi tiết đặt phòng: " + e.getMessage(), e);
         }
     }
 
@@ -45,8 +44,7 @@ public class ChiTietDatPhongDAO implements DAOinterface<ChiTietDatPhongDTO> {
             pstmt.setTimestamp(8, new java.sql.Timestamp(ctdp.getNgayThue().getTime()));
             return pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi cập nhật chi tiết đặt phòng: " + e.getMessage(), e);
         }
     }
 
@@ -58,8 +56,19 @@ public class ChiTietDatPhongDAO implements DAOinterface<ChiTietDatPhongDTO> {
             pstmt.setString(1, maCTDP);
             return pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi xóa chi tiết đặt phòng: " + e.getMessage(), e);
+        }
+    }
+
+    // Thêm phương thức deleteByMaP để xóa các bản ghi theo maP
+    public int deleteByMaP(String maP) {
+        String sql = "DELETE FROM CHITIETDATPHONG WHERE maP = ?";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, maP);
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi xóa chi tiết đặt phòng theo maP: " + e.getMessage(), e);
         }
     }
 
@@ -83,7 +92,7 @@ public class ChiTietDatPhongDAO implements DAOinterface<ChiTietDatPhongDTO> {
                 ctdpList.add(ctdp);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy danh sách chi tiết đặt phòng: " + e.getMessage(), e);
         }
         return ctdpList;
     }
@@ -108,13 +117,14 @@ public class ChiTietDatPhongDAO implements DAOinterface<ChiTietDatPhongDTO> {
                 return ctdp;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy chi tiết đặt phòng theo maCTDP: " + e.getMessage(), e);
         }
         return null;
     }
 
     @Override
     public int getAutoIncrement() {
+        // Nếu cần sinh mã tự động, bạn có thể sửa lại logic tại đây
         return 0;
     }
 }

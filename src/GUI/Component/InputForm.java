@@ -22,7 +22,12 @@ public class InputForm extends JPanel {
 
         // Label
         lblTitle = new JLabel(title + ":");
-        lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        Font timesNewRomanBold = Font.getFont("Times New Roman");
+        if (timesNewRomanBold != null) {
+            lblTitle.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
+        } else {
+            lblTitle.setFont(new Font(Font.SERIF, Font.BOLD, 20)); // Fallback to Serif if Times New Roman is not available
+        }
         lblTitle.setForeground(new Color(0, 102, 153));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -31,10 +36,16 @@ public class InputForm extends JPanel {
 
         // Text field
         txtForm = new JTextField();
-        txtForm.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        Font timesNewRomanPlain = Font.getFont("Times New Roman");
+        if (timesNewRomanPlain != null) {
+            txtForm.setFont(new Font(timesNewRomanPlain.getFamily(), Font.PLAIN, 20));
+        } else {
+            txtForm.setFont(new Font(Font.SERIF, Font.PLAIN, 20)); // Fallback to Serif
+        }
         txtForm.setForeground(new Color(51, 51, 51));
         txtForm.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         txtForm.setBackground(Color.WHITE);
+        txtForm.setPreferredSize(new Dimension(200, 32));
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.7;

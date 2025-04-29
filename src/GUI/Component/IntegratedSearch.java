@@ -7,41 +7,47 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class IntegratedSearch extends JPanel {
+
+    public JComboBox<String> cbxChoose = new JComboBox<>();
     public JButton btnReset;
     public JTextField txtSearchForm;
 
-    public IntegratedSearch() {
-        initComponent();
-    }
+    private void initComponent(String str[]) {
 
-    private void initComponent() {
         this.setBackground(Color.WHITE);
         BoxLayout bx = new BoxLayout(this, BoxLayout.Y_AXIS);
         this.setLayout(bx);
 
-        JPanel jpSearch = new JPanel(new BorderLayout(5, 10));
-        jpSearch.setBorder(new EmptyBorder(18, 15, 18, 15));
-        jpSearch.setBackground(Color.WHITE);
+        JPanel jpSearch = new JPanel(new BorderLayout(5,10));
+        jpSearch.setBorder(new EmptyBorder(18,15,18,15));
+        jpSearch.setBackground(Color.white);
+        cbxChoose.setModel(new DefaultComboBoxModel<>(str));
+        cbxChoose.setPreferredSize(new Dimension(140, 0));
+        cbxChoose.setFont(new java.awt.Font(FlatRobotoFont.FAMILY, 0, 13));
+        cbxChoose.setFocusable(false);
+        jpSearch.add(cbxChoose,BorderLayout.WEST);
 
         txtSearchForm = new JTextField();
         txtSearchForm.setFont(new Font(FlatRobotoFont.FAMILY, 0, 13));
         txtSearchForm.putClientProperty("JTextField.placeholderText", "Nhập nội dung tìm kiếm...");
         txtSearchForm.putClientProperty("JTextField.showClearButton", true);
-        txtSearchForm.setPreferredSize(new Dimension(200, 30)); // Tăng chiều dài ô tìm kiếm
-        txtSearchForm.setMaximumSize(new Dimension(300, 30));  // Giới hạn chiều dài tối đa
-        jpSearch.add(txtSearchForm, BorderLayout.CENTER);
+        jpSearch.add(txtSearchForm);
 
         btnReset = new JButton("Làm mới");
-        btnReset.setFont(new Font(FlatRobotoFont.FAMILY, 0, 14));
-        btnReset.setIcon(new FlatSVGIcon("icons/refresh.svg"));
-        btnReset.setPreferredSize(new Dimension(125, 30)); // Giữ nguyên kích thước nút
-        jpSearch.add(btnReset, BorderLayout.EAST);
-
+        btnReset.setFont(new java.awt.Font(FlatRobotoFont.FAMILY, 0, 14));
+        btnReset.setIcon(new FlatSVGIcon("./icons/refresh.svg"));
+        btnReset.setPreferredSize(new Dimension(125, 0));
+        btnReset.addActionListener(this::btnResetActionPerformed);
+        jpSearch.add(btnReset,BorderLayout.EAST);
         this.add(jpSearch);
     }
 
-    public JTextField getSearchField() {
-        return txtSearchForm;
+    public IntegratedSearch(String str[]) {
+        initComponent(str);
+    }
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent e) {
+        txtSearchForm.setText("");
+        cbxChoose.setSelectedIndex(0);
     }
 }
-

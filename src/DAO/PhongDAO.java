@@ -18,9 +18,9 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
     @Override
     public int add(PhongDTO p) {
         Objects.requireNonNull(p, "Thông tin phòng không được rỗng");
+        String sql = "INSERT INTO PHONG (maP, tenP, loaiP, hinhAnh, giaP, chiTietLoaiPhong, tinhTrang) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO PHONG (maP, tenP, loaiP, hinhAnh, giaP, chiTietLoaiPhong, tinhTrang) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getMaP());
             stmt.setString(2, p.getTenP());
             stmt.setString(3, p.getLoaiP());
@@ -32,17 +32,16 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
             System.out.println("Added room, rows affected: " + rowsAffected);
             return rowsAffected;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi thêm phòng: " + e.getMessage(), e);
         }
     }
 
     @Override
     public int update(PhongDTO p) {
         Objects.requireNonNull(p, "Thông tin phòng không được rỗng");
+        String sql = "UPDATE PHONG SET tenP = ?, loaiP = ?, hinhAnh = ?, giaP = ?, chiTietLoaiPhong = ?, tinhTrang = ? WHERE maP = ?";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE PHONG SET tenP = ?, loaiP = ?, hinhAnh = ?, giaP = ?, chiTietLoaiPhong = ?, tinhTrang = ? WHERE maP = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getTenP());
             stmt.setString(2, p.getLoaiP());
             stmt.setString(3, p.getHinhAnh());
@@ -54,8 +53,7 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
             System.out.println("Updated room, rows affected: " + rowsAffected);
             return rowsAffected;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi cập nhật phòng: " + e.getMessage(), e);
         }
     }
 
@@ -64,31 +62,32 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
         if (maP == null || maP.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã phòng không được rỗng");
         }
+        String sql = "DELETE FROM PHONG WHERE maP = ?";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("UPDATE PHONG SET tinhTrang = 1 WHERE maP = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maP);
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("Deleted room (soft delete), rows affected: " + rowsAffected);
+            System.out.println("Deleted room, rows affected: " + rowsAffected);
             return rowsAffected;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Lỗi khi xóa phòng: " + e.getMessage(), e);
         }
     }
 
     @Override
     public ArrayList<PhongDTO> selectAll() {
         ArrayList<PhongDTO> rooms = new ArrayList<>();
+        String sql = "SELECT * FROM PHONG";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM PHONG");
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 rooms.add(createPhongDTOFromResultSet(rs));
             }
+            return rooms;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy danh sách phòng: " + e.getMessage(), e);
         }
-        return rooms;
     }
 
     @Override
@@ -96,34 +95,34 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
         if (maP == null || maP.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã phòng không được rỗng");
         }
+        String sql = "SELECT * FROM PHONG WHERE maP = ?";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM PHONG WHERE maP = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maP);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return createPhongDTOFromResultSet(rs);
                 }
+                return null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy phòng theo mã: " + e.getMessage(), e);
         }
-        return null;
     }
 
     @Override
     public int getAutoIncrement() {
+        String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'quanlykhachsan' AND TABLE_NAME = 'PHONG'";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'quanlykhachsan' AND TABLE_NAME = 'PHONG'")) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("AUTO_INCREMENT");
-                }
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("AUTO_INCREMENT");
             }
+            return 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy AUTO_INCREMENT: " + e.getMessage(), e);
         }
-        return 0;
     }
 
     public List<Date[]> getThoiGianThue(String maP) {
@@ -131,9 +130,9 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
             throw new IllegalArgumentException("Mã phòng không được rỗng");
         }
         List<Date[]> thoiGianList = new ArrayList<>();
+        String sql = "SELECT ngayThue, ngayTra FROM CHITIETDATPHONG WHERE maP = ?";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT ngayThue, ngayTra FROM CHITIETDATPHONG WHERE maP = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maP);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -142,27 +141,30 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
                     thoiGian[1] = rs.getTimestamp("ngayTra");
                     thoiGianList.add(thoiGian);
                 }
+                return thoiGianList;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy thời gian thuê: " + e.getMessage(), e);
         }
-        return thoiGianList;
     }
 
     public List<PhongDTO> getAllAvailableRooms() throws SQLException {
         List<PhongDTO> rooms = new ArrayList<>();
+        String sql = "SELECT maP, tenP, loaiP, hinhAnh, giaP, chiTietLoaiPhong, tinhTrang FROM PHONG WHERE tinhTrang = 0 ORDER BY maP";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT maP, tenP, loaiP, hinhAnh, giaP, chiTietLoaiPhong, tinhTrang FROM PHONG WHERE tinhTrang = 0 ORDER BY maP");
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 rooms.add(createPhongDTOFromResultSet(rs));
             }
+            return rooms;
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy danh sách phòng trống: " + e.getMessage(), e);
         }
-        return rooms;
     }
 
-    public List<PhongDTO> getAvailableRooms(Date checkInDate, Date checkOutDate, List<String> roomTypes) throws SQLException {
+    public List<PhongDTO> getAvailableRooms(Date checkInDate, Date checkOutDate, List<String> roomTypes)
+            throws SQLException {
         Objects.requireNonNull(checkInDate, "Ngày nhận phòng không được rỗng");
         Objects.requireNonNull(checkOutDate, "Ngày trả phòng không được rỗng");
         List<PhongDTO> rooms = new ArrayList<>();
@@ -172,15 +174,18 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
             while (rs.next()) {
                 rooms.add(createPhongDTOFromResultSet(rs));
             }
+            return rooms;
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi lấy danh sách phòng trống theo thời gian: " + e.getMessage(), e);
         }
-        return rooms;
     }
 
-    private PreparedStatement prepareAvailableRoomsStatement(Connection conn, Date checkInDate, Date checkOutDate, List<String> roomTypes) throws SQLException {
+    private PreparedStatement prepareAvailableRoomsStatement(Connection conn, Date checkInDate, Date checkOutDate,
+                                                            List<String> roomTypes) throws SQLException {
         StringBuilder query = new StringBuilder(
                 "SELECT p.maP, p.tenP, p.loaiP, p.hinhAnh, p.giaP, p.chiTietLoaiPhong, p.tinhTrang " +
-                "FROM PHONG p " +
-                "WHERE p.tinhTrang = 0");
+                        "FROM PHONG p " +
+                        "WHERE p.tinhTrang = 0");
 
         if (roomTypes != null && !roomTypes.isEmpty()) {
             query.append(" AND p.loaiP IN (");
@@ -195,9 +200,9 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
 
         query.append(
                 " AND p.maP NOT IN (" +
-                "SELECT c.maP FROM CHITIETDATPHONG c " +
-                "WHERE c.tinhTrang = 1 AND c.ngayThue <= ? AND c.ngayTra >= ?) " +
-                "ORDER BY p.maP");
+                        "SELECT c.maP FROM CHITIETDATPHONG c " +
+                        "WHERE c.tinhTrang = 1 AND c.ngayThue <= ? AND c.ngayTra >= ?) " +
+                        "ORDER BY p.maP");
 
         PreparedStatement stmt = conn.prepareStatement(query.toString());
 
@@ -226,4 +231,3 @@ public class PhongDAO implements DAOinterface<PhongDTO> {
                 rs.getInt("tinhTrang"));
     }
 }
-

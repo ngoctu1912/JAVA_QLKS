@@ -1,29 +1,142 @@
+// package GUI_NHANVIEN;
+
+// import BUS.NhanVienBUS;
+// import DTO.NhanVienDTO;
+// import helper.JTableExporter;
+
+// import javax.swing.*;
+// import java.awt.event.MouseAdapter;
+// import java.awt.event.MouseEvent;
+// import java.io.IOException;
+
+// public class NhanVienEvent {
+//     private NhanVienGUI gui;
+//     private NhanVienBUS nhanVienBUS;
+
+//     public NhanVienEvent(NhanVienGUI gui) {
+//         this.gui = gui;
+//         this.nhanVienBUS = gui.getNhanVienBUS();
+
+//         // Attach double-click event to table
+//         gui.getNhanVienTable().addMouseListener(new MouseAdapter() {
+//             @Override
+//             public void mouseClicked(MouseEvent evt) {
+//                 if (evt.getClickCount() == 2) {
+//                     int row = gui.getNhanVienTable().getSelectedRow();
+//                     if (row >= 0) {
+//                         NhanVienDTO nv = gui.getSelectedNhanVien();
+//                         if (nv != null) {
+//                             new NhanVienDialog(gui, nv, false, true);
+//                         } else {
+//                             JOptionPane.showMessageDialog(gui, "Không tìm thấy nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                         }
+//                     }
+//                 }
+//             }
+//         });
+
+//         // Attach events to sidebar buttons
+//         gui.getSidebarPanel().btn.get("create").addActionListener(e -> openAddDialog());
+//         gui.getSidebarPanel().btn.get("update").addActionListener(e -> openEditDialog());
+//         gui.getSidebarPanel().btn.get("delete").addActionListener(e -> deleteNhanVien());
+//         gui.getSidebarPanel().btn.get("detail").addActionListener(e -> openDetailDialog());
+//         gui.getSidebarPanel().btn.get("export").addActionListener(e -> exportToExcel());
+//     }
+
+//     public void openAddDialog() {
+//         new NhanVienDialog(gui, null, false, false);
+//         gui.loadTableData();
+//     }
+
+//     public void openEditDialog() {
+//         NhanVienDTO selected = gui.getSelectedNhanVien();
+//         if (selected == null) {
+//             return;
+//         }
+//         new NhanVienDialog(gui, selected, true, false);
+//         gui.loadTableData();
+//     }
+
+//     public void deleteNhanVien() {
+//         NhanVienDTO selected = gui.getSelectedNhanVien();
+//         if (selected != null) {
+//             int confirm = JOptionPane.showConfirmDialog(gui, "Bạn có chắc chắn muốn xóa nhân viên này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+//             if (confirm == JOptionPane.YES_OPTION) {
+//                 nhanVienBUS.deleteNv(selected);
+//                 gui.loadTableData();
+//                 JOptionPane.showMessageDialog(gui, "Xóa nhân viên thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+//             }
+//         }
+//     }
+
+//     public void openDetailDialog() {
+//         NhanVienDTO selected = gui.getSelectedNhanVien();
+//         if (selected != null) {
+//             new NhanVienDialog(gui, selected, false, true);
+//         }
+//     }
+
+//     public void exportToExcel() {
+//         try {
+//             boolean success = JTableExporter.exportJTableToExcel(gui.getNhanVienTable());
+//             if (success) {
+//                 JOptionPane.showMessageDialog(gui, "Xuất file Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+//             }
+//         } catch (IOException ex) {
+//             JOptionPane.showMessageDialog(gui, "Lỗi khi xuất file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+//             ex.printStackTrace();
+//         }
+//     }
+// }
+
 package GUI_NHANVIEN;
 
 import BUS.NhanVienBUS;
 import DTO.NhanVienDTO;
 import helper.JTableExporter;
+
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.event.DocumentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class NhanVienEvent {
     private NhanVienGUI gui;
     private NhanVienBUS nhanVienBUS;
-    private JTextField searchField;
 
-    public NhanVienEvent(NhanVienGUI gui, NhanVienBUS nhanVienBUS, JTextField searchField) {
+    public NhanVienEvent(NhanVienGUI gui) {
         this.gui = gui;
-        this.nhanVienBUS = nhanVienBUS;
-        this.searchField = searchField;
+        this.nhanVienBUS = gui.getNhanVienBUS();
+
+        // Attach double-click event to table
+        gui.getNhanVienTable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int row = gui.getNhanVienTable().getSelectedRow();
+                    if (row >= 0) {
+                        NhanVienDTO nv = gui.getSelectedNhanVien();
+                        if (nv != null) {
+                            new NhanVienDialog(gui, nv, false, true);
+                        } else {
+                            JOptionPane.showMessageDialog(gui, "Không tìm thấy nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
+
+        // Attach events to sidebar buttons
+        gui.getSidebarPanel().btn.get("create").addActionListener(e -> openAddDialog());
+        gui.getSidebarPanel().btn.get("update").addActionListener(e -> openEditDialog());
+        gui.getSidebarPanel().btn.get("delete").addActionListener(e -> deleteNhanVien());
+        gui.getSidebarPanel().btn.get("detail").addActionListener(e -> openDetailDialog());
+        gui.getSidebarPanel().btn.get("export").addActionListener(e -> exportToExcel());
     }
 
     public void openAddDialog() {
-        NhanVienDialog dialog = new NhanVienDialog(nhanVienBUS, gui, gui, "Thêm nhân viên", true, "create", null);
-        dialog.setVisible(true);
+        new NhanVienDialog(gui, null, false, false);
+        gui.loadTableData();
     }
 
     public void openEditDialog() {
@@ -31,8 +144,8 @@ public class NhanVienEvent {
         if (selected == null) {
             return;
         }
-        NhanVienDialog dialog = new NhanVienDialog(nhanVienBUS, gui, gui, "Sửa nhân viên", true, "update", selected);
-        dialog.setVisible(true);
+        new NhanVienDialog(gui, selected, true, false);
+        gui.loadTableData();
     }
 
     public void deleteNhanVien() {
@@ -41,72 +154,28 @@ public class NhanVienEvent {
             int confirm = JOptionPane.showConfirmDialog(gui, "Bạn có chắc chắn muốn xóa nhân viên này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 nhanVienBUS.deleteNv(selected);
-                gui.loadNhanVienData();
+                gui.loadTableData();
+                JOptionPane.showMessageDialog(gui, "Xóa nhân viên thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
 
-    public void showDetails() {
+    public void openDetailDialog() {
         NhanVienDTO selected = gui.getSelectedNhanVien();
         if (selected != null) {
-            NhanVienDialog dialog = new NhanVienDialog(nhanVienBUS, gui, gui, "Chi tiết nhân viên", true, "view", selected);
-            dialog.setVisible(true);
+            new NhanVienDialog(gui, selected, false, true);
         }
     }
 
     public void exportToExcel() {
         try {
-            JTableExporter.exportJTableToExcel(gui.getNhanVienTable());
-            JOptionPane.showMessageDialog(gui, "Xuất file Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            boolean success = JTableExporter.exportJTableToExcel(gui.getNhanVienTable());
+            if (success) {
+                JOptionPane.showMessageDialog(gui, "Xuất file Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(gui, "Lỗi khi xuất file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
-    }
-
-    public void importExcel() {
-        nhanVienBUS.importExcel();
-        gui.loadNhanVienData();
-    }
-
-    public void refreshTable() {
-        gui.loadNhanVienData();
-        searchField.setText("");
-    }
-
-    public DocumentListener getSearchListener() {
-        return new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                search();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                search();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                search();
-            }
-
-            private void search() {
-                String searchText = searchField.getText();
-                ArrayList<NhanVienDTO> searchResults = nhanVienBUS.search(searchText);
-                DefaultTableModel tableModel = gui.getTableModel();
-                tableModel.setRowCount(0);
-                for (NhanVienDTO nv : searchResults) {
-                    tableModel.addRow(new Object[]{
-                            nv.getMNV(),
-                            nv.getHOTEN(),
-                            nv.getGIOITINH() == 1 ? "Nam" : "Nữ",
-                            nv.getNGAYSINH(),
-                            nv.getSDT(),
-                            nv.getEMAIL()
-                    });
-                }
-            }
-        };
     }
 }

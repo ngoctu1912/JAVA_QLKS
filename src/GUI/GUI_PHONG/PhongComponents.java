@@ -11,11 +11,11 @@ public class PhongComponents {
 
     public PhongComponents(JFrame parent) {
         dialog = new JDialog(parent, "Nhập Thông Tin Phòng", true);
-        dialog.setSize(400, 350); // Giảm chiều cao vì bỏ 1 trường
+        dialog.setSize(400, 350);
         dialog.setLocationRelativeTo(parent);
         dialog.setLayout(new BorderLayout());
 
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10)); // Giảm từ 8 xuống 7 hàng
+        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         txtMaP = new JTextField();
@@ -87,6 +87,10 @@ public class PhongComponents {
 
     public JButton getBtnOK() {
         return btnOK;
+    }
+
+    public JButton getBtnCancel() {
+        return btnCancel;
     }
 
     public JDialog getDialog() {
