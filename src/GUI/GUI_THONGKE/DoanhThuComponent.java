@@ -27,9 +27,7 @@ public class DoanhThuComponent extends JPanel {
     private JPanel contentPanel;
     private RoundedPanel filterPanel;
     private JScrollPane chartScrollPane, tableScrollPane, mainScrollPane;
-    private JButton btnExport;
-    private JButton btnFilter;
-    private JButton btnReset;
+    private JButton btnExport, btnFilter, btnReset;
     private JPanel subTabPanel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -44,7 +42,6 @@ public class DoanhThuComponent extends JPanel {
         event.loadData();
     }
 
-    @SuppressWarnings("unused")
     private void initComponents() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(960, 600));
@@ -58,12 +55,13 @@ public class DoanhThuComponent extends JPanel {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setDoubleBuffered(true);
+        contentPanel.setPreferredSize(new Dimension(960, 900)); // Ensure enough height to trigger scrolling
 
         subTabPanel = new JPanel();
-        subTabPanel.setBackground(Color.decode("#E6F4F1"));
+        subTabPanel.setBackground(Color.decode("#F5F5F5"));
         subTabPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
         subTabPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        subTabPanel.setPreferredSize(new Dimension(0, 40));
+        subTabPanel.setPreferredSize(new Dimension(960, 40));
 
         String[] subTabs = {
             "Thống kê theo năm",
@@ -88,8 +86,8 @@ public class DoanhThuComponent extends JPanel {
         filterPanel = new RoundedPanel(20);
         filterPanel.setBackground(Color.WHITE);
         filterPanel.setLayout(null);
-        filterPanel.setPreferredSize(new Dimension(0, 60));
-        filterPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        filterPanel.setPreferredSize(new Dimension(960, 60));
+        filterPanel.setMaximumSize(new Dimension(960, 60));
         filterPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblStartYear = new JLabel("Từ năm:");
@@ -100,6 +98,7 @@ public class DoanhThuComponent extends JPanel {
         txtStartYear = new JTextField();
         txtStartYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         txtStartYear.setBounds(80, 15, 80, 30);
+        txtStartYear.setText(String.valueOf(sharedStartYear));
         filterPanel.add(txtStartYear);
 
         JLabel lblEndYear = new JLabel("Đến năm:");
@@ -110,6 +109,7 @@ public class DoanhThuComponent extends JPanel {
         txtEndYear = new JTextField();
         txtEndYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         txtEndYear.setBounds(260, 15, 80, 30);
+        txtEndYear.setText(String.valueOf(sharedEndYear));
         filterPanel.add(txtEndYear);
 
         btnFilter = createRoundedButton("Thống kê");
@@ -146,8 +146,8 @@ public class DoanhThuComponent extends JPanel {
             @Override
             public Dimension getPreferredSize() {
                 int numYears = yearlyData != null ? yearlyData.size() : 1;
-                int minWidth = numYears * 150;
-                return new Dimension(Math.max(minWidth, getParent().getWidth()), 400);
+                int minWidth = Math.min(numYears * 150, 900);
+                return new Dimension(minWidth, 400);
             }
         };
         chartPanel.setBackground(Color.WHITE);
@@ -155,70 +155,13 @@ public class DoanhThuComponent extends JPanel {
         chartPanel.setDoubleBuffered(true);
 
         chartScrollPane = new JScrollPane(chartPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        chartScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
-        chartScrollPane.setPreferredSize(new Dimension(0, 400));
+        chartScrollPane.setPreferredSize(new Dimension(940, 400));
         chartScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         chartScrollPane.getViewport().setBackground(Color.WHITE);
-        contentPanel.add(chartScrollPane);
-        contentPanel.add(Box.createVerticalStrut(20));
 
-        String[] columns = {"Năm", "Doanh thu phòng", "Doanh thu dịch vụ", "Tổng doanh thu"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        doanhThuTable = new JTable(model) {
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                Component c = super.prepareRenderer(renderer, row, column);
-                c.setBackground(new Color(183, 228, 199));
-                c.setForeground(Color.BLACK);
-                ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
-                return c;
-            }
-
-            @Override
-            public JTableHeader getTableHeader() {
-                JTableHeader header = super.getTableHeader();
-                header.setPreferredSize(new Dimension(0, 40));
-                return header;
-            }
-        };
-
-        doanhThuTable.setRowHeight(40);
-        doanhThuTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        doanhThuTable.setShowVerticalLines(false);
-        doanhThuTable.setShowHorizontalLines(false);
-        doanhThuTable.setIntercellSpacing(new Dimension(0, 0));
-        doanhThuTable.setBorder(BorderFactory.createEmptyBorder());
-        doanhThuTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); // SỬA: Cho phép tự động điều chỉnh cột để lấp đầy không gian
-
-        JTableHeader header = doanhThuTable.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 15));
-        header.setBackground(Color.WHITE);
-        header.setForeground(Color.BLACK);
-        header.setReorderingAllowed(false);
-        header.setBorder(BorderFactory.createEmptyBorder());
-        header.setOpaque(false);
-
-        UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
-
-        // SỬA: Bỏ cố định chiều rộng cột để cột tự động điều chỉnh
-        // doanhThuTable.getColumnModel().getColumn(0).setPreferredWidth(150);
-        // doanhThuTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-        // doanhThuTable.getColumnModel().getColumn(2).setPreferredWidth(150);
-        // doanhThuTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-
-        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        tableScrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        tableScrollPane.getViewport().setBackground(Color.WHITE);
-        tableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        tableScrollPane.getVerticalScrollBar().setBlockIncrement(50);
-
-        JScrollBar verticalScrollBar = tableScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUI(new BasicScrollBarUI() {
+        // Tùy chỉnh thanh cuộn ngang cho chartScrollPane
+        JScrollBar chartHorizontalScrollBar = chartScrollPane.getHorizontalScrollBar();
+        chartHorizontalScrollBar.setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
                 this.thumbColor = new Color(209, 207, 207);
@@ -254,19 +197,118 @@ public class DoanhThuComponent extends JPanel {
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(trackColor);
-                g2.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
-                g2.dispose();
+                // Không vẽ track
             }
         });
-        verticalScrollBar.setPreferredSize(new Dimension(12, Integer.MAX_VALUE));
+        chartHorizontalScrollBar.setPreferredSize(new Dimension(Integer.MAX_VALUE, 6));
+
+        contentPanel.add(chartScrollPane);
+        contentPanel.add(Box.createVerticalStrut(20));
+
+        String[] columns = {"Năm", "Doanh thu phòng", "Doanh thu dịch vụ", "Tổng doanh thu"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        doanhThuTable = new JTable(model) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                c.setBackground(new Color(183, 228, 199));
+                c.setForeground(Color.BLACK);
+                ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
+                return c;
+            }
+
+            @Override
+            public JTableHeader getTableHeader() {
+                JTableHeader header = super.getTableHeader();
+                header.setPreferredSize(new Dimension(0, 40));
+                return header;
+            }
+
+            @Override
+            public Dimension getPreferredScrollableViewportSize() {
+                return new Dimension(900, 200); // Limit table height to ensure scrolling
+            }
+        };
+
+        doanhThuTable.setRowHeight(40);
+        doanhThuTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        doanhThuTable.setShowVerticalLines(false);
+        doanhThuTable.setShowHorizontalLines(false);
+        doanhThuTable.setIntercellSpacing(new Dimension(0, 0));
+        doanhThuTable.setBorder(BorderFactory.createEmptyBorder());
+        doanhThuTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        doanhThuTable.getTableHeader().setReorderingAllowed(false);
+        doanhThuTable.getTableHeader().setOpaque(false);
+
+        JTableHeader header = doanhThuTable.getTableHeader();
+        header.setFont(new Font("SansSerif", Font.BOLD, 15));
+        header.setBackground(Color.WHITE);
+        header.setForeground(Color.BLACK);
+        header.setBorder(BorderFactory.createEmptyBorder());
+        header.setOpaque(false);
+
+        UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
+
+        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        tableScrollPane.setPreferredSize(new Dimension(940, 200));
+        tableScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tableScrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        tableScrollPane.getViewport().setBackground(Color.WHITE);
+        tableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        tableScrollPane.getVerticalScrollBar().setBlockIncrement(50);
+
+        JScrollBar tableVerticalScrollBar = tableScrollPane.getVerticalScrollBar();
+        tableVerticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207);
+                this.trackColor = new Color(245, 245, 245);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track
+            }
+        });
+        tableVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
         contentPanel.add(tableScrollPane);
         contentPanel.add(Box.createVerticalStrut(10));
 
         mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        mainScrollPane.setBackground(Color.WHITE);
         mainScrollPane.getViewport().setBackground(Color.WHITE);
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
@@ -308,13 +350,10 @@ public class DoanhThuComponent extends JPanel {
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(trackColor);
-                g2.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
-                g2.dispose();
+                // Không vẽ track
             }
         });
-        mainVerticalScrollBar.setPreferredSize(new Dimension(12, Integer.MAX_VALUE));
+        mainVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
         cardPanel.add(mainScrollPane, "Yearly");
         add(cardPanel, BorderLayout.CENTER);
@@ -327,15 +366,33 @@ public class DoanhThuComponent extends JPanel {
             }
         });
 
-        MouseWheelListener scrollListener = new MouseWheelListener() {
-            @SuppressWarnings("deprecation")
+        // Chuyển sự kiện cuộn từ các thành phần con lên mainScrollPane (trừ tableScrollPane và doanhThuTable)
+        forwardMouseWheelEvents(chartScrollPane);
+        forwardMouseWheelEvents(subTabPanel);
+        forwardMouseWheelEvents(filterPanel);
+        forwardMouseWheelEvents(chartPanel);
+        forwardMouseWheelEvents(lblChartTitle);
+        forwardMouseWheelEvents(txtStartYear);
+        forwardMouseWheelEvents(txtEndYear);
+        forwardMouseWheelEvents(btnFilter);
+        forwardMouseWheelEvents(btnReset);
+        forwardMouseWheelEvents(btnExport);
+
+        revalidate();
+        repaint();
+        adjustTableSize();
+        adjustFilterPanelBounds();
+    }
+
+    private void forwardMouseWheelEvents(JComponent component) {
+        component.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 mainScrollPane.dispatchEvent(new MouseWheelEvent(
                     mainScrollPane,
                     e.getID(),
                     e.getWhen(),
-                    e.getModifiers(),
+                    e.getModifiersEx(),
                     e.getX(),
                     e.getY(),
                     e.getClickCount(),
@@ -346,29 +403,13 @@ public class DoanhThuComponent extends JPanel {
                 ));
                 e.consume();
             }
-        };
-
-        contentPanel.addMouseWheelListener(scrollListener);
-        chartScrollPane.addMouseWheelListener(scrollListener);
-        tableScrollPane.addMouseWheelListener(scrollListener);
-        subTabPanel.addMouseWheelListener(scrollListener);
-        filterPanel.addMouseWheelListener(scrollListener);
-        doanhThuTable.addMouseWheelListener(scrollListener);
-        chartPanel.addMouseWheelListener(scrollListener);
-        lblChartTitle.addMouseWheelListener(scrollListener);
-        txtStartYear.addMouseWheelListener(scrollListener);
-        txtEndYear.addMouseWheelListener(scrollListener);
-
-        revalidate();
-        repaint();
-        adjustTableSize();
-        adjustFilterPanelBounds();
+        });
     }
 
     private void adjustTableSize() {
-        int width = getWidth();
+        int width = getWidth() - 40;
         int tableHeight = doanhThuTable.getRowCount() * doanhThuTable.getRowHeight() + doanhThuTable.getTableHeader().getHeight() + 40;
-        tableScrollPane.setPreferredSize(new Dimension(width, Math.min(tableHeight, 300)));
+        tableScrollPane.setPreferredSize(new Dimension(width, Math.min(tableHeight, 200)));
         tableScrollPane.revalidate();
         tableScrollPane.repaint();
     }
@@ -377,17 +418,11 @@ public class DoanhThuComponent extends JPanel {
         int width = getWidth();
         int buttonWidth = 100;
         int gap = 10;
-        int startX = width - (buttonWidth * 3 + gap * 2) - 20;
+        int startX = Math.max(width - (buttonWidth * 3 + gap * 2) - 20, 360);
 
-        startX = Math.max(startX, 360);
-
-        if (btnFilter != null && btnReset != null && btnExport != null) {
-            btnFilter.setBounds(startX, 15, buttonWidth, 30);
-            btnReset.setBounds(startX + buttonWidth + gap, 15, buttonWidth, 30);
-            btnExport.setBounds(startX + (buttonWidth + gap) * 2, 15, buttonWidth, 30);
-        } else {
-            System.out.println("Error: One or more buttons in filterPanel are null");
-        }
+        btnFilter.setBounds(startX, 15, buttonWidth, 30);
+        btnReset.setBounds(startX + buttonWidth + gap, 15, buttonWidth, 30);
+        btnExport.setBounds(startX + (buttonWidth + gap) * 2, 15, buttonWidth, 30);
 
         filterPanel.revalidate();
         filterPanel.repaint();
@@ -471,7 +506,7 @@ public class DoanhThuComponent extends JPanel {
 
     public void setDanhSachDoanhThu(ArrayList<ThongKeDTO> danhSachDoanhThu) {
         this.danhSachDoanhThu = danhSachDoanhThu;
-        adjustTableSize(); // SỬA: Gọi lại để cập nhật kích thước bảng khi dữ liệu thay đổi
+        adjustTableSize();
     }
 
     public ArrayList<ThongKeDTO> getYearlyData() {
@@ -480,7 +515,7 @@ public class DoanhThuComponent extends JPanel {
 
     public void setYearlyData(ArrayList<ThongKeDTO> yearlyData) {
         this.yearlyData = yearlyData;
-        adjustTableSize(); // SỬA: Gọi lại để cập nhật kích thước bảng khi dữ liệu thay đổi
+        adjustTableSize();
     }
 
     public JTextField getTxtStartYear() {

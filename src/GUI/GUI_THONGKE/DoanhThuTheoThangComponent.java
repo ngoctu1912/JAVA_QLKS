@@ -46,7 +46,7 @@ public class DoanhThuTheoThangComponent extends JPanel {
 
         // Thanh tab phụ
         subTabPanel = new JPanel();
-        subTabPanel.setBackground(Color.decode("#E6F4F1"));
+        subTabPanel.setBackground(Color.decode("#F5F5F5"));
         subTabPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
         subTabPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         subTabPanel.setPreferredSize(new Dimension(960, 40));
@@ -137,6 +137,51 @@ public class DoanhThuTheoThangComponent extends JPanel {
         chartScrollPane = new JScrollPane(chartPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chartScrollPane.setPreferredSize(new Dimension(940, 400));
         chartScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chartScrollPane.getViewport().setBackground(Color.WHITE);
+
+        // Tùy chỉnh thanh cuộn ngang cho chartScrollPane
+        JScrollBar chartHorizontalScrollBar = chartScrollPane.getHorizontalScrollBar();
+        chartHorizontalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207);
+                this.trackColor = new Color(245, 245, 245);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track
+            }
+        });
+        chartHorizontalScrollBar.setPreferredSize(new Dimension(Integer.MAX_VALUE, 6));
+
         contentPanel.add(chartScrollPane);
         contentPanel.add(Box.createVerticalStrut(20));
 
@@ -170,109 +215,108 @@ public class DoanhThuTheoThangComponent extends JPanel {
         doanhThuTable.getTableHeader().setOpaque(false);
         styleTable(doanhThuTable);
 
-        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         tableScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         tableScrollPane.setPreferredSize(new Dimension(940, 100));
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         tableScrollPane.getViewport().setBackground(Color.WHITE);
+
+        // Tùy chỉnh thanh cuộn dọc cho tableScrollPane
+        JScrollBar tableVerticalScrollBar = tableScrollPane.getVerticalScrollBar();
+        tableVerticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207);
+                this.trackColor = new Color(245, 245, 245);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track
+            }
+        });
+        tableVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
+
         contentPanel.add(tableScrollPane);
         contentPanel.add(Box.createVerticalStrut(10));
 
-        // Tùy chỉnh thanh cuộn mảnh & đẹp cho tableScrollPane
-        JScrollBar verticalScrollBar = tableScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(209, 207, 207);
-                this.trackColor = new Color(245, 245, 245);
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setPaint(thumbColor);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Không vẽ track hoặc để lại mặc định nhẹ nhàng
-            }
-        });
-        verticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
-
-        // Tùy chỉnh thanh cuộn ngang
-        JScrollBar horizontalScrollBar = tableScrollPane.getHorizontalScrollBar();
-        horizontalScrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(209, 207, 207);
-                this.trackColor = new Color(245, 245, 245);
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setPaint(thumbColor);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Không vẽ track hoặc để lại mặc định nhẹ nhàng
-            }
-        });
-        horizontalScrollBar.setPreferredSize(new Dimension(Integer.MAX_VALUE, 6));
-
         UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
 
-        mainScrollPane = new JScrollPane(contentPanel);
-        mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
+        mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainScrollPane.setBackground(Color.WHITE);
         mainScrollPane.getViewport().setBackground(Color.WHITE);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
+
+        // Tùy chỉnh thanh cuộn dọc cho mainScrollPane
+        JScrollBar mainVerticalScrollBar = mainScrollPane.getVerticalScrollBar();
+        mainVerticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207);
+                this.trackColor = new Color(245, 245, 245);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track
+            }
+        });
+        mainVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
         // Chuyển sự kiện cuộn từ các thành phần con lên mainScrollPane (trừ tableScrollPane và doanhThuTable)
         forwardMouseWheelEvents(chartScrollPane);

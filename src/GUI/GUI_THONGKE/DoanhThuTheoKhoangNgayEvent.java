@@ -10,12 +10,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
@@ -31,7 +31,6 @@ public class DoanhThuTheoKhoangNgayEvent {
     public void switchTab(String tabName) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Tìm DoanhThuGUI trong hệ thống phân cấp
                 Container parent = component.getParent();
                 while (!(parent instanceof DoanhThuComponent) && parent != null) {
                     parent = parent.getParent();
@@ -40,7 +39,6 @@ public class DoanhThuTheoKhoangNgayEvent {
                     ((DoanhThuComponent) parent).switchTab(tabName);
                 }
 
-                // Cập nhật trạng thái nút trong subTabPanel
                 updateTabButtons(tabName);
 
                 component.revalidate();
@@ -55,7 +53,8 @@ public class DoanhThuTheoKhoangNgayEvent {
     public void updateTabButtons(String activeTab) {
         for (Component comp : component.getSubTabPanel().getComponents()) {
             if (comp instanceof JButton) {
-                comp.setBackground(((JButton) comp).getText().equals(activeTab) ? Color.WHITE : Color.decode("#E6F4F1"));
+                comp.setBackground(
+                        ((JButton) comp).getText().equals(activeTab) ? Color.WHITE : Color.decode("#E6F4F1"));
             }
         }
         component.getSubTabPanel().revalidate();
@@ -65,36 +64,51 @@ public class DoanhThuTheoKhoangNgayEvent {
     public void loadData() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(7);
-        component.getTxtStartDate().setText(startDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        component.getTxtEndDate().setText(currentDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        component.getTxtStartDate()
+                .setText(startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        component.getTxtEndDate()
+                .setText(currentDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         component.setDanhSachDoanhThu(thongKeBUS.getDoanhThuTheoKhoangNgay(startDate, currentDate));
-        component.getLblChartTitle().setText("Thống kê doanh thu từ ngày " + startDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " đến ngày " + currentDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        component.getLblChartTitle()
+                .setText("Thống kê doanh thu từ ngày "
+                        + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " đến ngày "
+                        + currentDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         updateTableAndChart();
     }
 
     public void loadDataByFilter() {
         try {
-            LocalDate startDate = LocalDate.parse(component.getTxtStartDate().getText(), java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            LocalDate endDate = LocalDate.parse(component.getTxtEndDate().getText(), java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate startDate = LocalDate.parse(component.getTxtStartDate().getText(),
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate endDate = LocalDate.parse(component.getTxtEndDate().getText(),
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             if (startDate.isAfter(endDate)) {
-                JOptionPane.showMessageDialog(component, "Ngày bắt đầu không được lớn hơn ngày kết thúc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(component, "Ngày bắt đầu không được lớn hơn ngày kết thúc!", "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             component.setDanhSachDoanhThu(thongKeBUS.getDoanhThuTheoKhoangNgay(startDate, endDate));
-            component.getLblChartTitle().setText("Thống kê doanh thu từ ngày " + startDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " đến ngày " + endDate.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            component.getLblChartTitle().setText("Thống kê doanh thu từ ngày "
+                    + startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " đến ngày "
+                    + endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             updateTableAndChart();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(component, "Vui lòng nhập ngày hợp lệ (dd/MM/yyyy)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(component, "Vui lòng nhập ngày hợp lệ (dd/MM/yyyy)!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void updateTableAndChart() {
         SwingUtilities.invokeLater(() -> {
             ArrayList<ThongKeDTO> rangeData = new ArrayList<>();
-            if (!component.getDanhSachDoanhThu().isEmpty()) {
-                LocalDate startDate = component.getDanhSachDoanhThu().get(0).getNgay();
-                LocalDate endDate = component.getDanhSachDoanhThu().get(component.getDanhSachDoanhThu().size() - 1).getNgay();
+            try {
+                LocalDate startDate = LocalDate.parse(component.getTxtStartDate().getText(),
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate endDate = LocalDate.parse(component.getTxtEndDate().getText(),
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+                boolean hasNonZeroData = false;
                 for (int i = 0; i < daysBetween; i++) {
                     LocalDate currentDate = startDate.plusDays(i);
                     long doanhThuPhong = 0, doanhThuDichVu = 0, tongDoanhThu = 0;
@@ -105,33 +119,48 @@ public class DoanhThuTheoKhoangNgayEvent {
                             tongDoanhThu += dto.getTongDoanhThu();
                         }
                     }
+                    if (doanhThuPhong > 0 || doanhThuDichVu > 0 || tongDoanhThu > 0) {
+                        hasNonZeroData = true;
+                    }
                     rangeData.add(new ThongKeDTO(currentDate, doanhThuPhong, doanhThuDichVu, tongDoanhThu));
                 }
+
+                component.setRangeData(rangeData);
+
+                DefaultTableModel model = (DefaultTableModel) component.getDoanhThuTable().getModel();
+                model.setRowCount(0);
+                for (ThongKeDTO dto : rangeData) {
+                    model.addRow(new Object[] {
+                            dto.getNgay().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                            dto.getDoanhThuPhong(),
+                            dto.getDoanhThuDichVu(),
+                            dto.getTongDoanhThu()
+                    });
+                }
+
+                if (!hasNonZeroData) {
+                    JOptionPane.showMessageDialog(component,
+                            "Không có dữ liệu doanh thu trong khoảng thời gian này!",
+                            "Thông báo",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                int rowHeight = component.getDoanhThuTable().getRowHeight();
+                int headerHeight = component.getDoanhThuTable().getTableHeader().getPreferredSize().height;
+                int maxHeight = rowHeight * 10 + headerHeight;
+                int preferredHeight = rowHeight * model.getRowCount() + headerHeight;
+                component.getTableScrollPane().setPreferredSize(new Dimension(
+                        component.getTableScrollPane().getPreferredSize().width,
+                        Math.min(preferredHeight, maxHeight)));
+                component.revalidate();
+                component.repaint();
+
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(component,
+                        "Định dạng ngày không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy.",
+                        "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
             }
-            component.setRangeData(rangeData);
-
-            DefaultTableModel model = (DefaultTableModel) component.getDoanhThuTable().getModel();
-            model.setRowCount(0);
-            model.setRowCount(rangeData.size());
-
-            for (int i = 0; i < rangeData.size(); i++) {
-                ThongKeDTO dto = rangeData.get(i);
-                model.setValueAt(dto.getNgay().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")), i, 0);
-                model.setValueAt(dto.getDoanhThuPhong(), i, 1);
-                model.setValueAt(dto.getDoanhThuDichVu(), i, 2);
-                model.setValueAt(dto.getTongDoanhThu(), i, 3);
-            }
-
-            // Cập nhật chiều cao tableScrollPane
-            int rowHeight = component.getDoanhThuTable().getRowHeight();
-            int headerHeight = component.getDoanhThuTable().getTableHeader().getHeight();
-            int totalHeight = (rangeData.size() * rowHeight) + headerHeight + 5;
-            component.getDoanhThuTable().getParent().getParent().setPreferredSize(new Dimension(940, Math.min(totalHeight, 400)));
-
-            component.getChartPanel().revalidate();
-            component.getChartPanel().repaint();
-            component.getMainScrollPane().revalidate();
-            component.getMainScrollPane().repaint();
         });
     }
 
@@ -150,7 +179,7 @@ public class DoanhThuTheoKhoangNgayEvent {
         int chartWidth = width - 2 * margin;
         int chartHeight = height - 2 * margin - 30;
         int numDays = rangeData.size();
-        int barGroupWidth = chartWidth / numDays;
+        int barGroupWidth = chartWidth / Math.max(numDays, 1);
         int barWidth = barGroupWidth / 4;
 
         long maxValue = rangeData.stream()
@@ -168,7 +197,7 @@ public class DoanhThuTheoKhoangNgayEvent {
         DecimalFormat df = new DecimalFormat("#,###");
         g2d.setFont(new Font("Times New Roman", Font.PLAIN, 12));
         int numTicks = 5;
-        long step = maxValue / numTicks;
+        long step = (long) Math.ceil(maxValue / (double) numTicks);
         for (int i = 0; i <= numTicks; i++) {
             long value = step * i;
             int y = height - margin - 30 - (int) ((value / (double) maxValue) * chartHeight);
@@ -177,7 +206,7 @@ public class DoanhThuTheoKhoangNgayEvent {
         }
 
         for (int i = 0; i < numDays; i++) {
-            String dateStr = rangeData.get(i).getNgay().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM"));
+            String dateStr = rangeData.get(i).getNgay().format(DateTimeFormatter.ofPattern("dd/MM"));
             int xBase = margin + i * barGroupWidth + barGroupWidth / 4;
             g2d.drawString(dateStr, xBase + barWidth / 2 - 10, height - margin - 10);
 
@@ -270,7 +299,8 @@ public class DoanhThuTheoKhoangNgayEvent {
         okButton.addActionListener(e -> SwingUtilities.windowForComponent(okButton).dispose());
         panel.add(okButton);
 
-        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{});
+        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+                new Object[] {});
         JDialog dialog = optionPane.createDialog(null, isSuccess ? "Thành công" : "Lỗi");
         dialog.setVisible(true);
     }

@@ -10,6 +10,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import java.awt.*;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 
 public class TongQuanTKComponent extends JPanel {
@@ -19,11 +21,13 @@ public class TongQuanTKComponent extends JPanel {
     private JPanel chartPanel;
     private ArrayList<ThongKeDTO> danhSachDoanhThu;
     private JPanel contentPanel;
-    private JScrollPane chartScrollPane, tableScrollPane, mainScrollPane;
+    private JScrollPane mainScrollPane, tableScrollPane;
     private CardLayout cardLayout;
     private JPanel tongQuanContentPanel;
     private JPanel navPanel;
     private TongQuanTKEvent event;
+    private String activeTab = "Tổng quan";
+    private boolean isProcessingScroll = false; // Cờ để ngăn vòng lặp vô hạn
 
     public TongQuanTKComponent(ThongKeBUS thongKeBUS) {
         this.thongKeBUS = thongKeBUS;
@@ -65,7 +69,7 @@ public class TongQuanTKComponent extends JPanel {
             tabButton.setForeground(Color.BLACK);
             tabButton.setBorderPainted(false);
             tabButton.setFocusPainted(false);
-            tabButton.addActionListener(e -> event.switchTab(tab));
+            tabButton.addActionListener(e -> switchTab(tab));
             navPanel.add(tabButton);
         }
 
@@ -76,6 +80,11 @@ public class TongQuanTKComponent extends JPanel {
         lblChartTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         tongQuanContentPanel.add(lblChartTitle);
         tongQuanContentPanel.add(Box.createVerticalStrut(10));
+
+        JPanel chartAndTablePanel = new JPanel();
+        chartAndTablePanel.setBackground(new Color(240, 245, 245));
+        chartAndTablePanel.setLayout(new BoxLayout(chartAndTablePanel, BoxLayout.Y_AXIS));
+        chartAndTablePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         chartPanel = new JPanel() {
             @Override
@@ -88,18 +97,19 @@ public class TongQuanTKComponent extends JPanel {
             public Dimension getPreferredSize() {
                 int numPoints = (danhSachDoanhThu != null && !danhSachDoanhThu.isEmpty()) ? danhSachDoanhThu.size() : 1;
                 int minWidth = numPoints * 80;
-                return new Dimension(Math.max(minWidth, getParent().getWidth() - 40), 400);
+                int parentWidth = getParent().getWidth() - 40;
+                return new Dimension(Math.max(minWidth, Math.max(parentWidth, 800)), 400);
+            }
+
+            @Override
+            public Dimension getMinimumSize() {
+                return new Dimension(800, 400);
             }
         };
         chartPanel.setBackground(Color.WHITE);
         chartPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        chartScrollPane = new JScrollPane(chartPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        chartScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
-        chartScrollPane.setPreferredSize(new Dimension(960, 400));
-        chartScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-        chartScrollPane.getViewport().setBackground(new Color(240, 245, 245));
-        tongQuanContentPanel.add(chartScrollPane);
-        tongQuanContentPanel.add(Box.createVerticalStrut(20));
+        chartAndTablePanel.add(chartPanel);
+        chartAndTablePanel.add(Box.createVerticalStrut(20));
 
         String[] columns = {"Ngày", "Doanh thu phòng", "Doanh thu dịch vụ", "Tổng doanh thu"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
@@ -154,7 +164,6 @@ public class TongQuanTKComponent extends JPanel {
         tableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         tableScrollPane.getVerticalScrollBar().setBlockIncrement(50);
 
-        // Tùy chỉnh thanh cuộn cho tableScrollPane
         JScrollBar tableVerticalScrollBar = tableScrollPane.getVerticalScrollBar();
         tableVerticalScrollBar.setUI(new BasicScrollBarUI() {
             @Override
@@ -192,22 +201,23 @@ public class TongQuanTKComponent extends JPanel {
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Không vẽ track để có giao diện mảnh và sạch
+                // Không vẽ track
             }
         });
         tableVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
 
-        tongQuanContentPanel.add(tableScrollPane);
-        tongQuanContentPanel.add(Box.createVerticalStrut(10));
+        tableScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chartAndTablePanel.add(tableScrollPane);
+        chartAndTablePanel.add(Box.createVerticalStrut(10));
 
-        // Bao quanh contentPanel bằng mainScrollPane
-        mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        tongQuanContentPanel.add(chartAndTablePanel);
+
+        mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(new Color(240, 245, 245));
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
 
-        // Tùy chỉnh thanh cuộn cho mainScrollPane
         JScrollBar mainVerticalScrollBar = mainScrollPane.getVerticalScrollBar();
         mainVerticalScrollBar.setUI(new BasicScrollBarUI() {
             @Override
@@ -245,10 +255,99 @@ public class TongQuanTKComponent extends JPanel {
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                // Không vẽ track để có giao diện mảnh và sạch
+                // Không vẽ track
             }
         });
         mainVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
+
+        JScrollBar mainHorizontalScrollBar = mainScrollPane.getHorizontalScrollBar();
+        mainHorizontalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207);
+                this.trackColor = new Color(245, 245, 245);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track
+            }
+        });
+        mainHorizontalScrollBar.setPreferredSize(new Dimension(Integer.MAX_VALUE, 6));
+
+        // MouseWheelListener để xử lý cuộn chuột
+        MouseWheelListener scrollListener = new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (isProcessingScroll) {
+                    return; // Ngăn xử lý lặp lại
+                }
+                isProcessingScroll = true;
+                try {
+                    if (activeTab.equals("Tổng quan")) {
+                        // Xử lý cuộn cho tab Tổng quan
+                        JScrollBar verticalScrollBar = mainScrollPane.getVerticalScrollBar();
+                        JScrollBar horizontalScrollBar = mainScrollPane.getHorizontalScrollBar();
+                        if (isMouseOverTable(e)) {
+                            // Cuộn bảng nếu con trỏ trên bảng
+                            tableScrollPane.getVerticalScrollBar().setValue(
+                                tableScrollPane.getVerticalScrollBar().getValue() + e.getWheelRotation() * 16
+                            );
+                        } else {
+                            // Cuộn mainScrollPane nếu con trỏ không trên bảng
+                            if (verticalScrollBar.isVisible()) {
+                                verticalScrollBar.setValue(
+                                    verticalScrollBar.getValue() + e.getWheelRotation() * 16
+                                );
+                            } else if (horizontalScrollBar.isVisible()) {
+                                horizontalScrollBar.setValue(
+                                    horizontalScrollBar.getValue() + e.getWheelRotation() * 16
+                                );
+                            }
+                        }
+                    }
+                    // Không chuyển sự kiện đến panel con, để panel con tự xử lý
+                    e.consume();
+                } finally {
+                    isProcessingScroll = false;
+                }
+            }
+
+            private boolean isMouseOverTable(MouseWheelEvent e) {
+                Point mousePoint = e.getPoint();
+                Point tableLocation = doanhThuTable.getLocationOnScreen();
+                Rectangle tableBounds = new Rectangle(tableLocation, doanhThuTable.getSize());
+                return tableBounds.contains(SwingUtilities.convertPoint((Component) e.getSource(), mousePoint, null));
+            }
+        };
+        mainScrollPane.addMouseWheelListener(scrollListener);
 
         add(navPanel, BorderLayout.NORTH);
         add(mainScrollPane, BorderLayout.CENTER);
@@ -264,6 +363,21 @@ public class TongQuanTKComponent extends JPanel {
         revalidate();
         repaint();
         adjustTableSize();
+    }
+
+    private void switchTab(String tab) {
+        activeTab = tab;
+        cardLayout.show(contentPanel, tab);
+        updateNavButtons(tab);
+        // Vô hiệu hóa thanh cuộn của mainScrollPane cho tab Doanh thu và Khách hàng
+        mainScrollPane.setVerticalScrollBarPolicy(
+            tab.equals("Tổng quan") ? JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED : JScrollPane.VERTICAL_SCROLLBAR_NEVER
+        );
+        mainScrollPane.setHorizontalScrollBarPolicy(
+            tab.equals("Tổng quan") ? JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+        revalidate();
+        repaint();
     }
 
     private void adjustTableSize() {

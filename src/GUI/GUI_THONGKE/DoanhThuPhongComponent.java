@@ -4,15 +4,17 @@ import BUS.ThongKeBUS;
 import DTO.ThongKeDTO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class DoanhThuPhongComponent extends JPanel {
@@ -47,9 +49,10 @@ public class DoanhThuPhongComponent extends JPanel {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setDoubleBuffered(true);
+        contentPanel.setPreferredSize(new Dimension(960, 1000)); // Tăng chiều cao để kích hoạt thanh cuộn
 
         subTabPanel = new JPanel();
-        subTabPanel.setBackground(Color.decode("#E6F4F1"));
+        subTabPanel.setBackground(Color.decode("#F5F5F5"));
         subTabPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
         subTabPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         subTabPanel.setPreferredSize(new Dimension(960, 40));
@@ -77,13 +80,13 @@ public class DoanhThuPhongComponent extends JPanel {
         filterPanel = new RoundedPanel(20);
         filterPanel.setBackground(Color.WHITE);
         filterPanel.setLayout(null);
-        filterPanel.setPreferredSize(new Dimension(960, 50));
-        filterPanel.setMaximumSize(new Dimension(960, 50));
+        filterPanel.setPreferredSize(new Dimension(960, 60));
+        filterPanel.setMaximumSize(new Dimension(960, 60));
         filterPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblStartDate = new JLabel("Từ ngày:");
-        lblStartDate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblStartDate.setBounds(10, 10, 60, 30);
+        lblStartDate.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        lblStartDate.setBounds(20, 15, 60, 30);
         filterPanel.add(lblStartDate);
 
         String[] days = new String[31];
@@ -94,64 +97,76 @@ public class DoanhThuPhongComponent extends JPanel {
         for (int i = 1900; i <= 2025; i++) years[i-1900] = String.valueOf(i);
 
         cbStartDay = new JComboBox<>(days);
-        cbStartDay.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbStartDay.setBounds(70, 10, 50, 30);
+        cbStartDay.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbStartDay.setBounds(80, 15, 60, 30);
         cbStartDay.setBackground(Color.WHITE);
-        cbStartDay.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbStartDay.setUI(new CustomComboBoxUI());
+        cbStartDay.setSelectedItem(String.valueOf(sharedStartDate.getDayOfMonth()));
+        cbStartDay.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbStartDay);
 
         cbStartMonth = new JComboBox<>(months);
-        cbStartMonth.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbStartMonth.setBounds(125, 10, 50, 30);
+        cbStartMonth.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbStartMonth.setBounds(150, 15, 60, 30);
         cbStartMonth.setBackground(Color.WHITE);
-        cbStartMonth.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbStartMonth.setUI(new CustomComboBoxUI());
+        cbStartMonth.setSelectedItem(String.valueOf(sharedStartDate.getMonthValue()));
+        cbStartMonth.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbStartMonth);
 
         cbStartYear = new JComboBox<>(years);
-        cbStartYear.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbStartYear.setBounds(180, 10, 70, 30);
+        cbStartYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbStartYear.setBounds(220, 15, 80, 30);
         cbStartYear.setBackground(Color.WHITE);
-        cbStartYear.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbStartYear.setUI(new CustomComboBoxUI());
+        cbStartYear.setSelectedItem(String.valueOf(sharedStartDate.getYear()));
+        cbStartYear.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbStartYear);
 
         JLabel lblEndDate = new JLabel("Đến ngày:");
-        lblEndDate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblEndDate.setBounds(260, 10, 70, 30);
+        lblEndDate.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        lblEndDate.setBounds(320, 15, 70, 30);
         filterPanel.add(lblEndDate);
 
         cbEndDay = new JComboBox<>(days);
-        cbEndDay.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbEndDay.setBounds(330, 10, 50, 30);
+        cbEndDay.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbEndDay.setBounds(390, 15, 60, 30);
         cbEndDay.setBackground(Color.WHITE);
-        cbEndDay.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbEndDay.setUI(new CustomComboBoxUI());
+        cbEndDay.setSelectedItem(String.valueOf(sharedEndDate.getDayOfMonth()));
+        cbEndDay.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbEndDay);
 
         cbEndMonth = new JComboBox<>(months);
-        cbEndMonth.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbEndMonth.setBounds(385, 10, 50, 30);
+        cbEndMonth.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbEndMonth.setBounds(460, 15, 60, 30);
         cbEndMonth.setBackground(Color.WHITE);
-        cbEndMonth.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbEndMonth.setUI(new CustomComboBoxUI());
+        cbEndMonth.setSelectedItem(String.valueOf(sharedEndDate.getMonthValue()));
+        cbEndMonth.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbEndMonth);
 
         cbEndYear = new JComboBox<>(years);
-        cbEndYear.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        cbEndYear.setBounds(440, 10, 70, 30);
+        cbEndYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        cbEndYear.setBounds(530, 15, 80, 30);
         cbEndYear.setBackground(Color.WHITE);
-        cbEndYear.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        cbEndYear.setUI(new CustomComboBoxUI());
+        cbEndYear.setSelectedItem(String.valueOf(sharedEndDate.getYear()));
+        cbEndYear.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(cbEndYear);
 
         JButton btnFilter = createRoundedButton("Thống kê");
-        btnFilter.setBounds(520, 10, 90, 30);
+        btnFilter.setBounds(630, 15, 100, 30);
         btnFilter.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(btnFilter);
 
         JButton btnReset = createRoundedButton("Làm mới");
-        btnReset.setBounds(620, 10, 90, 30);
+        btnReset.setBounds(740, 15, 100, 30);
         btnReset.addActionListener(e -> event.loadData());
         filterPanel.add(btnReset);
 
         btnExport = createRoundedButton("Xuất Excel");
-        btnExport.setBounds(720, 10, 90, 30);
+        btnExport.setBounds(850, 15, 100, 30);
         btnExport.addActionListener(e -> event.xuatExcel());
         filterPanel.add(btnExport);
 
@@ -182,10 +197,12 @@ public class DoanhThuPhongComponent extends JPanel {
         chartPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         chartPanel.setDoubleBuffered(true);
 
-        chartScrollPane = new JScrollPane(chartPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        chartScrollPane = new JScrollPane(chartPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         chartScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
         chartScrollPane.setPreferredSize(new Dimension(960, 400));
         chartScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chartScrollPane.getViewport().setBackground(Color.WHITE);
+
         contentPanel.add(chartScrollPane);
         contentPanel.add(Box.createVerticalStrut(20));
 
@@ -203,6 +220,11 @@ public class DoanhThuPhongComponent extends JPanel {
                 header.setPreferredSize(new Dimension(0, 40));
                 return header;
             }
+
+            @Override
+            public Dimension getPreferredScrollableViewportSize() {
+                return new Dimension(960, 200); // Giảm chiều cao để kích hoạt thanh cuộn
+            }
         };
         doanhThuTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         doanhThuTable.setShowVerticalLines(false);
@@ -211,26 +233,118 @@ public class DoanhThuPhongComponent extends JPanel {
         doanhThuTable.setBorder(BorderFactory.createEmptyBorder());
         doanhThuTable.getTableHeader().setReorderingAllowed(false);
         doanhThuTable.getTableHeader().setOpaque(false);
+        doanhThuTable.setRowHeight(30); // Giảm chiều cao hàng để hiển thị nhiều hàng hơn
         styleTable(doanhThuTable);
 
-        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // Thêm dữ liệu giả để đảm bảo thanh cuộn dọc xuất hiện
+        for (int i = 0; i < 50; i++) {
+            model.addRow(new Object[]{"Loại " + i, 1000 * i, 500 * i, i + 1, 1500 * i});
+        }
+
+        tableScrollPane = new JScrollPane(doanhThuTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         tableScrollPane.setPreferredSize(new Dimension(960, 300));
-        tableScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        tableScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
         tableScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tableScrollPane.getViewport().setBackground(Color.WHITE);
+
+        // Tùy chỉnh thanh cuộn dọc cho tableScrollPane
+        JScrollBar tableVerticalScrollBar = tableScrollPane.getVerticalScrollBar();
+        tableVerticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207); // #D1CFCF
+                this.trackColor = new Color(245, 245, 245); // #F5F5F5
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track để giao diện mảnh
+            }
+        });
+        tableVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
+
         contentPanel.add(tableScrollPane);
         contentPanel.add(Box.createVerticalStrut(10));
 
-        UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
-
-        mainScrollPane = new JScrollPane(contentPanel);
-        mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        mainScrollPane.getViewport().setBackground(Color.WHITE);
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
-        mainScrollPane.setBackground(Color.WHITE);
-        mainScrollPane.getViewport().setBackground(Color.WHITE);
-        add(mainScrollPane, BorderLayout.CENTER);
 
+        // Tùy chỉnh thanh cuộn dọc cho mainScrollPane
+        JScrollBar mainVerticalScrollBar = mainScrollPane.getVerticalScrollBar();
+        mainVerticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(209, 207, 207); // #D1CFCF
+                this.trackColor = new Color(245, 245, 245); // #F5F5F5
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                // Không vẽ track để giao diện mảnh
+            }
+        });
+        mainVerticalScrollBar.setPreferredSize(new Dimension(6, Integer.MAX_VALUE));
+
+        UIManager.put("TableHeader.cellBorder", BorderFactory.createEmptyBorder());
+
+        // Chuyển sự kiện cuộn chuột
         MouseWheelListener scrollListener = new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -263,6 +377,11 @@ public class DoanhThuPhongComponent extends JPanel {
         cbEndDay.addMouseWheelListener(scrollListener);
         cbEndMonth.addMouseWheelListener(scrollListener);
         cbEndYear.addMouseWheelListener(scrollListener);
+
+        add(mainScrollPane, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     private JButton createRoundedButton(String text) {
@@ -316,7 +435,7 @@ public class DoanhThuPhongComponent extends JPanel {
         table.getTableHeader().setForeground(Color.BLACK);
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 15));
 
-        table.setRowHeight(40);
+        table.setRowHeight(30);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -330,6 +449,104 @@ public class DoanhThuPhongComponent extends JPanel {
         };
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        }
+    }
+
+    private class CustomComboBoxUI extends BasicComboBoxUI {
+        private boolean isPressed = false;
+
+        @Override
+        protected JButton createArrowButton() {
+            JButton button = new JButton() {
+                @Override
+                public void paint(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    int width = getWidth();
+                    int height = getHeight();
+                    g2.setColor(Color.decode("#B7E4C7"));
+                    g2.fillRect(0, 0, width, height);
+                    g2.setColor(Color.WHITE);
+                    int[] xPoints = {width / 2 - 4, width / 2 + 4, width / 2};
+                    int[] yPoints = {height / 2 - 2, height / 2 - 2, height / 2 + 2};
+                    g2.fillPolygon(xPoints, yPoints, 3);
+                    g2.dispose();
+                }
+            };
+            button.setPreferredSize(new Dimension(20, 30));
+            button.setBackground(Color.decode("#B7E4C7"));
+            button.setBorder(BorderFactory.createEmptyBorder());
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    isPressed = true;
+                    comboBox.repaint();
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    isPressed = false;
+                    comboBox.repaint();
+                }
+            });
+            return button;
+        }
+
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int width = c.getWidth();
+            int height = c.getHeight();
+            int arc = 10;
+
+            if (isPressed) {
+                g2.setColor(Color.decode("#2eb82e"));
+            } else if (c.getMousePosition() != null) {
+                g2.setColor(Color.decode("#3cdc3c"));
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            g2.fillRoundRect(0, 0, width - 20, height, arc, arc);
+            g2.setColor(Color.GRAY);
+            g2.drawRoundRect(0, 0, width - 20, height - 1, arc, arc);
+
+            String selectedText = comboBox.getSelectedItem() != null ? comboBox.getSelectedItem().toString() : "";
+            g2.setColor(Color.BLACK);
+            g2.setFont(comboBox.getFont());
+            FontMetrics fm = g2.getFontMetrics();
+            int textWidth = fm.stringWidth(selectedText);
+            int textHeight = fm.getHeight();
+            int x = 5;
+            int y = (height - textHeight) / 2 + fm.getAscent();
+            g2.drawString(selectedText, x, y);
+
+            g2.dispose();
+        }
+
+        @Override
+        protected void installDefaults() {
+            super.installDefaults();
+            comboBox.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+            comboBox.setOpaque(false);
+        }
+
+        @Override
+        protected void installListeners() {
+            super.installListeners();
+            comboBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    isPressed = true;
+                    comboBox.repaint();
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    isPressed = false;
+                    comboBox.repaint();
+                }
+            });
         }
     }
 
@@ -417,5 +634,24 @@ public class DoanhThuPhongComponent extends JPanel {
 
     public static void setSharedEndDate(LocalDate date) {
         sharedEndDate = date;
+    }
+}
+
+class RoundedPanel extends JPanel {
+    private int cornerRadius;
+
+    public RoundedPanel(int radius) {
+        this.cornerRadius = radius;
+        setOpaque(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+        g2.dispose();
     }
 }
