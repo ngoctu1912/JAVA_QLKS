@@ -1,3 +1,161 @@
+// package DTO;
+
+// import java.util.Date;
+// import java.util.Objects;
+
+// public class NhanVienDTO {
+
+//     private int MNV;
+//     private String HOTEN;
+//     private int GIOITINH;
+//     private String SDT;
+//     private Date NGAYSINH;
+//     private int TT;
+//     private String EMAIL;
+//     private int SNP;
+//     private Date NVL;
+//     private int LN;
+
+//     public NhanVienDTO() {
+//     }
+
+//     public NhanVienDTO(int MNV, String HOTEN, int GIOITINH, Date NGAYSINH, String SDT, int TT, String EMAIL, int SNP, Date NVL, int LN) {
+//         this.MNV = MNV;
+//         this.HOTEN = HOTEN;
+//         this.GIOITINH = GIOITINH;
+//         this.NGAYSINH = NGAYSINH;
+//         this.SDT = SDT;
+//         this.TT = TT;
+//         this.EMAIL = EMAIL;
+//         this.SNP = SNP;
+//         this.NVL = NVL;
+//         this.LN = LN;
+//     }
+
+//     // Getters and Setters
+//     public int getMNV() {
+//         return MNV;
+//     }
+
+//     public void setMNV(int MNV) {
+//         this.MNV = MNV;
+//     }
+
+//     public String getHOTEN() {
+//         return HOTEN;
+//     }
+
+//     public void setHOTEN(String HOTEN) {
+//         this.HOTEN = HOTEN;
+//     }
+
+//     public int getGIOITINH() {
+//         return GIOITINH;
+//     }
+
+//     public void setGIOITINH(int GIOITINH) {
+//         this.GIOITINH = GIOITINH;
+//     }
+
+//     public Date getNGAYSINH() {
+//         return NGAYSINH;
+//     }
+
+//     public void setNGAYSINH(Date NGAYSINH) {
+//         this.NGAYSINH = NGAYSINH;
+//     }
+
+//     public String getSDT() {
+//         return SDT;
+//     }
+
+//     public void setSDT(String SDT) {
+//         this.SDT = SDT;
+//     }
+
+//     public int getTT() {
+//         return TT;
+//     }
+
+//     public void setTT(int TT) {
+//         this.TT = TT;
+//     }
+
+//     public String getEMAIL() {
+//         return EMAIL;
+//     }
+
+//     public void setEMAIL(String EMAIL) {
+//         this.EMAIL = EMAIL;
+//     }
+
+//     public int getSNP() {
+//         return SNP;
+//     }
+
+//     public void setSNP(int SNP) {
+//         this.SNP = SNP;
+//     }
+
+//     public Date getNVL() {
+//         return NVL;
+//     }
+
+//     public void setNVL(Date NVL) {
+//         this.NVL = NVL;
+//     }
+
+//     public int getLN() {
+//         return LN;
+//     }
+
+//     public void setLN(int LN) {
+//         this.LN = LN;
+//     }
+
+//     @Override
+//     public int hashCode() {
+//         return Objects.hash(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+//     }
+
+//     @Override
+//     public boolean equals(Object obj) {
+//         if (this == obj) {
+//             return true;
+//         }
+//         if (obj == null || getClass() != obj.getClass()) {
+//             return false;
+//         }
+//         NhanVienDTO other = (NhanVienDTO) obj;
+//         return MNV == other.MNV &&
+//                Objects.equals(HOTEN, other.HOTEN) &&
+//                GIOITINH == other.GIOITINH &&
+//                Objects.equals(NGAYSINH, other.NGAYSINH) &&
+//                Objects.equals(SDT, other.SDT) &&
+//                Objects.equals(EMAIL, other.EMAIL);
+//     }
+
+//     @Override
+//     public String toString() {
+//         return "NhanVienDTO{" +
+//                "MNV=" + MNV +
+//                ", HOTEN='" + HOTEN + '\'' +
+//                ", GIOITINH=" + GIOITINH +
+//                ", NGAYSINH=" + NGAYSINH +
+//                ", SDT='" + SDT + '\'' +
+//                ", TT=" + TT +
+//                ", EMAIL='" + EMAIL + '\'' +
+//                ", SNP=" + SNP +
+//                ", NVL=" + NVL +
+//                ", LN=" + LN +
+//                '}';
+//     }
+
+//     public int getColumnCount() {
+//         return getClass().getDeclaredFields().length;
+//     }
+// }
+
 package DTO;
 
 import java.util.Date;
@@ -12,14 +170,11 @@ public class NhanVienDTO {
     private Date NGAYSINH;
     private int TT;
     private String EMAIL;
-    private int SNP;
-    private Date NVL;
-    private int LN;
 
     public NhanVienDTO() {
     }
 
-    public NhanVienDTO(int MNV, String HOTEN, int GIOITINH, Date NGAYSINH, String SDT, int TT, String EMAIL, int SNP, Date NVL, int LN) {
+    public NhanVienDTO(int MNV, String HOTEN, int GIOITINH, Date NGAYSINH, String SDT, int TT, String EMAIL) {
         this.MNV = MNV;
         this.HOTEN = HOTEN;
         this.GIOITINH = GIOITINH;
@@ -27,111 +182,46 @@ public class NhanVienDTO {
         this.SDT = SDT;
         this.TT = TT;
         this.EMAIL = EMAIL;
-        this.SNP = SNP;
-        this.NVL = NVL;
-        this.LN = LN;
     }
 
     // Getters and Setters
-    public int getMNV() {
-        return MNV;
-    }
+    public int getMNV() { return MNV; }
+    public void setMNV(int MNV) { this.MNV = MNV; }
 
-    public void setMNV(int MNV) {
-        this.MNV = MNV;
-    }
+    public String getHOTEN() { return HOTEN; }
+    public void setHOTEN(String HOTEN) { this.HOTEN = HOTEN; }
 
-    public String getHOTEN() {
-        return HOTEN;
-    }
+    public int getGIOITINH() { return GIOITINH; }
+    public void setGIOITINH(int GIOITINH) { this.GIOITINH = GIOITINH; }
 
-    public void setHOTEN(String HOTEN) {
-        this.HOTEN = HOTEN;
-    }
+    public Date getNGAYSINH() { return NGAYSINH; }
+    public void setNGAYSINH(Date NGAYSINH) { this.NGAYSINH = NGAYSINH; }
 
-    public int getGIOITINH() {
-        return GIOITINH;
-    }
+    public String getSDT() { return SDT; }
+    public void setSDT(String SDT) { this.SDT = SDT; }
 
-    public void setGIOITINH(int GIOITINH) {
-        this.GIOITINH = GIOITINH;
-    }
+    public int getTT() { return TT; }
+    public void setTT(int TT) { this.TT = TT; }
 
-    public Date getNGAYSINH() {
-        return NGAYSINH;
-    }
-
-    public void setNGAYSINH(Date NGAYSINH) {
-        this.NGAYSINH = NGAYSINH;
-    }
-
-    public String getSDT() {
-        return SDT;
-    }
-
-    public void setSDT(String SDT) {
-        this.SDT = SDT;
-    }
-
-    public int getTT() {
-        return TT;
-    }
-
-    public void setTT(int TT) {
-        this.TT = TT;
-    }
-
-    public String getEMAIL() {
-        return EMAIL;
-    }
-
-    public void setEMAIL(String EMAIL) {
-        this.EMAIL = EMAIL;
-    }
-
-    public int getSNP() {
-        return SNP;
-    }
-
-    public void setSNP(int SNP) {
-        this.SNP = SNP;
-    }
-
-    public Date getNVL() {
-        return NVL;
-    }
-
-    public void setNVL(Date NVL) {
-        this.NVL = NVL;
-    }
-
-    public int getLN() {
-        return LN;
-    }
-
-    public void setLN(int LN) {
-        this.LN = LN;
-    }
+    public String getEMAIL() { return EMAIL; }
+    public void setEMAIL(String EMAIL) { this.EMAIL = EMAIL; }
 
     @Override
     public int hashCode() {
-        return Objects.hash(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+        return Objects.hash(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
         NhanVienDTO other = (NhanVienDTO) obj;
         return MNV == other.MNV &&
                Objects.equals(HOTEN, other.HOTEN) &&
                GIOITINH == other.GIOITINH &&
                Objects.equals(NGAYSINH, other.NGAYSINH) &&
                Objects.equals(SDT, other.SDT) &&
+               TT == other.TT &&
                Objects.equals(EMAIL, other.EMAIL);
     }
 
@@ -145,9 +235,6 @@ public class NhanVienDTO {
                ", SDT='" + SDT + '\'' +
                ", TT=" + TT +
                ", EMAIL='" + EMAIL + '\'' +
-               ", SNP=" + SNP +
-               ", NVL=" + NVL +
-               ", LN=" + LN +
                '}';
     }
 

@@ -1,7 +1,6 @@
 // package DAO;
 
 // import DTO.TienIchDTO;
-// import config.ConnectDB;
 // import java.sql.Connection;
 // import java.sql.PreparedStatement;
 // import java.sql.ResultSet;
@@ -10,16 +9,14 @@
 // import java.util.List;
 
 // public class TienIchDAO {
-//     public TienIchDAO() {
-//     }
+//     private Connection conn;
 
-//     public static TienIchDAO getInstance() {
-//         return new TienIchDAO();
+//     public TienIchDAO(Connection conn) {
+//         this.conn = conn;
 //     }
 
 //     public List<TienIchDTO> getAll() throws SQLException {
 //         List<TienIchDTO> list = new ArrayList<>();
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT * FROM TIENICH";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         ResultSet rs = stmt.executeQuery();
@@ -37,7 +34,6 @@
 //     }
 
 //     public TienIchDTO getById(String maTI) throws SQLException {
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT * FROM TIENICH WHERE maTI = ?";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, maTI);
@@ -58,7 +54,6 @@
 //     }
 
 //     public void add(TienIchDTO ti) throws SQLException {
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "INSERT INTO TIENICH (maTI, tenTI, soLuong, xuLy) VALUES (?, ?, ?, ?)";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, ti.getMaTI());
@@ -70,7 +65,6 @@
 //     }
 
 //     public void update(TienIchDTO ti) throws SQLException {
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "UPDATE TIENICH SET tenTI = ?, soLuong = ?, xuLy = ? WHERE maTI = ?";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, ti.getTenTI());
@@ -82,7 +76,6 @@
 //     }
 
 //     public void delete(String maTI) throws SQLException {
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "DELETE FROM TIENICH WHERE maTI = ?";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, maTI);
@@ -91,7 +84,6 @@
 //     }
 
 //     public int getUsedQuantity(String maTI) throws SQLException {
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT SUM(soLuong) FROM CHITIETTIENICH WHERE maTI = ?";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, maTI);
@@ -109,7 +101,6 @@
 
 //     public List<String> getRoomsUsingTienIch(String maTI) throws SQLException {
 //         List<String> rooms = new ArrayList<>();
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT p.maP FROM PHONG p JOIN CHITIETTIENICH ct ON p.maP = ct.maP WHERE ct.maTI = ?";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, maTI);
@@ -124,27 +115,26 @@
 
 //     public List<Object[]> getTienIchDetailsByRoom() throws SQLException {
 //         List<Object[]> result = new ArrayList<>();
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT p.maP, p.tenP, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI001' THEN ct.soLuong ELSE 0 END) AS wifi, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI002' THEN ct.soLuong ELSE 0 END) AS tv, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI003' THEN ct.soLuong ELSE 0 END) AS mayLanh, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI004' THEN ct.soLuong ELSE 0 END) AS tuLanh, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI005' THEN ct.soLuong ELSE 0 END) AS binhNongLanh " +
-//                 "FROM PHONG p " +
-//                 "LEFT JOIN CHITIETTIENICH ct ON p.maP = ct.maP " +
-//                 "GROUP BY p.maP, p.tenP";
+//                      "SUM(CASE WHEN ct.maTI = 'TI001' THEN ct.soLuong ELSE 0 END) AS wifi, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI002' THEN ct.soLuong ELSE 0 END) AS tv, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI003' THEN ct.soLuong ELSE 0 END) AS mayLanh, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI004' THEN ct.soLuong ELSE 0 END) AS tuLanh, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI005' THEN ct.soLuong ELSE 0 END) AS binhNongLanh " +
+//                      "FROM PHONG p " +
+//                      "LEFT JOIN CHITIETTIENICH ct ON p.maP = ct.maP " +
+//                      "GROUP BY p.maP, p.tenP";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         ResultSet rs = stmt.executeQuery();
 //         while (rs.next()) {
-//             Object[] row = new Object[] {
-//                     rs.getString("maP"),
-//                     rs.getString("tenP"),
-//                     rs.getInt("wifi"),
-//                     rs.getInt("tv"),
-//                     rs.getInt("mayLanh"),
-//                     rs.getInt("tuLanh"),
-//                     rs.getInt("binhNongLanh")
+//             Object[] row = new Object[]{
+//                 rs.getString("maP"),
+//                 rs.getString("tenP"),
+//                 rs.getInt("wifi"),
+//                 rs.getInt("tv"),
+//                 rs.getInt("mayLanh"),
+//                 rs.getInt("tuLanh"),
+//                 rs.getInt("binhNongLanh")
 //             };
 //             result.add(row);
 //         }
@@ -155,29 +145,28 @@
 
 //     public List<Object[]> getTienIchDetailsByRoom(String maPhong) throws SQLException {
 //         List<Object[]> result = new ArrayList<>();
-//         Connection conn = ConnectDB.getConnection();
 //         String sql = "SELECT p.maP, p.tenP, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI001' THEN ct.soLuong ELSE 0 END) AS wifi, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI002' THEN ct.soLuong ELSE 0 END) AS tv, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI003' THEN ct.soLuong ELSE 0 END) AS mayLanh, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI004' THEN ct.soLuong ELSE 0 END) AS tuLanh, " +
-//                 "SUM(CASE WHEN ct.maTI = 'TI005' THEN ct.soLuong ELSE 0 END) AS binhNongLanh " +
-//                 "FROM PHONG p " +
-//                 "LEFT JOIN CHITIETTIENICH ct ON p.maP = ct.maP " +
-//                 "WHERE p.maP = ? " +
-//                 "GROUP BY p.maP, p.tenP";
+//                      "SUM(CASE WHEN ct.maTI = 'TI001' THEN ct.soLuong ELSE 0 END) AS wifi, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI002' THEN ct.soLuong ELSE 0 END) AS tv, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI003' THEN ct.soLuong ELSE 0 END) AS mayLanh, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI004' THEN ct.soLuong ELSE 0 END) AS tuLanh, " +
+//                      "SUM(CASE WHEN ct.maTI = 'TI005' THEN ct.soLuong ELSE 0 END) AS binhNongLanh " +
+//                      "FROM PHONG p " +
+//                      "LEFT JOIN CHITIETTIENICH ct ON p.maP = ct.maP " +
+//                      "WHERE p.maP = ? " +
+//                      "GROUP BY p.maP, p.tenP";
 //         PreparedStatement stmt = conn.prepareStatement(sql);
 //         stmt.setString(1, maPhong);
 //         ResultSet rs = stmt.executeQuery();
 //         while (rs.next()) {
-//             Object[] row = new Object[] {
-//                     rs.getString("maP"),
-//                     rs.getString("tenP"),
-//                     rs.getInt("wifi"),
-//                     rs.getInt("tv"),
-//                     rs.getInt("mayLanh"),
-//                     rs.getInt("tuLanh"),
-//                     rs.getInt("binhNongLanh")
+//             Object[] row = new Object[]{
+//                 rs.getString("maP"),
+//                 rs.getString("tenP"),
+//                 rs.getInt("wifi"),
+//                 rs.getInt("tv"),
+//                 rs.getInt("mayLanh"),
+//                 rs.getInt("tuLanh"),
+//                 rs.getInt("binhNongLanh")
 //             };
 //             result.add(row);
 //         }
@@ -222,25 +211,26 @@ public class TienIchDAO {
         return list;
     }
 
-    public TienIchDTO getById(String maTI) throws SQLException {
-        String sql = "SELECT * FROM TIENICH WHERE maTI = ?";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, maTI);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            TienIchDTO ti = new TienIchDTO();
-            ti.setMaTI(rs.getString("maTI"));
-            ti.setTenTI(rs.getString("tenTI"));
-            ti.setTotalQuantity(rs.getInt("soLuong"));
-            ti.setXuLy(rs.getInt("xuLy"));
-            rs.close();
-            stmt.close();
-            return ti;
-        }
-        rs.close();
-        stmt.close();
-        return null;
-    }
+    // // Đổi tên từ getById thành selectById
+    // public TienIchDTO selectById(String maTI) throws SQLException {
+    //     String sql = "SELECT * FROM TIENICH WHERE maTI = ?";
+    //     PreparedStatement stmt = conn.prepareStatement(sql);
+    //     stmt.setString(1, maTI);
+    //     ResultSet rs = stmt.executeQuery();
+    //     if (rs.next()) {
+    //         TienIchDTO ti = new TienIchDTO();
+    //         ti.setMaTI(rs.getString("maTI"));
+    //         ti.setTenTI(rs.getString("tenTI"));
+    //         ti.setTotalQuantity(rs.getInt("soLuong"));
+    //         ti.setXuLy(rs.getInt("xuLy"));
+    //         rs.close();
+    //         stmt.close();
+    //         return ti;
+    //     }
+    //     rs.close();
+    //     stmt.close();
+    //     return null;
+    // }
 
     public void add(TienIchDTO ti) throws SQLException {
         String sql = "INSERT INTO TIENICH (maTI, tenTI, soLuong, xuLy) VALUES (?, ?, ?, ?)";
@@ -362,5 +352,25 @@ public class TienIchDAO {
         rs.close();
         stmt.close();
         return result;
+    }
+
+    public TienIchDTO selectById(String maTI) throws SQLException {
+        String sql = "SELECT * FROM TIENICH WHERE maTI = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, maTI);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            TienIchDTO ti = new TienIchDTO();
+            ti.setMaTI(rs.getString("maTI"));
+            ti.setTenTI(rs.getString("tenTI"));
+            ti.setTotalQuantity(rs.getInt("soLuong"));
+            ti.setXuLy(rs.getInt("xuLy"));
+            rs.close();
+            stmt.close();
+            return ti;
+        }
+        rs.close();
+        stmt.close();
+        return null;
     }
 }

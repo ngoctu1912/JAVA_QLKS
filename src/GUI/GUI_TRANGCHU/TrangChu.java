@@ -6,11 +6,8 @@ import GUI_DANGNHAP_DANGKY.DNDKComponent.AccountInfo;
 import GUI_DATPHONG.FindRoom;
 import GUI_DATPHONG.DatPhong.DatPhongFrame;
 import GUI_DICHVU.FormDichVu;
-import GUI_HOADON.HoaDon;
-// import GUI_KHACHHANG.KhachHangComponent;
+import GUI_HOADON.FormHoaDon;
 import GUI_KHACHHANG.KhachHangFrame;
-// import GUI_KHACHHANG.KhachHangFrame;
-// import GUI_KIEMKETIENICH.KKTienIchComponent;
 import GUI_KIEMKETIENICH.KKTienIchFrame;
 import BUS.NhomQuyenBUS;
 import BUS.ThongKeBUS;
@@ -21,6 +18,7 @@ import DTO.TaiKhoanKHDTO;
 import GUI_PHANQUYEN.PhanQuyenGUI;
 import GUI_PHONG.FormPhong;
 import GUI_TAIKHOAN.TaiKhoanGUI;
+import GUI_TAIKHOANKH.TaiKhoanKHGUI;
 import GUI_THONGKE.TongQuanTKComponent;
 
 import javax.swing.*;
@@ -54,6 +52,14 @@ public class TrangChu extends JPanel {
         int maNhomQuyen = getMaNhomQuyen();
         String mcn = getMCNFromModule(moduleName);
         NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
+        AccountInfo accountInfo = menuPanel.getMenuComponents().getAccountInfo();
+
+        // Kiểm tra accountInfo null
+        if (accountInfo == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng đăng nhập để truy cập chức năng này!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (!mcn.equals("0") && !nhomQuyenBUS.checkPermission(maNhomQuyen, mcn, "view")) {
             JOptionPane.showMessageDialog(this, "Bạn không có quyền truy cập chức năng này!");
@@ -69,7 +75,6 @@ public class TrangChu extends JPanel {
             case "PhongGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
                 try {
-                    // Lấy JFrame hiện tại
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     FormPhong formPhong = new FormPhong(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(formPhong, BorderLayout.CENTER);
@@ -83,11 +88,10 @@ public class TrangChu extends JPanel {
                 break;
             case "DatPhongGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
-                AccountInfo accountInfo = menuPanel.getMenuComponents().getAccountInfo();
-                if (accountInfo != null && accountInfo.getAccountType().equals("KHACHHANG")) {
+                if (accountInfo.getAccountType().equals("KHACHHANG")) {
                     FindRoom findRoomPanel = new FindRoom();
                     currentContentPanel.add(findRoomPanel, BorderLayout.CENTER);
-                } else if (accountInfo != null && accountInfo.getAccountType().equals("QUANLY")) {
+                } else if (accountInfo.getAccountType().equals("QUANLY")) {
                     try {
                         DatPhongFrame datPhongFrame = new DatPhongFrame();
                         currentContentPanel.add(datPhongFrame, BorderLayout.CENTER);
@@ -104,10 +108,8 @@ public class TrangChu extends JPanel {
             case "KhachHangGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
                 try {
-                    // Lấy JFrame hiện tại
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                    // Tạo KhachHangFrame với tham số parentFrame, maNhomQuyen và mcn
-                    KhachHangFrame khachHangFrame = new KhachHangFrame(parentFrame, maNhomQuyen, mcn);
+                    KhachHangFrame khachHangFrame = new KhachHangFrame(parentFrame, maNhomQuyen, mcn, accountInfo);
                     currentContentPanel.add(khachHangFrame, BorderLayout.CENTER);
                     System.out.println("KhachHangFrame panel added successfully");
                 } catch (Exception e) {
@@ -119,9 +121,7 @@ public class TrangChu extends JPanel {
             case "DichVuGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
                 try {
-                    // Lấy JFrame hiện tại
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                    // Truyền parentFrame, maNhomQuyen, và mcn
                     FormDichVu dichVuPanel = new FormDichVu(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(dichVuPanel, BorderLayout.CENTER);
                     System.out.println("DichVuGUI panel added successfully");
@@ -148,8 +148,36 @@ public class TrangChu extends JPanel {
                 break;
             case "HoaDonGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
-                HoaDon hoaDonPanel = new HoaDon();
-                currentContentPanel.add(hoaDonPanel, BorderLayout.CENTER);
+                try {
+                    JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                    if (accountInfo.getAccountType().equals("KHACHHANG")) {
+                        // Lấy maKH từ tài khoản khách hàng
+                        TaiKhoanKHDTO tkKH = TaiKhoanKHDAO.getInstance()
+                                .selectById(String.valueOf(accountInfo.getAccountId()));
+                        if (tkKH != null) {
+                            String maKH = String.valueOf(accountInfo.getAccountId()); // Giả định maKH là accountId
+                            // Tạo FormHoaDon với bộ lọc theo maKH
+                            FormHoaDon hoaDonPanel = new FormHoaDon(parentFrame, maNhomQuyen, mcn, maKH);
+                            currentContentPanel.add(hoaDonPanel, BorderLayout.CENTER);
+                            System.out.println("FormHoaDon panel for customer (maKH=" + maKH + ") added successfully");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin khách hàng!", "Lỗi",
+                                    JOptionPane.ERROR_MESSAGE);
+                            currentContentPanel
+                                    .add(new JLabel("Không tìm thấy thông tin khách hàng", SwingConstants.CENTER));
+                        }
+                    } else {
+                        // Hiển thị toàn bộ hóa đơn cho quản lý hoặc các loại tài khoản khác
+                        FormHoaDon hoaDonPanel = new FormHoaDon(parentFrame, maNhomQuyen, mcn);
+                        currentContentPanel.add(hoaDonPanel, BorderLayout.CENTER);
+                        System.out.println("FormHoaDon panel for all invoices added successfully");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Lỗi khi tải FormHoaDon: " + e.getMessage(), "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                    currentContentPanel.add(new JLabel("Lỗi khi tải FormHoaDon", SwingConstants.CENTER));
+                }
                 break;
             case "KiemKeTienIchGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
@@ -181,13 +209,27 @@ public class TrangChu extends JPanel {
             case "TaiKhoanGUI":
                 currentContentPanel = new JPanel(new BorderLayout());
                 try {
-                    TaiKhoanGUI taiKhoanGUI = new TaiKhoanGUI();
+                    TaiKhoanGUI taiKhoanGUI = new TaiKhoanGUI(accountInfo);
                     currentContentPanel.add(taiKhoanGUI, BorderLayout.CENTER);
                     System.out.println("TaiKhoanGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải TaiKhoanGUI: " + e.getMessage(), "Lỗi",
                             JOptionPane.ERROR_MESSAGE);
+                    currentContentPanel.add(new JLabel("Lỗi khi tải TaiKhoanGUI", SwingConstants.CENTER));
+                }
+                break;
+            case "TaiKhoanKHGUI":
+                currentContentPanel = new JPanel(new BorderLayout());
+                try {
+                    TaiKhoanKHGUI taiKhoanKHGUI = new TaiKhoanKHGUI(accountInfo);
+                    currentContentPanel.add(taiKhoanKHGUI, BorderLayout.CENTER);
+                    System.out.println("TaiKhoanKHGUI panel added successfully");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Lỗi khi tải TaiKhoanKHGUI: " + e.getMessage(), "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                    currentContentPanel.add(new JLabel("Lỗi khi tải TaiKhoanKHGUI", SwingConstants.CENTER));
                 }
                 break;
             case "ThongKeGUI":
@@ -224,8 +266,8 @@ public class TrangChu extends JPanel {
             case "KiemKeTienIchGUI" -> "10";
             case "PhanQuyenGUI" -> "11";
             case "TaiKhoanGUI" -> "12";
-            case "KhuyenMaiGUI" -> "13";
-            case "ThongKeGUI" -> "14";
+            case "TaiKhoanKHGUI" -> "13";
+            case "ThongKeGUI" -> "15";
             default -> "0";
         };
     }

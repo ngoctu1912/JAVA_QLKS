@@ -10,74 +10,72 @@ import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 
 public class TaiKhoanEvent {
     private TaiKhoanGUI gui;
     private TaiKhoanBUS taiKhoanBUS;
-    private JTextField searchField;
-    private NhomQuyenBUS nhomQuyenBUS;
     private int maNhomQuyen;
 
-    public TaiKhoanEvent(TaiKhoanGUI gui, TaiKhoanBUS taiKhoanBUS, JTextField searchField, int maNhomQuyen) {
+    public TaiKhoanEvent(TaiKhoanGUI gui, TaiKhoanBUS taiKhoanBUS, int maNhomQuyen) {
         this.gui = gui;
         this.taiKhoanBUS = taiKhoanBUS;
-        this.searchField = searchField;
-        this.nhomQuyenBUS = new NhomQuyenBUS();
         this.maNhomQuyen = maNhomQuyen;
         System.out.println("TaiKhoanEvent initialized with maNhomQuyen: " + maNhomQuyen);
+        initEvents();
+    }
+
+    private void initEvents() {
+        // Sự kiện bấm đúp vào bảng
+        gui.getTaiKhoanTable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    showDetails();
+                }
+            }
+        });
+
+        // Sự kiện cho các nút
+        gui.getSidebarPanel().btn.get("create").addActionListener(e -> openAddDialog());
+        gui.getSidebarPanel().btn.get("update").addActionListener(e -> openEditDialog());
+        gui.getSidebarPanel().btn.get("delete").addActionListener(e -> deleteTaiKhoan());
+        gui.getSidebarPanel().btn.get("detail").addActionListener(e -> showDetails());
+        gui.getSidebarPanel().btn.get("export").addActionListener(e -> exportToExcel());
     }
 
     public void openAddDialog() {
-        System.out.println("Checking permission for add, maNhomQuyen: " + maNhomQuyen + ", MCN: 12, Action: add");
+        NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
         boolean hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, "12", "add");
-        if (!hasPermission) {
-            List<ChiTietQuyenDTO> chiTietQuyen = nhomQuyenBUS.getChiTietQuyen(String.valueOf(maNhomQuyen));
-            System.out.println("ChiTietQuyen for MNQ=" + maNhomQuyen + ": " + chiTietQuyen);
-        }
-        System.out.println("Permission check result: " + hasPermission);
         if (maNhomQuyen == 0 || !hasPermission) {
-            String errorMsg = maNhomQuyen == 0 ? "Vui lòng đăng nhập với tài khoản quản lý (MNQ phải khác 0)!" : "Bạn không có quyền thêm tài khoản! Kiểm tra CHITIETQUYEN cho MNQ=" + maNhomQuyen + ", MCN=12, HANHDONG=add.";
-            JOptionPane.showMessageDialog(gui, errorMsg, "Lỗi Quyền Truy Cập", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Bạn không có quyền thêm tài khoản!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "Thêm tài khoản", true, "create", null, maNhomQuyen);
-        dialog.setVisible(true);
+        TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "THÊM TÀI KHOẢN", true, "create", null, maNhomQuyen);
     }
 
     public void openEditDialog() {
-        System.out.println("Checking permission for edit, maNhomQuyen: " + maNhomQuyen + ", MCN: 12, Action: edit");
+        NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
         boolean hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, "12", "edit");
-        if (!hasPermission) {
-            List<ChiTietQuyenDTO> chiTietQuyen = nhomQuyenBUS.getChiTietQuyen(String.valueOf(maNhomQuyen));
-            System.out.println("ChiTietQuyen for MNQ=" + maNhomQuyen + ": " + chiTietQuyen);
-        }
-        System.out.println("Permission check result: " + hasPermission);
         if (maNhomQuyen == 0 || !hasPermission) {
-            String errorMsg = maNhomQuyen == 0 ? "Vui lòng đăng nhập với tài khoản quản lý (MNQ phải khác 0)!" : "Bạn không có quyền sửa tài khoản! Kiểm tra CHITIETQUYEN cho MNQ=" + maNhomQuyen + ", MCN=12, HANHDONG=edit.";
-            JOptionPane.showMessageDialog(gui, errorMsg, "Lỗi Quyền Truy Cập", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Bạn không có quyền sửa tài khoản!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
         TaiKhoanDTO selected = gui.getSelectedTaiKhoan();
         if (selected == null) {
             return;
         }
-        TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "Sửa tài khoản", true, "update", selected, maNhomQuyen);
-        dialog.setVisible(true);
+        TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "SỬA TÀI KHOẢN", true, "update", selected, maNhomQuyen);
     }
 
     public void deleteTaiKhoan() {
-        System.out.println("Checking permission for delete, maNhomQuyen: " + maNhomQuyen + ", MCN: 12, Action: delete");
+        NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
         boolean hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, "12", "delete");
-        if (!hasPermission) {
-            List<ChiTietQuyenDTO> chiTietQuyen = nhomQuyenBUS.getChiTietQuyen(String.valueOf(maNhomQuyen));
-            System.out.println("ChiTietQuyen for MNQ=" + maNhomQuyen + ": " + chiTietQuyen);
-        }
-        System.out.println("Permission check result: " + hasPermission);
         if (maNhomQuyen == 0 || !hasPermission) {
-            String errorMsg = maNhomQuyen == 0 ? "Vui lòng đăng nhập với tài khoản quản lý (MNQ phải khác 0)!" : "Bạn không có quyền xóa tài khoản! Kiểm tra CHITIETQUYEN cho MNQ=" + maNhomQuyen + ", MCN=12, HANHDONG=delete.";
-            JOptionPane.showMessageDialog(gui, errorMsg, "Lỗi Quyền Truy Cập", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Bạn không có quyền xóa tài khoản!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
         TaiKhoanDTO selected = gui.getSelectedTaiKhoan();
@@ -96,36 +94,23 @@ public class TaiKhoanEvent {
     }
 
     public void showDetails() {
-        System.out.println("Checking permission for view, maNhomQuyen: " + maNhomQuyen + ", MCN: 12, Action: view");
+        NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
         boolean hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, "12", "view");
-        if (!hasPermission) {
-            List<ChiTietQuyenDTO> chiTietQuyen = nhomQuyenBUS.getChiTietQuyen(String.valueOf(maNhomQuyen));
-            System.out.println("ChiTietQuyen for MNQ=" + maNhomQuyen + ": " + chiTietQuyen);
-        }
-        System.out.println("Permission check result: " + hasPermission);
         if (maNhomQuyen == 0 || !hasPermission) {
-            String errorMsg = maNhomQuyen == 0 ? "Vui lòng đăng nhập với tài khoản quản lý (MNQ phải khác 0)!" : "Bạn không có quyền xem chi tiết tài khoản! Kiểm tra CHITIETQUYEN cho MNQ=" + maNhomQuyen + ", MCN=12, HANHDONG=view.";
-            JOptionPane.showMessageDialog(gui, errorMsg, "Lỗi Quyền Truy Cập", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Bạn không có quyền xem chi tiết tài khoản!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
         TaiKhoanDTO selected = gui.getSelectedTaiKhoan();
         if (selected != null) {
-            TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "Chi tiết tài khoản", true, "view", selected, maNhomQuyen);
-            dialog.setVisible(true);
+            TaiKhoanDialog dialog = new TaiKhoanDialog(taiKhoanBUS, gui, gui, "CHI TIẾT TÀI KHOẢN", true, "view", selected, maNhomQuyen);
         }
     }
 
     public void exportToExcel() {
-        System.out.println("Checking permission for export, maNhomQuyen: " + maNhomQuyen + ", MCN: 12, Action: export");
+        NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
         boolean hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, "12", "export");
-        if (!hasPermission) {
-            List<ChiTietQuyenDTO> chiTietQuyen = nhomQuyenBUS.getChiTietQuyen(String.valueOf(maNhomQuyen));
-            System.out.println("ChiTietQuyen for MNQ=" + maNhomQuyen + ": " + chiTietQuyen);
-        }
-        System.out.println("Permission check result: " + hasPermission);
         if (maNhomQuyen == 0 || !hasPermission) {
-            String errorMsg = maNhomQuyen == 0 ? "Vui lòng đăng nhập với tài khoản quản lý (MNQ phải khác 0)!" : "Bạn không có quyền xuất dữ liệu! Kiểm tra CHITIETQUYEN cho MNQ=" + maNhomQuyen + ", MCN=12, HANHDONG=export.";
-            JOptionPane.showMessageDialog(gui, errorMsg, "Lỗi Quyền Truy Cập", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(gui, "Bạn không có quyền xuất dữ liệu!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
@@ -135,52 +120,5 @@ public class TaiKhoanEvent {
             JOptionPane.showMessageDialog(gui, "Lỗi khi xuất file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
-    }
-
-    public void refreshTable() {
-        gui.loadTaiKhoanData();
-        searchField.setText("");
-    }
-
-    public DocumentListener getSearchListener() {
-        return new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                search();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                search();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                search();
-            }
-
-            private void search() {
-                String searchText = searchField.getText().trim();
-                List<TaiKhoanDTO> searchResults = taiKhoanBUS.search(searchText, "Tất cả");
-                DefaultTableModel tableModel = gui.getTableModel();
-                tableModel.setRowCount(0);
-                for (TaiKhoanDTO tk : searchResults) {
-                    String trangthaiString = switch (tk.getTrangThai()) {
-                        case 1 -> "Hoạt động";
-                        case 0 -> "Ngưng hoạt động";
-                        case 2 -> "Chờ xử lý";
-                        default -> "Không xác định";
-                    };
-                    NhomQuyenDTO nhomQuyen = taiKhoanBUS.getNhomQuyenDTO(tk.getMaNhomQuyen());
-                    String tenNhomQuyen = nhomQuyen != null ? nhomQuyen.getTEN() : "Không xác định";
-                    tableModel.addRow(new Object[]{
-                        tk.getMaNV(),
-                        tk.getTenDangNhap(),
-                        tenNhomQuyen,
-                        trangthaiString
-                    });
-                }
-            }
-        };
     }
 }

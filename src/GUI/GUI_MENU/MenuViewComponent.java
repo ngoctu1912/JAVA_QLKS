@@ -63,7 +63,7 @@ public class MenuViewComponent {
         // JButton button = new JButton(text, icon);
         RoundedMenuButton button = new RoundedMenuButton(text, icon);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        button.setPreferredSize(new Dimension(220, 50));
+        button.setPreferredSize(new Dimension(250, 50));
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Font to và hiện đại hơn

@@ -47,6 +47,7 @@ public class MenuComponent extends JPanel {
             { "Kiểm kê tiện ích", "tienich.svg", "KiemKeTienIchGUI" },
             { "Phân quyền", "nhomquyen.svg", "PhanQuyenGUI" },
             { "Tài khoản", "taikhoan.svg", "TaiKhoanGUI" },
+            { "Tài khoản khách hàng", "client_acc.svg", "TaiKhoanKHGUI" },
             { "Thống kê", "thongke.svg", "ThongKeGUI" },
             { "Đăng xuất", "logout.svg", "Logout" }
     };
@@ -134,9 +135,9 @@ public class MenuComponent extends JPanel {
         menuItem.setBackground(defaultColor);
         menuItem.setForeground(fontColor);
         menuItem.setFocusPainted(false);
-        menuItem.setPreferredSize(new Dimension(220, 50));
-        menuItem.setMaximumSize(new Dimension(220, 50));
-        menuItem.setMinimumSize(new Dimension(220, 50));
+        menuItem.setPreferredSize(new Dimension(250, 50));
+        menuItem.setMaximumSize(new Dimension(250, 50));
+        menuItem.setMinimumSize(new Dimension(250, 50));
         menuItem.setFont(new Font("Arial", Font.PLAIN, 16));
 
         parent.add(menuItem);

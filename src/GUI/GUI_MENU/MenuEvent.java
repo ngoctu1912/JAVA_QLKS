@@ -125,8 +125,11 @@ public class MenuEvent {
                 case "Tài khoản":
                     mcnMapping[i] = "12";
                     break;
+                case "Tài khoản khách hàng":
+                    mcnMapping[i] = "13";
+                    break;
                 case "Thống kê":
-                    mcnMapping[i] = "14";
+                    mcnMapping[i] = "15";
                     break;
                 case "Đăng xuất":
                     mcnMapping[i] = "0";

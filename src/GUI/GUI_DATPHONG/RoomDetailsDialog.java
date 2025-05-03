@@ -5,9 +5,12 @@ import DTO.ChiTietTienIchDTO;
 import DTO.TienIchDTO;
 import BUS.ChiTietTienIchBUS;
 import BUS.TienIchBUS;
+import config.ConnectDB;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +19,8 @@ public class RoomDetailsDialog {
     private final TienIchBUS tienIchBUS;
 
     public RoomDetailsDialog() {
-        this.chiTietTienIchBUS = new ChiTietTienIchBUS();
+        Connection conn = ConnectDB.getConnection(); // Lấy Connection
+        this.chiTietTienIchBUS = new ChiTietTienIchBUS(); // Giả sử cũng cần Connection
         this.tienIchBUS = new TienIchBUS();
     }
 
@@ -69,8 +73,13 @@ public class RoomDetailsDialog {
         List<ChiTietTienIchDTO> amenities = chiTietTienIchBUS.getAmenitiesByRoomId(room.getMaP());
         String tenTienIch = amenities.stream()
                 .map(ti -> {
-                    TienIchDTO tienIch = tienIchBUS.selectById(ti.getMaTI());
-                    return tienIch != null ? tienIch.getTenTI() : "Unknown (" + ti.getMaTI() + ")";
+                    try {
+                        TienIchDTO tienIch = tienIchBUS.selectById(ti.getMaTI());
+                        return tienIch != null ? tienIch.getTenTI() : "Unknown (" + ti.getMaTI() + ")";
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return "Error (" + ti.getMaTI() + ")";
+                    }
                 })
                 .collect(Collectors.joining(", "));
         infoPanel.add(createInfoPanel("Tiện ích", tenTienIch.isEmpty() ? "Không có tiện ích" : tenTienIch));

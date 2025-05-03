@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+// ... (phần đầu giữ nguyên)
+
 public class BookingDialog {
     private final JComponent parent;
     private final DichVuBUS dichVuBUS;
@@ -120,7 +122,7 @@ public class BookingDialog {
         contentPanel.add(serviceTitle);
 
         // Lấy danh sách dịch vụ
-        List<DichVuDTO> services = dichVuBUS.selectAll();
+        List<DichVuDTO> services = dichVuBUS.getAllDichVu(); // Sửa từ selectAll()
         int numCols = 2;
         int numRows = (int) Math.ceil((double) services.size() / numCols);
 
@@ -175,7 +177,7 @@ public class BookingDialog {
             // Calculate room cost
             int tienPhong = 0;
             for (String maP : selectedRoomIds) {
-                PhongDTO phong = phongBUS.selectById(maP);
+                PhongDTO phong = phongBUS.getPhongById(maP); // Sửa từ selectById thành getPhongById
                 if (phong != null) {
                     tienPhong += phong.getGiaP() * (int) diffInDays;
                 }
@@ -189,7 +191,7 @@ public class BookingDialog {
                 if (checkBox.isSelected()) {
                     String maDV = checkBox.getToolTipText();
                     selectedServiceIds.add(maDV);
-                    DichVuDTO service = dichVuBUS.selectById(maDV);
+                    DichVuDTO service = dichVuBUS.getDichVuById(maDV); // Sửa từ selectById()
                     if (service != null) {
                         tienDichVu += service.getGiaDV();
                         selectedServicesText.append(service.getTenDV()).append(" (").append(service.getGiaDV()).append("đ)\n");
@@ -214,4 +216,3 @@ public class BookingDialog {
         dialog.setVisible(true);
     }
 }
-

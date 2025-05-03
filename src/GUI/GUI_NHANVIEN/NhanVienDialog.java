@@ -203,8 +203,6 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtNgaysinh.setDate(nhanVien.getNGAYSINH()); // Set date in InputDate
         txtSDT.setText(nhanVien.getSDT() != null ? nhanVien.getSDT() : "");
         txtEmail.setText(nhanVien.getEMAIL() != null ? nhanVien.getEMAIL() : "");
-        txtSNP.setText(String.valueOf(nhanVien.getSNP()));
-        txtLN.setText(String.valueOf(nhanVien.getLN()));
     }
 
     private NhanVienDTO getInfo() {
@@ -222,7 +220,7 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         String email = txtEmail.getText();
         int snp = txtSNP.getText().isEmpty() ? 0 : Integer.parseInt(txtSNP.getText());
         int ln = txtLN.getText().isEmpty() ? 0 : Integer.parseInt(txtLN.getText());
-        return new NhanVienDTO(mnv, hoten, gioitinh, ngaysinh, sdt, 1, email, snp, new java.sql.Date(System.currentTimeMillis()), ln);
+        return new NhanVienDTO(mnv, hoten, gioitinh, ngaysinh, sdt, 1, email);
     }
 
     private boolean checkInput() {

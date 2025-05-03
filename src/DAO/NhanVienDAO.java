@@ -460,10 +460,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
                 String SDT = rs.getString("SDT");
                 int TT = rs.getInt("TT");
                 String EMAIL = rs.getString("EMAIL");
-                int SNP = rs.getInt("SNP");
-                Date NVL = rs.getDate("NVL");
-                int LN = rs.getInt("LN");
-                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
                 result.add(nv);
             }
         } catch (SQLException ex) {
@@ -498,10 +495,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
                 String SDT = rs.getString("SDT");
                 int TT = rs.getInt("TT");
                 String EMAIL = rs.getString("EMAIL");
-                int SNP = rs.getInt("SNP");
-                Date NVL = rs.getDate("NVL");
-                int LN = rs.getInt("LN");
-                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
                 result.add(nv);
             }
         } catch (SQLException ex) {
@@ -536,10 +530,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
                 String SDT = rs.getString("SDT");
                 int TT = rs.getInt("TT");
                 String EMAIL = rs.getString("EMAIL");
-                int SNP = rs.getInt("SNP");
-                Date NVL = rs.getDate("NVL");
-                int LN = rs.getInt("LN");
-                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
                 result.add(nv);
             }
         } catch (SQLException ex) {
@@ -576,10 +567,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
                 String SDT = rs.getString("SDT");
                 int TT = rs.getInt("TT");
                 String EMAIL = rs.getString("EMAIL");
-                int SNP = rs.getInt("SNP");
-                Date NVL = rs.getDate("NVL");
-                int LN = rs.getInt("LN");
-                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -614,10 +602,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
                 String SDT = rs.getString("SDT");
                 int TT = rs.getInt("TT");
                 String EMAIL = rs.getString("EMAIL");
-                int SNP = rs.getInt("SNP");
-                Date NVL = rs.getDate("NVL");
-                int LN = rs.getInt("LN");
-                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL, SNP, NVL, LN);
+                result = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);

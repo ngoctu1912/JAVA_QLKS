@@ -19,7 +19,7 @@ public class MenuGUI extends JPanel {
         // Use standard BorderLayout without BoxLayout.Y_AXIS
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(250, 0));
+        setPreferredSize(new Dimension(270, 0));
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.LIGHT_GRAY));
 
         // Initialize MenuComponent

@@ -470,7 +470,7 @@ public class NhanVienBUS {
                     if (check == 0) {
                         k += 1;
                     } else {
-                        NhanVienDTO nvdto = new NhanVienDTO(id, tennv, gt, birth, sdt, 1, email, 0, new java.sql.Date(System.currentTimeMillis()), 0);
+                        NhanVienDTO nvdto = new NhanVienDTO(id, tennv, gt, birth, sdt, 1, email);
                         nhanVienDAO.add(nvdto);
                         listNv.add(nvdto);
                     }

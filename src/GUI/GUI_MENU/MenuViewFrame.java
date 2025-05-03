@@ -17,7 +17,7 @@ public class MenuViewFrame extends JPanel {
     private void initFrame() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(250, 0));
+        setPreferredSize(new Dimension(270, 0));
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.LIGHT_GRAY));
 
         // Khởi tạo components và events

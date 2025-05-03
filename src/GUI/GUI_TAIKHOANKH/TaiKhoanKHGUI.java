@@ -1,8 +1,9 @@
-package GUI_TAIKHOAN;
+package GUI_TAIKHOANKH;
 
 import BUS.TaiKhoanBUS;
-import DTO.TaiKhoanDTO;
+import DTO.TaiKhoanKHDTO;
 import DTO.NhomQuyenDTO;
+import DTO.TaiKhoanDTO;
 import Component.IntegratedSearch;
 import Component.PanelBorderRadius;
 import Component.SidebarPanel;
@@ -21,21 +22,21 @@ import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.util.ArrayList;
 
-public class TaiKhoanGUI extends JPanel {
+public class TaiKhoanKHGUI extends JPanel {
     private TaiKhoanBUS taiKhoanBus;
-    private JTable taiKhoanTable;
+    private JTable taiKhoanKHTable;
     private DefaultTableModel tableModel;
     private SidebarPanel sidebarPanel;
     private IntegratedSearch search;
-    private TaiKhoanEvent eventHandler;
+    private TaiKhoanKHEvent eventHandler;
     private Connection conn;
     private AccountInfo accountInfo;
     private PanelBorderRadius main, functionBar;
     private JPanel pnlBorder1, pnlBorder2, pnlBorder3, pnlBorder4, contentCenter;
     private Color BackgroundColor = new Color(240, 245, 245);
-    private ArrayList<TaiKhoanDTO> listTaiKhoan;
+    private ArrayList<TaiKhoanKHDTO> listTaiKhoanKH;
 
-    public TaiKhoanGUI(AccountInfo accountInfo) {
+    public TaiKhoanKHGUI(AccountInfo accountInfo) {
         this.accountInfo = accountInfo;
         try {
             conn = ConnectDB.getConnection();
@@ -55,9 +56,9 @@ public class TaiKhoanGUI extends JPanel {
         }
 
         taiKhoanBus = new TaiKhoanBUS();
-        listTaiKhoan = taiKhoanBus.getTaiKhoanAll();
+        listTaiKhoanKH = taiKhoanBus.getTaiKhoanAllKH();
         initComponents();
-        loadTaiKhoanData();
+        loadTaiKhoanKHData();
     }
 
     private void initComponents() {
@@ -66,46 +67,46 @@ public class TaiKhoanGUI extends JPanel {
         setOpaque(true);
 
         // Khởi tạo bảng
-        tableModel = new DefaultTableModel(new String[]{"STT", "Mã NV", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"}, 0) {
+        tableModel = new DefaultTableModel(new String[]{"STT", "Mã KH", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        taiKhoanTable = new JTable(tableModel);
-        taiKhoanTable.setBackground(new Color(0xA1D6E2));
-        JScrollPane scrollPane = new JScrollPane(taiKhoanTable);
+        taiKhoanKHTable = new JTable(tableModel);
+        taiKhoanKHTable.setBackground(new Color(0xA1D6E2));
+        JScrollPane scrollPane = new JScrollPane(taiKhoanKHTable);
         scrollPane.setBackground(Color.WHITE);
 
         // Căn giữa các cột
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        TableColumnModel columnModel = taiKhoanTable.getColumnModel();
+        TableColumnModel columnModel = taiKhoanKHTable.getColumnModel();
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            columnModel.getColumn(i).setCellRenderer(centerRenderer); // Căn giữa tất cả cột, bao gồm "Tên đăng nhập"
+            columnModel.getColumn(i).setCellRenderer(centerRenderer); // Căn giữa tất cả cột
         }
 
         // Thiết lập kích thước cột
-        taiKhoanTable.getColumnModel().getColumn(0).setPreferredWidth(50); // STT
-        taiKhoanTable.getColumnModel().getColumn(1).setPreferredWidth(80); // Mã NV
-        taiKhoanTable.getColumnModel().getColumn(2).setPreferredWidth(120); // Tên đăng nhập
-        taiKhoanTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Nhóm quyền
-        taiKhoanTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Trạng thái
-        taiKhoanTable.setRowHeight(30);
-        taiKhoanTable.getTableHeader().setPreferredSize(new Dimension(taiKhoanTable.getTableHeader().getPreferredSize().width, 30));
-        taiKhoanTable.setShowHorizontalLines(true);
-        taiKhoanTable.setShowVerticalLines(false);
-        taiKhoanTable.setGridColor(Color.WHITE);
-        taiKhoanTable.setIntercellSpacing(new Dimension(0, 1));
-        taiKhoanTable.setFocusable(false);
-        taiKhoanTable.setAutoCreateRowSorter(true);
-        taiKhoanTable.setDefaultEditor(Object.class, null);
+        taiKhoanKHTable.getColumnModel().getColumn(0).setPreferredWidth(50); // STT
+        taiKhoanKHTable.getColumnModel().getColumn(1).setPreferredWidth(80); // Mã KH
+        taiKhoanKHTable.getColumnModel().getColumn(2).setPreferredWidth(120); // Tên đăng nhập
+        taiKhoanKHTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Nhóm quyền
+        taiKhoanKHTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Trạng thái
+        taiKhoanKHTable.setRowHeight(30);
+        taiKhoanKHTable.getTableHeader().setPreferredSize(new Dimension(taiKhoanKHTable.getTableHeader().getPreferredSize().width, 30));
+        taiKhoanKHTable.setShowHorizontalLines(true);
+        taiKhoanKHTable.setShowVerticalLines(false);
+        taiKhoanKHTable.setGridColor(Color.WHITE);
+        taiKhoanKHTable.setIntercellSpacing(new Dimension(0, 1));
+        taiKhoanKHTable.setFocusable(false);
+        taiKhoanKHTable.setAutoCreateRowSorter(true);
+        taiKhoanKHTable.setDefaultEditor(Object.class, null);
 
         // Tùy chỉnh tiêu đề
-        taiKhoanTable.getTableHeader().setBackground(Color.WHITE);
-        taiKhoanTable.getTableHeader().setForeground(Color.BLACK);
-        taiKhoanTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        ((DefaultTableCellRenderer) taiKhoanTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
+        taiKhoanKHTable.getTableHeader().setBackground(Color.WHITE);
+        taiKhoanKHTable.getTableHeader().setForeground(Color.BLACK);
+        taiKhoanKHTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        ((DefaultTableCellRenderer) taiKhoanKHTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 
         initPadding();
 
@@ -131,7 +132,7 @@ public class TaiKhoanGUI extends JPanel {
                 }
             }
         }
-        sidebarPanel = new SidebarPanel(maNhomQuyen, "12", actions);
+        sidebarPanel = new SidebarPanel(maNhomQuyen, "13", actions); // Dùng mcn = "13" cho TaiKhoanKH
         for (String action : actions) {
             JButton button = sidebarPanel.btn.get(action);
             if (button != null) {
@@ -141,7 +142,7 @@ public class TaiKhoanGUI extends JPanel {
         functionBar.add(sidebarPanel);
 
         // Tìm kiếm
-        search = new IntegratedSearch(new String[]{"Tất cả", "Mã NV", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"});
+        search = new IntegratedSearch(new String[]{"Tất cả", "Mã KH", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"});
         search.txtSearchForm.setPreferredSize(new Dimension(100, search.txtSearchForm.getPreferredSize().height));
         search.btnReset.setPreferredSize(new Dimension(120, 25));
         search.txtSearchForm.addKeyListener(new KeyAdapter() {
@@ -153,7 +154,7 @@ public class TaiKhoanGUI extends JPanel {
         search.btnReset.addActionListener(e -> {
             search.txtSearchForm.setText("");
             search.cbxChoose.setSelectedIndex(0);
-            loadTaiKhoanData();
+            loadTaiKhoanKHData();
         });
         functionBar.add(search);
 
@@ -166,7 +167,7 @@ public class TaiKhoanGUI extends JPanel {
         contentCenter.add(main, BorderLayout.CENTER);
         main.add(scrollPane);
 
-        eventHandler = new TaiKhoanEvent(this, taiKhoanBus, maNhomQuyen);
+        eventHandler = new TaiKhoanKHEvent(this, taiKhoanBus, maNhomQuyen);
     }
 
     private void initPadding() {
@@ -191,15 +192,15 @@ public class TaiKhoanGUI extends JPanel {
         add(pnlBorder4, BorderLayout.WEST);
     }
 
-    public void loadTaiKhoanData() {
-        listTaiKhoan = taiKhoanBus.getTaiKhoanAll();
-        loadDataTable(listTaiKhoan);
+    public void loadTaiKhoanKHData() {
+        listTaiKhoanKH = taiKhoanBus.getTaiKhoanAllKH();
+        loadDataTable(listTaiKhoanKH);
     }
 
-    private void loadDataTable(ArrayList<TaiKhoanDTO> result) {
+    private void loadDataTable(ArrayList<TaiKhoanKHDTO> result) {
         tableModel.setRowCount(0);
         int stt = 1;
-        for (TaiKhoanDTO tk : result) {
+        for (TaiKhoanKHDTO tk : result) {
             String trangthaiString = switch (tk.getTrangThai()) {
                 case 1 -> "Hoạt động";
                 case 0 -> "Ngưng hoạt động";
@@ -210,7 +211,7 @@ public class TaiKhoanGUI extends JPanel {
             String tenNhomQuyen = nhomQuyen != null ? nhomQuyen.getTEN() : "Không xác định";
             tableModel.addRow(new Object[]{
                 stt++,
-                tk.getMaNV(),
+                tk.getMaKhachHang(),
                 tk.getTenDangNhap(),
                 tenNhomQuyen,
                 trangthaiString
@@ -221,10 +222,10 @@ public class TaiKhoanGUI extends JPanel {
     private void search() {
         String keyword = search.txtSearchForm.getText().trim().toLowerCase();
         String type = (String) search.cbxChoose.getSelectedItem();
-        ArrayList<TaiKhoanDTO> result = new ArrayList<>();
+        ArrayList<TaiKhoanKHDTO> result = new ArrayList<>();
 
         if (type.equals("Tất cả")) {
-            result = taiKhoanBus.getTaiKhoanAll();
+            result = taiKhoanBus.getTaiKhoanAllKH();
             result.removeIf(tk -> {
                 NhomQuyenDTO nhomQuyen = taiKhoanBus.getNhomQuyenDTO(tk.getMaNhomQuyen());
                 String tenNhomQuyen = nhomQuyen != null ? nhomQuyen.getTEN().toLowerCase() : "";
@@ -234,26 +235,26 @@ public class TaiKhoanGUI extends JPanel {
                     case 2 -> "chờ xử lý";
                     default -> "không xác định";
                 };
-                return !String.valueOf(tk.getMaNV()).contains(keyword) &&
+                return !String.valueOf(tk.getMaKhachHang()).contains(keyword) &&
                        !tk.getTenDangNhap().toLowerCase().contains(keyword) &&
                        !tenNhomQuyen.contains(keyword) &&
                        !trangThai.contains(keyword);
             });
-        } else if (type.equals("Mã NV")) {
-            result = taiKhoanBus.getTaiKhoanAll();
-            result.removeIf(tk -> !String.valueOf(tk.getMaNV()).contains(keyword));
+        } else if (type.equals("Mã KH")) {
+            result = taiKhoanBus.getTaiKhoanAllKH();
+            result.removeIf(tk -> !String.valueOf(tk.getMaKhachHang()).contains(keyword));
         } else if (type.equals("Tên đăng nhập")) {
-            result = taiKhoanBus.getTaiKhoanAll();
+            result = taiKhoanBus.getTaiKhoanAllKH();
             result.removeIf(tk -> !tk.getTenDangNhap().toLowerCase().contains(keyword));
         } else if (type.equals("Nhóm quyền")) {
-            result = taiKhoanBus.getTaiKhoanAll();
+            result = taiKhoanBus.getTaiKhoanAllKH();
             result.removeIf(tk -> {
                 NhomQuyenDTO nhomQuyen = taiKhoanBus.getNhomQuyenDTO(tk.getMaNhomQuyen());
                 String tenNhomQuyen = nhomQuyen != null ? nhomQuyen.getTEN().toLowerCase() : "";
                 return !tenNhomQuyen.contains(keyword);
             });
         } else if (type.equals("Trạng thái")) {
-            result = taiKhoanBus.getTaiKhoanAll();
+            result = taiKhoanBus.getTaiKhoanAllKH();
             if (keyword.contains("hoạt động")) {
                 result.removeIf(tk -> tk.getTrangThai() != 1);
             } else if (keyword.contains("ngưng")) {
@@ -261,30 +262,30 @@ public class TaiKhoanGUI extends JPanel {
             } else if (keyword.contains("chờ")) {
                 result.removeIf(tk -> tk.getTrangThai() != 2);
             } else {
-                result = taiKhoanBus.getTaiKhoanAll();
+                result = taiKhoanBus.getTaiKhoanAllKH();
             }
         }
 
         loadDataTable(result);
     }
 
-    public TaiKhoanDTO getSelectedTaiKhoan() {
-        int selectedRow = taiKhoanTable.getSelectedRow();
+    public TaiKhoanKHDTO getSelectedTaiKhoanKH() {
+        int selectedRow = taiKhoanKHTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một tài khoản!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một tài khoản khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         int id = (int) tableModel.getValueAt(selectedRow, 1);
-        int index = taiKhoanBus.getTaiKhoanByMaNV(id);
-        return index != -1 ? taiKhoanBus.getTaiKhoan(index) : null;
+        int index = taiKhoanBus.getTaiKhoanByMaKH(id);
+        return index != -1 ? taiKhoanBus.getTaiKhoanAllKH().get(index) : null;
     }
 
     public DefaultTableModel getTableModel() {
         return tableModel;
     }
 
-    public JTable getTaiKhoanTable() {
-        return taiKhoanTable;
+    public JTable getTaiKhoanKHTable() {
+        return taiKhoanKHTable;
     }
 
     public SidebarPanel getSidebarPanel() {
