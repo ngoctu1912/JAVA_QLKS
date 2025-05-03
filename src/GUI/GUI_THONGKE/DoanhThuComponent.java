@@ -45,20 +45,20 @@ public class DoanhThuComponent extends JPanel {
     private void initComponents() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(960, 600));
-        setBackground(Color.WHITE);
+        setBackground(Color.decode("#F5F5F5")); // Đổi màu nền thành xám nhạt
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBackground(Color.decode("#F5F5F5"));
 
         contentPanel = new JPanel();
-        contentPanel.setBackground(Color.WHITE);
+        contentPanel.setBackground(Color.decode("#F5F5F5"));
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setDoubleBuffered(true);
-        contentPanel.setPreferredSize(new Dimension(960, 900)); // Ensure enough height to trigger scrolling
+        contentPanel.setPreferredSize(new Dimension(960, 900));
 
         subTabPanel = new JPanel();
-        subTabPanel.setBackground(Color.decode("#F5F5F5"));
+        subTabPanel.setBackground(Color.decode("#E6F4F1"));
         subTabPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
         subTabPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         subTabPanel.setPreferredSize(new Dimension(960, 40));
@@ -85,45 +85,38 @@ public class DoanhThuComponent extends JPanel {
 
         filterPanel = new RoundedPanel(20);
         filterPanel.setBackground(Color.WHITE);
-        filterPanel.setLayout(null);
+        filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 15)); // Sử dụng FlowLayout thay vì null
         filterPanel.setPreferredSize(new Dimension(960, 60));
-        filterPanel.setMaximumSize(new Dimension(960, 60));
+        filterPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         filterPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel lblStartYear = new JLabel("Từ năm:");
         lblStartYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        lblStartYear.setBounds(20, 15, 60, 30);
         filterPanel.add(lblStartYear);
 
-        txtStartYear = new JTextField();
+        txtStartYear = new JTextField(5);
         txtStartYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        txtStartYear.setBounds(80, 15, 80, 30);
         txtStartYear.setText(String.valueOf(sharedStartYear));
         filterPanel.add(txtStartYear);
 
         JLabel lblEndYear = new JLabel("Đến năm:");
         lblEndYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        lblEndYear.setBounds(180, 15, 80, 30);
         filterPanel.add(lblEndYear);
 
-        txtEndYear = new JTextField();
+        txtEndYear = new JTextField(5);
         txtEndYear.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        txtEndYear.setBounds(260, 15, 80, 30);
         txtEndYear.setText(String.valueOf(sharedEndYear));
         filterPanel.add(txtEndYear);
 
         btnFilter = createRoundedButton("Thống kê");
-        btnFilter.setBounds(360, 15, 100, 30);
         btnFilter.addActionListener(e -> event.loadDataByFilter());
         filterPanel.add(btnFilter);
 
         btnReset = createRoundedButton("Làm mới");
-        btnReset.setBounds(470, 15, 100, 30);
         btnReset.addActionListener(e -> event.loadData());
         filterPanel.add(btnReset);
 
         btnExport = createRoundedButton("Xuất Excel");
-        btnExport.setBounds(580, 15, 100, 30);
         btnExport.addActionListener(e -> event.xuatExcel());
         filterPanel.add(btnExport);
 
@@ -159,7 +152,6 @@ public class DoanhThuComponent extends JPanel {
         chartScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         chartScrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Tùy chỉnh thanh cuộn ngang cho chartScrollPane
         JScrollBar chartHorizontalScrollBar = chartScrollPane.getHorizontalScrollBar();
         chartHorizontalScrollBar.setUI(new BasicScrollBarUI() {
             @Override
@@ -231,7 +223,7 @@ public class DoanhThuComponent extends JPanel {
 
             @Override
             public Dimension getPreferredScrollableViewportSize() {
-                return new Dimension(900, 200); // Limit table height to ensure scrolling
+                return new Dimension(900, 200);
             }
         };
 
@@ -308,8 +300,8 @@ public class DoanhThuComponent extends JPanel {
         contentPanel.add(Box.createVerticalStrut(10));
 
         mainScrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mainScrollPane.setBackground(Color.WHITE);
-        mainScrollPane.getViewport().setBackground(Color.WHITE);
+        mainScrollPane.setBackground(Color.decode("#F5F5F5"));
+        mainScrollPane.getViewport().setBackground(Color.decode("#F5F5F5"));
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         mainScrollPane.getVerticalScrollBar().setBlockIncrement(50);
 
@@ -362,11 +354,9 @@ public class DoanhThuComponent extends JPanel {
             @Override
             public void componentResized(java.awt.event.ComponentEvent e) {
                 adjustTableSize();
-                adjustFilterPanelBounds();
             }
         });
 
-        // Chuyển sự kiện cuộn từ các thành phần con lên mainScrollPane (trừ tableScrollPane và doanhThuTable)
         forwardMouseWheelEvents(chartScrollPane);
         forwardMouseWheelEvents(subTabPanel);
         forwardMouseWheelEvents(filterPanel);
@@ -381,7 +371,6 @@ public class DoanhThuComponent extends JPanel {
         revalidate();
         repaint();
         adjustTableSize();
-        adjustFilterPanelBounds();
     }
 
     private void forwardMouseWheelEvents(JComponent component) {
@@ -412,20 +401,6 @@ public class DoanhThuComponent extends JPanel {
         tableScrollPane.setPreferredSize(new Dimension(width, Math.min(tableHeight, 200)));
         tableScrollPane.revalidate();
         tableScrollPane.repaint();
-    }
-
-    private void adjustFilterPanelBounds() {
-        int width = getWidth();
-        int buttonWidth = 100;
-        int gap = 10;
-        int startX = Math.max(width - (buttonWidth * 3 + gap * 2) - 20, 360);
-
-        btnFilter.setBounds(startX, 15, buttonWidth, 30);
-        btnReset.setBounds(startX + buttonWidth + gap, 15, buttonWidth, 30);
-        btnExport.setBounds(startX + (buttonWidth + gap) * 2, 15, buttonWidth, 30);
-
-        filterPanel.revalidate();
-        filterPanel.repaint();
     }
 
     private JButton createRoundedButton(String text) {
