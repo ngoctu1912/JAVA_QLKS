@@ -220,6 +220,7 @@ VALUES
     (1, 12, 'create'), (1, 12, 'delete'), (1, 12, 'update'), (1, 12, 'view'),
     (1, 13, 'create'), (1, 13, 'delete'), (1, 13, 'update'), (1, 13, 'view'),
     (1, 14, 'create'), (1, 14, 'delete'), (1, 14, 'update'), (1, 14, 'view'),
+    (1, 15, 'create'), (1, 15, 'delete'), (1, 15, 'update'), (1, 15, 'view'),
     
     -- Quyền cho nhóm 'Nhân viên lễ tân' (MNQ = 2)
     (2, 1, 'view'),
@@ -236,7 +237,7 @@ VALUES
     
     -- Quyền cho nhóm 'Khách hàng' (MNQ = 4)
     (4, 2, 'create'), (4, 2, 'view'),
-    (4, 3, 'view'),
+    (4, 3, 'update'), (4, 3, 'view'), 
     (4, 8, 'view');
     
 INSERT INTO `NHANVIEN` (`MNV`, `HOTEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`, `TT`)
