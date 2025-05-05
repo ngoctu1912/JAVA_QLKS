@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class ChiTietDatPhongDTO {
     private String maCTDP;
+    private String maDP; // Thêm trường maDP
     private String maP;
     private Date ngayThue;
     private Date ngayTra;
@@ -12,11 +13,15 @@ public class ChiTietDatPhongDTO {
     private int giaThue;
     private int tinhTrang;
 
-    public ChiTietDatPhongDTO() {}
+    // Constructor mặc định
+    public ChiTietDatPhongDTO() {
+    }
 
-    public ChiTietDatPhongDTO(String maCTDP, String maP, Date ngayThue, Date ngayTra, Date ngayCheckOut, 
-                             int loaiHinhThue, int giaThue, int tinhTrang) {
+    // Constructor đầy đủ
+    public ChiTietDatPhongDTO(String maCTDP, String maDP, String maP, Date ngayThue, Date ngayTra, 
+                              Date ngayCheckOut, int loaiHinhThue, int giaThue, int tinhTrang) {
         this.maCTDP = maCTDP;
+        this.maDP = maDP;
         this.maP = maP;
         this.ngayThue = ngayThue;
         this.ngayTra = ngayTra;
@@ -26,12 +31,21 @@ public class ChiTietDatPhongDTO {
         this.tinhTrang = tinhTrang;
     }
 
+    // Getter và Setter
     public String getMaCTDP() {
         return maCTDP;
     }
 
     public void setMaCTDP(String maCTDP) {
         this.maCTDP = maCTDP;
+    }
+
+    public String getMaDP() {
+        return maDP;
+    }
+
+    public void setMaDP(String maDP) {
+        this.maDP = maDP;
     }
 
     public String getMaP() {

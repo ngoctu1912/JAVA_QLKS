@@ -47,9 +47,7 @@ public class PhongBUS {
         if (maP == null || maP.trim().isEmpty()) {
             throw new IllegalArgumentException("Mã phòng không được rỗng");
         }
-        // Xóa các bản ghi liên quan trong chitietdatphong trước
         chiTietDatPhongDAO.deleteByMaP(maP);
-        // Sau đó xóa phòng
         return phongDAO.delete(maP);
     }
 
@@ -84,6 +82,9 @@ public class PhongBUS {
         if (checkOutDate.before(checkInDate) || checkOutDate.equals(checkInDate)) {
             throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng!");
         }
+        if (guestType == null || guestType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Loại khách không được rỗng!");
+        }
 
         // Map guestType to room types
         List<String> roomTypes = getRoomTypesByGuestType(guestType);
@@ -92,7 +93,7 @@ public class PhongBUS {
         try {
             List<PhongDTO> rooms = phongDAO.getAvailableRooms(checkInDate, checkOutDate, roomTypes);
             if (rooms.isEmpty()) {
-                throw new IllegalStateException("Không tìm thấy phòng trống phù hợp!");
+                throw new IllegalStateException("Không tìm thấy phòng trống phù hợp trong khoảng thời gian đã chọn!");
             }
             return rooms;
         } catch (Exception e) {
@@ -102,22 +103,17 @@ public class PhongBUS {
 
     public int countAvailableRooms(Date checkInDate, Date checkOutDate, String guestType) {
         try {
-            // Map guestType to room types
-            List<String> roomTypes = getRoomTypesByGuestType(guestType);
-
-            // If dates are valid, count available rooms within the date range
-            if (checkInDate != null && checkOutDate != null && !checkOutDate.before(checkInDate) && !checkOutDate.equals(checkInDate)) {
-                List<PhongDTO> rooms = phongDAO.getAvailableRooms(checkInDate, checkOutDate, roomTypes);
-                return rooms.size();
-            } else {
-                // Count all rooms with tinhTrang = 0 for the given room types
-                List<PhongDTO> allRooms = phongDAO.getAllAvailableRooms();
-                return (int) allRooms.stream()
-                        .filter(room -> roomTypes.contains(room.getLoaiP()))
-                        .count();
+            if (checkInDate == null || checkOutDate == null || 
+                checkOutDate.before(checkInDate) || checkOutDate.equals(checkInDate) ||
+                guestType == null || guestType.trim().isEmpty()) {
+                return 0; // Invalid inputs, return 0
             }
+            List<PhongDTO> rooms = getAvailableRooms(checkInDate, checkOutDate, guestType);
+            return rooms.size();
+        } catch (IllegalStateException e) {
+            return 0; // No available rooms
         } catch (Exception e) {
-            return 0;
+            return 0; // Other errors
         }
     }
 

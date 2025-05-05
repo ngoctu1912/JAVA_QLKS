@@ -112,22 +112,23 @@ public class DatPhongDAO implements DAOinterface<DatPhongDTO> {
 
     @Override
     public int getAutoIncrement() {
-        String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = 'DATPHONG'";
+        String sql = "SELECT MAX(CAST(SUBSTRING(maDP, 3) AS UNSIGNED)) AS maxId FROM DATPHONG";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt("AUTO_INCREMENT");
+                int maxId = rs.getInt("maxId");
+                return maxId + 1; // Tăng số thứ tự lên 1
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return 1; // Nếu bảng rỗng, bắt đầu từ 1
     }
 
     public boolean checkExists(String maDP) throws SQLException {
         String query = "SELECT COUNT(*) FROM DATPHONG WHERE maDP = ?";
-        try (Connection conn = ConnectDB.getConnection(); // Assumes ConnectDB is your DB utility
+        try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, maDP);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -139,4 +140,3 @@ public class DatPhongDAO implements DAOinterface<DatPhongDTO> {
         return false;
     }
 }
-
