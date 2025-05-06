@@ -2,6 +2,7 @@ package GUI_THONGKE;
 
 import BUS.ThongKeBUS;
 import DTO.ThongKeDTO;
+import Component.RoundedPanel; // Thêm import cho RoundedPanel
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -634,24 +635,5 @@ public class DoanhThuPhongComponent extends JPanel {
 
     public static void setSharedEndDate(LocalDate date) {
         sharedEndDate = date;
-    }
-}
-
-class RoundedPanel extends JPanel {
-    private int cornerRadius;
-
-    public RoundedPanel(int radius) {
-        this.cornerRadius = radius;
-        setOpaque(false);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
-        g2.dispose();
     }
 }
