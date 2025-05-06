@@ -13,7 +13,7 @@ public class EventHandler {
     private final UIComponents uiComponents;
     private Date checkInDate;
     private Date checkOutDate;
-    private final BUS.PhongBUS phongBUS; // Add PhongBUS to count available rooms
+    private final BUS.PhongBUS phongBUS;
 
     public EventHandler(FindRoom findRoom, UIComponents uiComponents) {
         this.findRoom = findRoom;
