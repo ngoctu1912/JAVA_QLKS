@@ -48,7 +48,7 @@ public class ChiTietQuyenDAO implements ChiTietInterface<ChiTietQuyenDTO> {
                 e.printStackTrace();
             }
         } finally {
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         }
         return result;
     }
@@ -62,7 +62,7 @@ public class ChiTietQuyenDAO implements ChiTietInterface<ChiTietQuyenDTO> {
             PreparedStatement prest = conn.prepareStatement(sql);
             prest.setString(1, t);
             result = prest.executeUpdate();
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(ChiTietQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -96,7 +96,7 @@ public class ChiTietQuyenDAO implements ChiTietInterface<ChiTietQuyenDTO> {
                 result.add(dvt);
             }
             System.out.println("Total permissions found: " + result.size());
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(ChiTietQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

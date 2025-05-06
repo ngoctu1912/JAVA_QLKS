@@ -29,7 +29,7 @@ public class HoaDonComponents {
         txtTongTien = new JTextField();
         txtNgayThanhToan = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
         txtHinhThucThanhToan = new JTextField();
-        cbXuLy = new JComboBox<>(new String[] { "1 - Đã xử lý", "0 - Đã hủy" });
+        cbXuLy = new JComboBox<>(new String[] { "Đã xử lý", "Chưa xử lý" });
 
         inputPanel.add(new JLabel("Mã Hóa Đơn:"));
         inputPanel.add(txtMaHD);

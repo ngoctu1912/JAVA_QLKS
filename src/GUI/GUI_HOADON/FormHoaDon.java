@@ -68,30 +68,27 @@ public class FormHoaDon extends JPanel {
     }
 
     public void loadTableData() {
-        System.out.println("Loading table data for maKH: " + maKH);
         try {
             if (maKH != null && !maKH.isEmpty()) {
                 // Lọc hóa đơn theo maKH
-                listHoaDon = hoaDonBUS.filterHoaDon(0, "", maKH, 0, new java.util.Date(0), new java.util.Date(), "", "");
-                System.out.println("Filtered invoices for maKH=" + maKH + ": " + (listHoaDon != null ? listHoaDon.size() : 0) + " invoices");
+                listHoaDon = hoaDonBUS.filterHoaDon(0, "", maKH, 0, new java.util.Date(0), new java.util.Date(), "",
+                        "");
                 if (listHoaDon.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, 
-                        "Không tìm thấy hóa đơn nào cho khách hàng này. Vui lòng kiểm tra dữ liệu đặt phòng hoặc liên hệ quản lý!", 
-                        "Thông báo", 
-                        JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                            "Không tìm thấy hóa đơn nào cho khách hàng này. Vui lòng kiểm tra dữ liệu đặt phòng hoặc liên hệ quản lý!",
+                            "Thông báo",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             } else {
                 // Lấy tất cả hóa đơn
                 listHoaDon = hoaDonBUS.getAll();
-                System.out.println("Loaded all invoices: " + (listHoaDon != null ? listHoaDon.size() : 0) + " invoices");
             }
             loadDataTable(listHoaDon);
         } catch (Exception e) {
-            System.err.println("Error loading table data: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, 
-                "Lỗi khi tải dữ liệu hóa đơn: " + e.getMessage(), 
-                "Lỗi", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Lỗi khi tải dữ liệu hóa đơn: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -134,7 +131,8 @@ public class FormHoaDon extends JPanel {
 
         // Tùy chỉnh chiều cao dòng và đường phân cách
         tableHoaDon.setRowHeight(30);
-        tableHoaDon.getTableHeader().setPreferredSize(new Dimension(tableHoaDon.getTableHeader().getPreferredSize().width, 30));
+        tableHoaDon.getTableHeader()
+                .setPreferredSize(new Dimension(tableHoaDon.getTableHeader().getPreferredSize().width, 30));
         tableHoaDon.setShowHorizontalLines(true);
         tableHoaDon.setShowVerticalLines(false);
         tableHoaDon.setGridColor(Color.WHITE);
@@ -166,7 +164,8 @@ public class FormHoaDon extends JPanel {
         functionBar.setLayout(new GridLayout(1, 2, 50, 0));
         functionBar.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        String[] actions = maKH != null ? new String[] { "detail" } : new String[] { "create", "update", "delete", "detail", "export" };
+        String[] actions = maKH != null ? new String[] { "detail" }
+                : new String[] { "create", "update", "delete", "detail", "export" };
         sidebarPanel = new SidebarPanel(manhomquyen, chucnang, actions);
         for (String action : actions) {
             JButton button = sidebarPanel.btn.get(action);
@@ -177,7 +176,8 @@ public class FormHoaDon extends JPanel {
         functionBar.add(sidebarPanel);
 
         // Cập nhật IntegratedSearch với các tùy chọn tìm kiếm
-        search = new IntegratedSearch(new String[] { "Tất cả", "Mã Hóa Đơn", "Mã Chi Tiết Thuê", "Hình Thức Thanh Toán", "Khách hàng" });
+        search = new IntegratedSearch(
+                new String[] { "Tất cả", "Mã Hóa Đơn", "Mã Chi Tiết Thuê", "Hình Thức Thanh Toán", "Khách hàng" });
         search.txtSearchForm.setPreferredSize(new Dimension(100, search.txtSearchForm.getPreferredSize().height));
         search.btnReset.setPreferredSize(new Dimension(120, 25));
         search.txtSearchForm.addKeyListener(new KeyAdapter() {
@@ -213,7 +213,7 @@ public class FormHoaDon extends JPanel {
         }
         int stt = 1;
         for (HoaDonDTO hd : result) {
-            String xuLy = hd.getXuLy() == 1 ? "Đã xử lý" : "Đã hủy";
+            String xuLy = hd.getXuLy() == 1 ? "Đã xử lý" : "Chưa xử lý";
             tblModel.addRow(new Object[] {
                     stt++,
                     hd.getMaHD(),
@@ -228,7 +228,6 @@ public class FormHoaDon extends JPanel {
                     xuLy
             });
         }
-        System.out.println("loadDataTable: Loaded " + result.size() + " rows");
     }
 
     private void search() {
@@ -255,36 +254,35 @@ public class FormHoaDon extends JPanel {
                     searchType = 0; // Tất cả
                     break;
             }
-            
+
             // Gọi filterHoaDon để tìm kiếm, tích hợp cả maKH nếu có
             result = hoaDonBUS.filterHoaDon(
-                searchType, 
-                keyword, 
-                maKH != null && !maKH.isEmpty() ? maKH : "", 
-                0, 
-                new java.util.Date(0), 
-                new java.util.Date(), 
-                "", 
-                ""
-            );
-            
-            System.out.println("Search result for type=" + type + ", keyword=" + keyword + ", maKH=" + maKH + ": " + 
-                (result != null ? result.size() : 0) + " invoices");
-            
+                    searchType,
+                    keyword,
+                    maKH != null && !maKH.isEmpty() ? maKH : "",
+                    0,
+                    new java.util.Date(0),
+                    new java.util.Date(),
+                    "",
+                    "");
+
+            System.out.println("Search result for type=" + type + ", keyword=" + keyword + ", maKH=" + maKH + ": " +
+                    (result != null ? result.size() : 0) + " invoices");
+
             if (result.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Không tìm thấy hóa đơn phù hợp với tiêu chí tìm kiếm!", 
-                    "Thông báo", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Không tìm thấy hóa đơn phù hợp với tiêu chí tìm kiếm!",
+                        "Thông báo",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
-            
+
             loadDataTable(result);
         } catch (Exception e) {
             System.err.println("Error during search: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, 
-                "Lỗi khi tìm kiếm hóa đơn: " + e.getMessage(), 
-                "Lỗi", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Lỗi khi tìm kiếm hóa đơn: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

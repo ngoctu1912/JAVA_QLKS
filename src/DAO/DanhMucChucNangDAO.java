@@ -27,7 +27,7 @@ public class DanhMucChucNangDAO {
                 DanhMucChucNangDTO dvt = new DanhMucChucNangDTO(machucnang, tenchucnang);
                 result.add(dvt);
             }
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } 
         catch (Exception e) {
             e.printStackTrace();

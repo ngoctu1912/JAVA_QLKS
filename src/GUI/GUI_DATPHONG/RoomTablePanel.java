@@ -6,6 +6,7 @@
 // import DTO.DichVuDTO;
 // import GUI_DANGNHAP_DANGKY.CustomMessage;
 // import GUI_TRANGCHU.HomeFrame;
+
 // import javax.swing.*;
 // import javax.swing.border.EmptyBorder;
 // import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -134,6 +135,13 @@
 //             // User is logged in, get check-in and check-out dates and proceed with booking
 //             java.util.Date checkInDate = eventHandler.getCheckInDate();
 //             java.util.Date checkOutDate = eventHandler.getCheckOutDate();
+//             if (checkInDate == null || checkOutDate == null || checkOutDate.before(checkInDate) || checkOutDate.equals(checkInDate)) {
+//                 JOptionPane.showMessageDialog(this,
+//                         "Ngày nhận phòng và trả phòng không hợp lệ!",
+//                         "Lỗi",
+//                         JOptionPane.ERROR_MESSAGE);
+//                 return;
+//             }
 //             new BookingDialog(this, selectedRoomIds, selectedRooms.toString(), checkInDate, checkOutDate).showDialog();
 //         });
 
@@ -153,7 +161,7 @@
 //             List<PhongDTO> rooms = phongBUS.getAllAvailableRooms();
 //             populateRoomCards(rooms);
 //         } catch (Exception e) {
-//             JOptionPane.showMessageDialog(this, e.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//             JOptionPane.showMessageDialog(this, "Không tìm thấy phòng trống: " + e.getMessage(), "Thông báo", JOptionPane.WARNING_MESSAGE);
 //         }
 
 //         roomContainer.revalidate();
@@ -169,10 +177,13 @@
 //             java.util.Date checkInDate = eventHandler.getCheckInDate();
 //             java.util.Date checkOutDate = eventHandler.getCheckOutDate();
 //             String guestType = findRoom.getSelectedOptionTitle();
+//             if (checkInDate == null || checkOutDate == null || guestType == null) {
+//                 throw new IllegalArgumentException("Vui lòng nhập đầy đủ thông tin tìm kiếm!");
+//             }
 //             List<PhongDTO> rooms = phongBUS.getAvailableRooms(checkInDate, checkOutDate, guestType);
 //             populateRoomCards(rooms);
 //         } catch (Exception e) {
-//             JOptionPane.showMessageDialog(this, e.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//             JOptionPane.showMessageDialog(this, "Lỗi tìm phòng: " + e.getMessage(), "Thông báo", JOptionPane.WARNING_MESSAGE);
 //         }
 
 //         roomContainer.revalidate();
@@ -196,12 +207,19 @@
 //         // Left: Image
 //         JLabel imageLabel = new JLabel();
 //         try {
-//             ImageIcon icon = new ImageIcon(room.getHinhAnh());
-//             Image scaledImage = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-//             imageLabel.setIcon(new ImageIcon(scaledImage));
+//             String hinhAnh = room.getHinhAnh();
+//             if (hinhAnh != null && !hinhAnh.isEmpty()) {
+//                 ImageIcon icon = new ImageIcon(hinhAnh);
+//                 Image scaledImage = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+//                 imageLabel.setIcon(new ImageIcon(scaledImage));
+//             } else {
+//                 imageLabel.setText("No Image");
+//                 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//             }
 //         } catch (Exception e) {
 //             imageLabel.setText("No Image");
 //             imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//             e.printStackTrace();
 //         }
 //         imageLabel.setPreferredSize(new Dimension(120, 120));
 //         card.add(imageLabel, BorderLayout.WEST);
@@ -260,7 +278,7 @@
 //         selectCheckBox.setFocusPainted(false);
 //         selectCheckBox.setOpaque(false);
 //         selectCheckBox.setHorizontalAlignment(SwingConstants.CENTER);
-//         selectCheckBox.setToolTipText(room.getMaP() + " - " + room.getTenP()); // Use tooltip for room info
+//         selectCheckBox.setToolTipText(room.getMaP() + " - " + room.getTenP());
 //         JPanel checkBoxContainer = new JPanel(new BorderLayout());
 //         checkBoxContainer.setBackground(Color.WHITE);
 //         checkBoxContainer.setBorder(BorderFactory.createLineBorder(new Color(66, 133, 244), 1));
@@ -448,7 +466,7 @@ public class RoomTablePanel extends JPanel {
             List<PhongDTO> rooms = phongBUS.getAllAvailableRooms();
             populateRoomCards(rooms);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy phòng trống: " + e.getMessage(), "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Không thể tải danh sách phòng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
 
         roomContainer.revalidate();
@@ -465,12 +483,20 @@ public class RoomTablePanel extends JPanel {
             java.util.Date checkOutDate = eventHandler.getCheckOutDate();
             String guestType = findRoom.getSelectedOptionTitle();
             if (checkInDate == null || checkOutDate == null || guestType == null) {
-                throw new IllegalArgumentException("Vui lòng nhập đầy đủ thông tin tìm kiếm!");
+                throw new IllegalArgumentException("Vui lòng nhập đầy đủ thông tin tìm kiếm (ngày nhận phòng, ngày trả phòng, loại khách)!");
             }
             List<PhongDTO> rooms = phongBUS.getAvailableRooms(checkInDate, checkOutDate, guestType);
             populateRoomCards(rooms);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi tìm phòng: " + e.getMessage(), "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Lỗi khi tìm kiếm phòng: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
 
         roomContainer.revalidate();

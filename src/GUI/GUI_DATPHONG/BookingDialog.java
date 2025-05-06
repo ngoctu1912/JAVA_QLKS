@@ -5,20 +5,29 @@
 // import BUS.PhongBUS;
 // import BUS.DatPhongBUS;
 // import BUS.ChiTietDatPhongBUS;
+// import BUS.ChiTietThueDichVuBUS;
 // import DTO.DichVuDTO;
 // import DTO.KhachHangDTO;
 // import DTO.PhongDTO;
 // import DTO.DatPhongDTO;
 // import DTO.ChiTietDatPhongDTO;
+// import DTO.ChiTietThueDichVuDTO;
 // import GUI_DANGNHAP_DANGKY.DNDKComponent.AccountInfo;
 // import GUI_TRANGCHU.HomeFrame;
+// import config.ConnectDB;
+
 // import javax.swing.*;
 // import javax.swing.border.EmptyBorder;
 // import java.awt.*;
+// import java.sql.Connection;
+// import java.sql.SQLException;
 // import java.text.DecimalFormat;
 // import java.util.ArrayList;
+// import java.util.Calendar;
 // import java.util.Date;
+// import java.util.HashMap;
 // import java.util.List;
+// import java.util.Map;
 // import java.util.concurrent.TimeUnit;
 
 // public class BookingDialog {
@@ -28,66 +37,68 @@
 //     private final PhongBUS phongBUS;
 //     private final DatPhongBUS datPhongBUS;
 //     private final ChiTietDatPhongBUS chiTietDatPhongBUS;
+//     private final ChiTietThueDichVuBUS chiTietThueDichVuBUS;
 //     private final List<String> selectedRoomIds;
 //     private final String selectedRoomsText;
 //     private final Date checkInDate;
 //     private final Date checkOutDate;
 //     private final AccountInfo accountInfo;
-//     private JTextField nameField; // Trường nhập họ và tên
-//     private JTextField phoneField; // Trường nhập số điện thoại
-//     private List<String> selectedServiceIds; // Danh sách dịch vụ đã chọn
+//     private JTextField nameField;
+//     private JTextField phoneField;
+//     private List<String> selectedServiceIds;
+//     private List<JCheckBox> serviceCheckBoxes;
 
-//     public BookingDialog(JComponent parent, List<String> selectedRoomIds, String selectedRoomsText, 
-//                          Date checkInDate, Date checkOutDate) {
+//     public BookingDialog(JComponent parent, List<String> selectedRoomIds, String selectedRoomsText,
+//             Date checkInDate, Date checkOutDate) {
 //         this.parent = parent;
 //         this.dichVuBUS = new DichVuBUS();
 //         this.khachHangBUS = new KhachHangBUS();
 //         this.phongBUS = new PhongBUS();
 //         this.datPhongBUS = new DatPhongBUS();
 //         this.chiTietDatPhongBUS = new ChiTietDatPhongBUS();
+//         this.chiTietThueDichVuBUS = new ChiTietThueDichVuBUS();
 //         this.selectedRoomIds = selectedRoomIds;
 //         this.selectedRoomsText = selectedRoomsText;
 //         this.checkInDate = checkInDate;
 //         this.checkOutDate = checkOutDate;
 //         this.selectedServiceIds = new ArrayList<>();
+//         this.serviceCheckBoxes = new ArrayList<>();
 
-//         // Get account info from HomeFrame
 //         HomeFrame homeFrame = (HomeFrame) SwingUtilities.getAncestorOfClass(HomeFrame.class, parent);
-//         this.accountInfo = homeFrame != null ? homeFrame.getAccountInfo() : null;
+//         if (homeFrame == null || homeFrame.getAccountInfo() == null) {
+//             throw new IllegalStateException("Không thể khởi tạo BookingDialog: HomeFrame hoặc thông tin tài khoản không khả dụng.");
+//         }
+//         this.accountInfo = homeFrame.getAccountInfo();
 //     }
 
 //     public void showDialog() {
-//         // Validate dates
 //         if (checkInDate == null || checkOutDate == null) {
-//             JOptionPane.showMessageDialog(parent, "Ngày nhận phòng và trả phòng không được để trống!", 
-//                                          "Lỗi", JOptionPane.ERROR_MESSAGE);
+//             JOptionPane.showMessageDialog(parent, "Ngày nhận phòng và trả phòng không được để trống!",
+//                     "Lỗi", JOptionPane.ERROR_MESSAGE);
 //             return;
 //         }
 //         if (checkOutDate.before(checkInDate) || checkOutDate.equals(checkInDate)) {
-//             JOptionPane.showMessageDialog(parent, "Ngày trả phòng phải sau ngày nhận phòng!", 
-//                                          "Lỗi", JOptionPane.ERROR_MESSAGE);
+//             JOptionPane.showMessageDialog(parent, "Ngày trả phòng phải sau ngày nhận phòng!",
+//                     "Lỗi", JOptionPane.ERROR_MESSAGE);
 //             return;
 //         }
 
-//         // Validate login status
-//         if (accountInfo == null || !"KHACHHANG".equals(accountInfo.getAccountType())) {
-//             JOptionPane.showMessageDialog(parent, "Vui lòng đăng nhập tài khoản khách hàng để đặt phòng!", 
-//                                          "Lỗi", JOptionPane.ERROR_MESSAGE);
+//         if (!"KHACHHANG".equals(accountInfo.getAccountType())) {
+//             JOptionPane.showMessageDialog(parent, "Vui lòng đăng nhập tài khoản khách hàng để đặt phòng!",
+//                     "Lỗi", JOptionPane.ERROR_MESSAGE);
 //             return;
 //         }
 
 //         JDialog dialog = new JDialog((Frame) null, "Xác nhận đặt phòng", true);
 //         dialog.setLayout(new BorderLayout());
 //         dialog.setSize(500, 650);
-//         // Căn giữa dialog so với HomeFrame
 //         HomeFrame homeFrame = (HomeFrame) SwingUtilities.getAncestorOfClass(HomeFrame.class, parent);
 //         if (homeFrame != null) {
 //             dialog.setLocationRelativeTo(homeFrame);
 //         } else {
-//             dialog.setLocationRelativeTo(null); // Căn giữa màn hình nếu không tìm thấy HomeFrame
+//             dialog.setLocationRelativeTo(null);
 //         }
 
-//         // Header
 //         JPanel headerPanel = new JPanel(new GridBagLayout());
 //         headerPanel.setBackground(new Color(149, 213, 178));
 //         headerPanel.setPreferredSize(new Dimension(500, 50));
@@ -97,13 +108,11 @@
 //         headerPanel.add(headerLabel);
 //         dialog.add(headerPanel, BorderLayout.NORTH);
 
-//         // Content Panel
 //         JPanel contentPanel = new JPanel();
 //         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 //         contentPanel.setBackground(Color.WHITE);
 //         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-//         // Phòng đã chọn
 //         JLabel roomTitle = new JLabel("Phòng đã chọn", SwingConstants.CENTER);
 //         roomTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
 //         roomTitle.setForeground(new Color(66, 133, 244));
@@ -128,20 +137,19 @@
 //         contentPanel.add(roomScrollPane);
 //         contentPanel.add(Box.createVerticalStrut(20));
 
-//         // Tính tổng tiền phòng
 //         final int tongTienPhong;
 //         final long diffInDays;
 //         {
 //             long diffInMillies = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
 //             long tempDiffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-//             diffInDays = tempDiffInDays == 0 ? 1 : tempDiffInDays; // Gán giá trị một lần
+//             diffInDays = tempDiffInDays == 0 ? 1 : tempDiffInDays;
 
 //             int tempTongTienPhong = 0;
 //             for (String maPhong : selectedRoomIds) {
 //                 PhongDTO phong = phongBUS.getPhongById(maPhong);
 //                 if (phong == null) {
-//                     JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!", 
-//                                                  "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                     JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!",
+//                             "Lỗi", JOptionPane.ERROR_MESSAGE);
 //                     return;
 //                 }
 //                 tempTongTienPhong += phong.getGiaP() * (int) diffInDays;
@@ -149,12 +157,9 @@
 //             tongTienPhong = tempTongTienPhong;
 //         }
 
-//         // Tạo danh sách dịch vụ để tính tiền dịch vụ khi chọn
 //         List<DichVuDTO> services = dichVuBUS.getAllDichVu();
-//         List<JCheckBox> serviceCheckBoxes = new ArrayList<>();
-//         int[] tongTienDichVu = {0}; // Mảng để cập nhật tổng tiền dịch vụ trong ActionListener
+//         int[] tongTienDichVu = { 0 };
 
-//         // Hiển thị tiền đặt cọc
 //         JLabel depositTitle = new JLabel("Tiền đặt cọc (30%)", SwingConstants.CENTER);
 //         depositTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
 //         depositTitle.setForeground(new Color(66, 133, 244));
@@ -173,7 +178,6 @@
 //         contentPanel.add(depositField);
 //         contentPanel.add(Box.createVerticalStrut(20));
 
-//         // Thông tin khách hàng
 //         JLabel customerTitle = new JLabel("Thông tin khách hàng", SwingConstants.CENTER);
 //         customerTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
 //         customerTitle.setForeground(new Color(66, 133, 244));
@@ -184,7 +188,6 @@
 //         JPanel customerPanel = new JPanel(new GridLayout(2, 2, 10, 10));
 //         customerPanel.setBackground(Color.WHITE);
 
-//         // Họ và tên
 //         JLabel nameLabel = new JLabel("Họ và tên:");
 //         nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
 //         nameField = new JTextField();
@@ -195,7 +198,6 @@
 //         customerPanel.add(nameLabel);
 //         customerPanel.add(nameField);
 
-//         // Số điện thoại
 //         JLabel phoneLabel = new JLabel("Số điện thoại:");
 //         phoneLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
 //         phoneField = new JTextField();
@@ -209,7 +211,6 @@
 //         contentPanel.add(customerPanel);
 //         contentPanel.add(Box.createVerticalStrut(20));
 
-//         // Tiêu đề dịch vụ
 //         JLabel serviceTitle = new JLabel("Các dịch vụ tại khách sạn", SwingConstants.CENTER);
 //         serviceTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
 //         serviceTitle.setForeground(new Color(66, 133, 244));
@@ -217,7 +218,6 @@
 //         serviceTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 //         contentPanel.add(serviceTitle);
 
-//         // Danh sách dịch vụ
 //         int numCols = 2;
 //         int numRows = (int) Math.ceil((double) services.size() / numCols);
 
@@ -225,14 +225,13 @@
 //         servicePanel.setBackground(Color.WHITE);
 
 //         for (DichVuDTO service : services) {
-//             JCheckBox checkBox = new JCheckBox(service.getTenDV() + " (" + service.getGiaDV() + "đ)");
+//             JCheckBox checkBox = new JCheckBox(service.getTenDV() + " (" + df.format(service.getGiaDV()) + ")");
 //             checkBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
 //             checkBox.setBackground(Color.WHITE);
 //             checkBox.setToolTipText(service.getMaDV());
 //             checkBox.setFocusPainted(false);
 //             checkBox.setBorder(new EmptyBorder(5, 10, 5, 10));
 //             checkBox.addActionListener(e -> {
-//                 // Cập nhật tổng tiền dịch vụ và tiền đặt cọc khi checkbox thay đổi
 //                 tongTienDichVu[0] = 0;
 //                 for (JCheckBox cb : serviceCheckBoxes) {
 //                     if (cb.isSelected()) {
@@ -257,7 +256,6 @@
 
 //         dialog.add(contentPanel, BorderLayout.CENTER);
 
-//         // Footer - nút xác nhận
 //         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 //         footerPanel.setBackground(Color.WHITE);
 //         JButton confirmButton = new JButton("Xác nhận");
@@ -269,122 +267,201 @@
 //         confirmButton.setBorderPainted(false);
 //         confirmButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 //         confirmButton.addActionListener(e -> {
-//             // Validate customer information
 //             String name = nameField.getText().trim();
 //             String phone = phoneField.getText().trim();
 
 //             if (name.isEmpty() || phone.isEmpty()) {
-//                 JOptionPane.showMessageDialog(parent, "Vui lòng nhập đầy đủ họ và tên và số điện thoại!", 
-//                                              "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                 JOptionPane.showMessageDialog(parent, "Vui lòng nhập đầy đủ họ và tên và số điện thoại!",
+//                         "Lỗi", JOptionPane.ERROR_MESSAGE);
 //                 return;
 //             }
 
-//             // Validate phone number (10-11 chữ số)
 //             if (!phone.matches("\\d{10,11}")) {
-//                 JOptionPane.showMessageDialog(parent, "Số điện thoại phải là số và có 10-11 chữ số!", 
-//                                              "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                 JOptionPane.showMessageDialog(parent, "Số điện thoại phải là số và có 10-11 chữ số!",
+//                         "Lỗi", JOptionPane.ERROR_MESSAGE);
 //                 return;
 //             }
 
-//             // Fetch KhachHangDTO from database
 //             KhachHangDTO khachHang = khachHangBUS.selectById(String.valueOf(accountInfo.getAccountId()));
 //             if (khachHang == null) {
-//                 JOptionPane.showMessageDialog(parent, "Không tìm thấy thông tin khách hàng!", 
-//                                              "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                 JOptionPane.showMessageDialog(parent, "Không tìm thấy thông tin khách hàng!",
+//                         "Lỗi", JOptionPane.ERROR_MESSAGE);
 //                 return;
 //             }
 
-//             // Update customer information
 //             khachHang.setTenKhachHang(name);
 //             khachHang.setSoDienThoai(phone);
 //             try {
-//                 khachHangBUS.update(khachHang); // Cập nhật thông tin khách hàng
+//                 khachHangBUS.update(khachHang);
 //             } catch (IllegalArgumentException ex) {
-//                 JOptionPane.showMessageDialog(parent, ex.getMessage(), 
-//                                              "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                 JOptionPane.showMessageDialog(parent, "Lỗi cập nhật thông tin khách hàng: " + ex.getMessage(),
+//                         "Lỗi", JOptionPane.ERROR_MESSAGE);
 //                 return;
 //             }
 
-//             // Create DatPhongDTO
 //             DatPhongDTO datPhong = new DatPhongDTO();
 //             String maDP = "DP" + String.format("%03d", datPhongBUS.getAutoIncrement());
 //             datPhong.setMaDP(maDP);
 //             datPhong.setMaKH(khachHang.getMaKhachHang());
 //             datPhong.setNgayLapPhieu(new Date());
-//             datPhong.setTienDatCoc((int) ((tongTienPhong + tongTienDichVu[0]) * 0.3)); // Tiền đặt cọc 30% tổng tiền
-//             datPhong.setTinhTrangXuLy(0); // Chưa xử lý
-//             datPhong.setXuLy(1); // Hợp lệ
+//             datPhong.setTienDatCoc((int) ((tongTienPhong + tongTienDichVu[0]) * 0.3));
+//             datPhong.setTinhTrangXuLy(0);
+//             datPhong.setXuLy(1);
 
-//             // Get selected services
 //             selectedServiceIds.clear();
-//             for (JCheckBox checkBox : serviceCheckBoxes) {
-//                 if (checkBox.isSelected()) {
-//                     selectedServiceIds.add(checkBox.getToolTipText());
+//             for (JCheckBox cb : serviceCheckBoxes) {
+//                 if (cb.isSelected()) {
+//                     selectedServiceIds.add(cb.getToolTipText());
 //                 }
 //             }
 
-//             // Save to DATPHONG table
-//             try {
-//                 int result = datPhongBUS.add(datPhong);
-//                 if (result > 0) {
-//                     // Lưu chi tiết đặt phòng (phòng)
-//                     int ctdpCounter = chiTietDatPhongBUS.getAutoIncrement(); // Lấy giá trị ban đầu
-//                     for (String maPhong : selectedRoomIds) {
-//                         PhongDTO phong = phongBUS.getPhongById(maPhong);
-//                         if (phong == null) {
-//                             JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!", 
-//                                                          "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                             return;
-//                         }
-//                         ChiTietDatPhongDTO chiTiet = new ChiTietDatPhongDTO();
-//                         chiTiet.setMaCTDP("CTDP" + String.format("%03d", ctdpCounter++));
-//                         chiTiet.setMaP(maPhong);
-//                         chiTiet.setNgayThue(checkInDate);
-//                         chiTiet.setNgayTra(checkOutDate);
-//                         chiTiet.setNgayCheckOut(null); // Chưa check out
-//                         chiTiet.setLoaiHinhThue(0); // Thuê theo ngày
-//                         chiTiet.setGiaThue(phong.getGiaP() * (int) diffInDays); // Giá thuê phòng
-//                         chiTiet.setTinhTrang(0); // Chưa xử lý
-//                         chiTietDatPhongBUS.add(chiTiet);
-//                     }
-//                     // Lưu chi tiết đặt phòng (dịch vụ)
-//                     for (String maDV : selectedServiceIds) {
-//                         DichVuDTO dv = dichVuBUS.getDichVuById(maDV);
-//                         if (dv == null) {
-//                             JOptionPane.showMessageDialog(parent, "Dịch vụ " + maDV + " không tồn tại!", 
-//                                                          "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                             return;
-//                         }
-//                         ChiTietDatPhongDTO chiTiet = new ChiTietDatPhongDTO();
-//                         chiTiet.setMaCTDP("CTDP" + String.format("%03d", ctdpCounter++));
-
-//                         chiTiet.setMaP(selectedRoomIds.get(0)); // Gán dịch vụ cho phòng đầu tiên
-//                         chiTiet.setNgayThue(checkInDate);
-//                         chiTiet.setNgayTra(checkOutDate);
-//                         chiTiet.setNgayCheckOut(null);
-//                         chiTiet.setLoaiHinhThue(1); // Giả sử 1 là dịch vụ
-//                         chiTiet.setGiaThue(dv.getGiaDV()); // Giá dịch vụ
-//                         chiTiet.setTinhTrang(0);
-//                         chiTietDatPhongBUS.add(chiTiet);
-//                     }
-
-//                     JOptionPane.showMessageDialog(parent, "Đặt phòng thành công! Mã đặt phòng: " + maDP, 
-//                                                  "Thành công", JOptionPane.INFORMATION_MESSAGE);
-//                     dialog.dispose();
-//                 } else {
-//                     JOptionPane.showMessageDialog(parent, "Đặt phòng thất bại!", 
-//                                                  "Lỗi", JOptionPane.ERROR_MESSAGE);
+//             Map<String, PhongDTO> phongMap = new HashMap<>();
+//             for (String maPhong : selectedRoomIds) {
+//                 PhongDTO phong = phongBUS.getPhongById(maPhong);
+//                 if (phong == null) {
+//                     JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!",
+//                             "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                     return;
 //                 }
-//             } catch (RuntimeException ex) {
-//                 JOptionPane.showMessageDialog(parent, "Lỗi khi lưu đặt phòng: " + ex.getMessage(), 
-//                                              "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                 phongMap.put(maPhong, phong);
+//             }
+
+//             Map<String, DichVuDTO> dichVuMap = new HashMap<>();
+//             for (String maDV : selectedServiceIds) {
+//                 DichVuDTO service = dichVuBUS.getDichVuById(maDV);
+//                 if (service == null) {
+//                     JOptionPane.showMessageDialog(parent, "Dịch vụ " + maDV + " không tồn tại!",
+//                             "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                     return;
+//                 }
+//                 dichVuMap.put(maDV, service);
+//             }
+
+//             // Retry logic for transaction
+//             int maxRetries = 3;
+//             int attempt = 0;
+//             boolean success = false;
+//             Connection conn = null;
+
+//             while (attempt < maxRetries && !success) {
+//                 try {
+//                     conn = ConnectDB.getConnection();
+//                     if (conn == null) {
+//                         JOptionPane.showMessageDialog(parent,
+//                                 "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra cấu hình!",
+//                                 "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                         return;
+//                     }
+//                     conn.setAutoCommit(false);
+
+//                     int result = datPhongBUS.add(datPhong, conn);
+//                     if (result == 0) {
+//                         conn.rollback();
+//                         JOptionPane.showMessageDialog(parent, "Đặt phòng thất bại! Vui lòng thử lại.",
+//                                 "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                         return;
+//                     }
+
+//                     for (String maPhong : selectedRoomIds) {
+//                         ChiTietDatPhongDTO chiTiet = new ChiTietDatPhongDTO();
+//                         chiTiet.setMaCTDP(maDP);
+//                         chiTiet.setMaP(maPhong);
+
+//                         Calendar cal = Calendar.getInstance();
+//                         cal.setTime(checkInDate);
+//                         cal.set(Calendar.HOUR_OF_DAY, 14);
+//                         cal.set(Calendar.MINUTE, 0);
+//                         cal.set(Calendar.SECOND, 0);
+//                         cal.set(Calendar.MILLISECOND, 0);
+//                         chiTiet.setNgayThue(cal.getTime());
+
+//                         cal.setTime(checkOutDate);
+//                         cal.set(Calendar.HOUR_OF_DAY, 12);
+//                         cal.set(Calendar.MINUTE, 0);
+//                         cal.set(Calendar.SECOND, 0);
+//                         cal.set(Calendar.MILLISECOND, 0);
+//                         chiTiet.setNgayTra(cal.getTime());
+
+//                         chiTiet.setNgayCheckOut(null);
+//                         chiTiet.setLoaiHinhThue(0);
+//                         chiTiet.setGiaThue(phongMap.get(maPhong).getGiaP() * (int) diffInDays);
+//                         chiTiet.setTinhTrang(0);
+//                         chiTietDatPhongBUS.add(chiTiet, conn);
+//                     }
+
+//                     for (String maDV : selectedServiceIds) {
+//                         ChiTietThueDichVuDTO chiTietDV = new ChiTietThueDichVuDTO();
+//                         chiTietDV.setMaCTT(maDP);
+//                         chiTietDV.setMaDV(maDV);
+//                         Calendar cal = Calendar.getInstance();
+//                         cal.setTime(checkInDate);
+//                         cal.set(Calendar.HOUR_OF_DAY, 8);
+//                         cal.set(Calendar.MINUTE, 0);
+//                         cal.set(Calendar.SECOND, 0);
+//                         cal.set(Calendar.MILLISECOND, 0);
+//                         chiTietDV.setNgaySuDung(cal.getTime());
+//                         chiTietDV.setSoLuong(1);
+//                         chiTietDV.setGiaDV(dichVuMap.get(maDV).getGiaDV());
+//                         chiTietThueDichVuBUS.add(chiTietDV, conn);
+//                     }
+
+//                     conn.commit();
+//                     success = true;
+//                     JOptionPane.showMessageDialog(parent, "Đặt phòng thành công! Mã đặt phòng: " + maDP,
+//                             "Thành công", JOptionPane.INFORMATION_MESSAGE);
+//                     dialog.dispose();
+//                 } catch (SQLException ex) {
+//                     attempt++;
+//                     try {
+//                         if (conn != null && !conn.isClosed()) {
+//                             conn.rollback();
+//                         }
+//                     } catch (SQLException rollbackEx) {
+//                         rollbackEx.printStackTrace();
+//                     }
+
+//                     if (ex.getMessage().contains("Lock wait timeout exceeded") && attempt < maxRetries) {
+//                         try {
+//                             Thread.sleep(100 * attempt); // Wait before retry
+//                         } catch (InterruptedException ie) {
+//                             ie.printStackTrace();
+//                         }
+//                         continue;
+//                     }
+
+//                     String errorMessage = "Lỗi cơ sở dữ liệu: " + ex.getMessage();
+//                     if (ex.getMessage().contains("Access denied")) {
+//                         errorMessage = "Tài khoản hoặc mật khẩu cơ sở dữ liệu không đúng!";
+//                     } else if (ex.getMessage().contains("Unknown database")) {
+//                         errorMessage = "Cơ sở dữ liệu không tồn tại! Vui lòng kiểm tra tên cơ sở dữ liệu.";
+//                     } else if (ex.getMessage().contains("Connection refused")) {
+//                         errorMessage = "Không thể kết nối đến server MySQL. Vui lòng kiểm tra server!";
+//                     } else if (ex.getMessage().contains("Duplicate entry")) {
+//                         errorMessage = "Lỗi trùng khóa chính hoặc khóa ngoại. Vui lòng kiểm tra dữ liệu!";
+//                     }
+//                     JOptionPane.showMessageDialog(parent, errorMessage, "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                     return;
+//                 } finally {
+//                     try {
+//                         if (conn != null && !conn.isClosed()) {
+//                             conn.setAutoCommit(true);
+//                             conn.close();
+//                         }
+//                     } catch (SQLException closeEx) {
+//                         closeEx.printStackTrace();
+//                     }
+//                 }
+//             }
+
+//             if (!success) {
+//                 JOptionPane.showMessageDialog(parent, "Đặt phòng thất bại sau " + maxRetries + " lần thử. Vui lòng thử lại sau!",
+//                         "Lỗi", JOptionPane.ERROR_MESSAGE);
 //             }
 //         });
 
 //         footerPanel.add(confirmButton);
 //         dialog.add(footerPanel, BorderLayout.SOUTH);
 
-//         // Auto-fill customer information if available
 //         KhachHangDTO khachHang = khachHangBUS.selectById(String.valueOf(accountInfo.getAccountId()));
 //         if (khachHang != null) {
 //             nameField.setText(khachHang.getTenKhachHang() != null ? khachHang.getTenKhachHang() : "");
@@ -400,14 +477,20 @@ package GUI_DATPHONG;
 import BUS.DichVuBUS;
 import BUS.KhachHangBUS;
 import BUS.PhongBUS;
+import DAO.HoaDonDAO;
 import BUS.DatPhongBUS;
 import BUS.ChiTietDatPhongBUS;
+import BUS.ChiTietThueDichVuBUS;
+import BUS.HoaDonBUS;
 import DTO.DichVuDTO;
 import DTO.KhachHangDTO;
 import DTO.PhongDTO;
 import DTO.DatPhongDTO;
 import DTO.ChiTietDatPhongDTO;
+import DTO.ChiTietThueDichVuDTO;
+import DTO.HoaDonDTO;
 import GUI_DANGNHAP_DANGKY.DNDKComponent.AccountInfo;
+import GUI_HOADON.FormHoaDon;
 import GUI_TRANGCHU.HomeFrame;
 import config.ConnectDB;
 
@@ -418,8 +501,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class BookingDialog {
@@ -429,14 +515,17 @@ public class BookingDialog {
     private final PhongBUS phongBUS;
     private final DatPhongBUS datPhongBUS;
     private final ChiTietDatPhongBUS chiTietDatPhongBUS;
+    private final ChiTietThueDichVuBUS chiTietThueDichVuBUS;
+    private final HoaDonBUS hoaDonBUS;
     private final List<String> selectedRoomIds;
     private final String selectedRoomsText;
     private final Date checkInDate;
     private final Date checkOutDate;
     private final AccountInfo accountInfo;
-    private JTextField nameField; // Trường nhập họ và tên
-    private JTextField phoneField; // Trường nhập số điện thoại
-    private List<String> selectedServiceIds; // Danh sách dịch vụ đã chọn
+    private JTextField nameField;
+    private JTextField phoneField;
+    private List<String> selectedServiceIds;
+    private List<JCheckBox> serviceCheckBoxes;
 
     public BookingDialog(JComponent parent, List<String> selectedRoomIds, String selectedRoomsText,
             Date checkInDate, Date checkOutDate) {
@@ -446,19 +535,24 @@ public class BookingDialog {
         this.phongBUS = new PhongBUS();
         this.datPhongBUS = new DatPhongBUS();
         this.chiTietDatPhongBUS = new ChiTietDatPhongBUS();
+        this.chiTietThueDichVuBUS = new ChiTietThueDichVuBUS();
+        this.hoaDonBUS = new HoaDonBUS();
         this.selectedRoomIds = selectedRoomIds;
         this.selectedRoomsText = selectedRoomsText;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.selectedServiceIds = new ArrayList<>();
+        this.serviceCheckBoxes = new ArrayList<>();
 
-        // Get account info from HomeFrame
         HomeFrame homeFrame = (HomeFrame) SwingUtilities.getAncestorOfClass(HomeFrame.class, parent);
-        this.accountInfo = homeFrame != null ? homeFrame.getAccountInfo() : null;
+        if (homeFrame == null || homeFrame.getAccountInfo() == null) {
+            throw new IllegalStateException(
+                    "Không thể khởi tạo BookingDialog: HomeFrame hoặc thông tin tài khoản không khả dụng.");
+        }
+        this.accountInfo = homeFrame.getAccountInfo();
     }
 
     public void showDialog() {
-        // Validate dates
         if (checkInDate == null || checkOutDate == null) {
             JOptionPane.showMessageDialog(parent, "Ngày nhận phòng và trả phòng không được để trống!",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -470,8 +564,7 @@ public class BookingDialog {
             return;
         }
 
-        // Validate login status
-        if (accountInfo == null || !"KHACHHANG".equals(accountInfo.getAccountType())) {
+        if (!"KHACHHANG".equals(accountInfo.getAccountType())) {
             JOptionPane.showMessageDialog(parent, "Vui lòng đăng nhập tài khoản khách hàng để đặt phòng!",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
@@ -480,15 +573,13 @@ public class BookingDialog {
         JDialog dialog = new JDialog((Frame) null, "Xác nhận đặt phòng", true);
         dialog.setLayout(new BorderLayout());
         dialog.setSize(500, 650);
-        // Căn giữa dialog so với HomeFrame
         HomeFrame homeFrame = (HomeFrame) SwingUtilities.getAncestorOfClass(HomeFrame.class, parent);
         if (homeFrame != null) {
             dialog.setLocationRelativeTo(homeFrame);
         } else {
-            dialog.setLocationRelativeTo(null); // Căn giữa màn hình nếu không tìm thấy HomeFrame
+            dialog.setLocationRelativeTo(null);
         }
 
-        // Header
         JPanel headerPanel = new JPanel(new GridBagLayout());
         headerPanel.setBackground(new Color(149, 213, 178));
         headerPanel.setPreferredSize(new Dimension(500, 50));
@@ -498,13 +589,11 @@ public class BookingDialog {
         headerPanel.add(headerLabel);
         dialog.add(headerPanel, BorderLayout.NORTH);
 
-        // Content Panel
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Phòng đã chọn
         JLabel roomTitle = new JLabel("Phòng đã chọn", SwingConstants.CENTER);
         roomTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
         roomTitle.setForeground(new Color(66, 133, 244));
@@ -529,13 +618,12 @@ public class BookingDialog {
         contentPanel.add(roomScrollPane);
         contentPanel.add(Box.createVerticalStrut(20));
 
-        // Tính tổng tiền phòng
         final int tongTienPhong;
         final long diffInDays;
         {
             long diffInMillies = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
             long tempDiffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            diffInDays = tempDiffInDays == 0 ? 1 : tempDiffInDays; // Gán giá trị một lần
+            diffInDays = tempDiffInDays == 0 ? 1 : tempDiffInDays;
 
             int tempTongTienPhong = 0;
             for (String maPhong : selectedRoomIds) {
@@ -550,12 +638,9 @@ public class BookingDialog {
             tongTienPhong = tempTongTienPhong;
         }
 
-        // Tạo danh sách dịch vụ để tính tiền dịch vụ khi chọn
         List<DichVuDTO> services = dichVuBUS.getAllDichVu();
-        List<JCheckBox> serviceCheckBoxes = new ArrayList<>();
-        int[] tongTienDichVu = { 0 }; // Mảng để cập nhật tổng tiền dịch vụ trong ActionListener
+        int[] tongTienDichVu = { 0 };
 
-        // Hiển thị tiền đặt cọc
         JLabel depositTitle = new JLabel("Tiền đặt cọc (30%)", SwingConstants.CENTER);
         depositTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
         depositTitle.setForeground(new Color(66, 133, 244));
@@ -574,7 +659,6 @@ public class BookingDialog {
         contentPanel.add(depositField);
         contentPanel.add(Box.createVerticalStrut(20));
 
-        // Thông tin khách hàng
         JLabel customerTitle = new JLabel("Thông tin khách hàng", SwingConstants.CENTER);
         customerTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
         customerTitle.setForeground(new Color(66, 133, 244));
@@ -585,7 +669,6 @@ public class BookingDialog {
         JPanel customerPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         customerPanel.setBackground(Color.WHITE);
 
-        // Họ và tên
         JLabel nameLabel = new JLabel("Họ và tên:");
         nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         nameField = new JTextField();
@@ -596,7 +679,6 @@ public class BookingDialog {
         customerPanel.add(nameLabel);
         customerPanel.add(nameField);
 
-        // Số điện thoại
         JLabel phoneLabel = new JLabel("Số điện thoại:");
         phoneLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         phoneField = new JTextField();
@@ -610,7 +692,6 @@ public class BookingDialog {
         contentPanel.add(customerPanel);
         contentPanel.add(Box.createVerticalStrut(20));
 
-        // Tiêu đề dịch vụ
         JLabel serviceTitle = new JLabel("Các dịch vụ tại khách sạn", SwingConstants.CENTER);
         serviceTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
         serviceTitle.setForeground(new Color(66, 133, 244));
@@ -618,7 +699,6 @@ public class BookingDialog {
         serviceTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         contentPanel.add(serviceTitle);
 
-        // Danh sách dịch vụ
         int numCols = 2;
         int numRows = (int) Math.ceil((double) services.size() / numCols);
 
@@ -626,14 +706,13 @@ public class BookingDialog {
         servicePanel.setBackground(Color.WHITE);
 
         for (DichVuDTO service : services) {
-            JCheckBox checkBox = new JCheckBox(service.getTenDV() + " (" + service.getGiaDV() + "đ)");
+            JCheckBox checkBox = new JCheckBox(service.getTenDV() + " (" + df.format(service.getGiaDV()) + ")");
             checkBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
             checkBox.setBackground(Color.WHITE);
             checkBox.setToolTipText(service.getMaDV());
             checkBox.setFocusPainted(false);
             checkBox.setBorder(new EmptyBorder(5, 10, 5, 10));
             checkBox.addActionListener(e -> {
-                // Cập nhật tổng tiền dịch vụ và tiền đặt cọc khi checkbox thay đổi
                 tongTienDichVu[0] = 0;
                 for (JCheckBox cb : serviceCheckBoxes) {
                     if (cb.isSelected()) {
@@ -658,7 +737,6 @@ public class BookingDialog {
 
         dialog.add(contentPanel, BorderLayout.CENTER);
 
-        // Footer - nút xác nhận
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(Color.WHITE);
         JButton confirmButton = new JButton("Xác nhận");
@@ -670,7 +748,6 @@ public class BookingDialog {
         confirmButton.setBorderPainted(false);
         confirmButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         confirmButton.addActionListener(e -> {
-            // Validate customer information
             String name = nameField.getText().trim();
             String phone = phoneField.getText().trim();
 
@@ -680,14 +757,12 @@ public class BookingDialog {
                 return;
             }
 
-            // Validate phone number (10-11 chữ số)
             if (!phone.matches("\\d{10,11}")) {
                 JOptionPane.showMessageDialog(parent, "Số điện thoại phải là số và có 10-11 chữ số!",
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Fetch KhachHangDTO from database
             KhachHangDTO khachHang = khachHangBUS.selectById(String.valueOf(accountInfo.getAccountId()));
             if (khachHang == null) {
                 JOptionPane.showMessageDialog(parent, "Không tìm thấy thông tin khách hàng!",
@@ -695,88 +770,217 @@ public class BookingDialog {
                 return;
             }
 
-            // Update customer information
             khachHang.setTenKhachHang(name);
             khachHang.setSoDienThoai(phone);
             try {
-                khachHangBUS.update(khachHang); // Cập nhật thông tin khách hàng
+                khachHangBUS.update(khachHang);
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(parent, ex.getMessage(),
+                JOptionPane.showMessageDialog(parent, "Lỗi cập nhật thông tin khách hàng: " + ex.getMessage(),
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Create DatPhongDTO
             DatPhongDTO datPhong = new DatPhongDTO();
             String maDP = "DP" + String.format("%03d", datPhongBUS.getAutoIncrement());
             datPhong.setMaDP(maDP);
             datPhong.setMaKH(khachHang.getMaKhachHang());
             datPhong.setNgayLapPhieu(new Date());
-            datPhong.setTienDatCoc((int) ((tongTienPhong + tongTienDichVu[0]) * 0.3)); // Tiền đặt cọc 30% tổng tiền
-            datPhong.setTinhTrangXuLy(0); // Chưa xử lý
-            datPhong.setXuLy(1); // Hợp lệ
+            datPhong.setTienDatCoc((int) ((tongTienPhong + tongTienDichVu[0]) * 0.3));
+            datPhong.setTinhTrangXuLy(0);
+            datPhong.setXuLy(1);
 
-            // Log DatPhongDTO
-            System.out.println("DatPhongDTO: maDP=" + datPhong.getMaDP() + ", maKH=" + datPhong.getMaKH() +
-                    ", tienDatCoc=" + datPhong.getTienDatCoc() + ", ngayLapPhieu=" + datPhong.getNgayLapPhieu());
-
-            // Check if maDP already exists
-            if (datPhongBUS.checkExists(maDP)) {
-                JOptionPane.showMessageDialog(parent, "Mã đặt phòng " + maDP + " đã tồn tại!",
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Get selected services
             selectedServiceIds.clear();
-            for (JCheckBox checkBox : serviceCheckBoxes) {
-                if (checkBox.isSelected()) {
-                    selectedServiceIds.add(checkBox.getToolTipText());
+            for (JCheckBox cb : serviceCheckBoxes) {
+                if (cb.isSelected()) {
+                    selectedServiceIds.add(cb.getToolTipText());
                 }
             }
 
-            // Save to DATPHONG table with transaction
-            try (Connection conn = ConnectDB.getConnection()) {
-                conn.setAutoCommit(false); // Bắt đầu giao dịch
-                int result = datPhongBUS.add(datPhong);
-                System.out.println("Result of datPhongBUS.add: " + result);
-                if (result > 0) {
-                    // Lưu chi tiết đặt phòng (phòng)
-                    int ctdpCounter = chiTietDatPhongBUS.getAutoIncrement();
-                    for (String maPhong : selectedRoomIds) {
-                        PhongDTO phong = phongBUS.getPhongById(maPhong);
-                        if (phong == null) {
-                            conn.rollback();
-                            JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!",
-                                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        ChiTietDatPhongDTO chiTiet = new ChiTietDatPhongDTO();
-                        chiTiet.setMaCTDP("CTDP" + String.format("%03d", ctdpCounter++));
-                        chiTiet.setMaP(maPhong);
-                        chiTiet.setNgayThue(checkInDate);
-                        chiTiet.setNgayTra(checkOutDate);
-                        chiTiet.setNgayCheckOut(null);
-                        chiTiet.setLoaiHinhThue(0); // Thuê theo ngày
-                        chiTiet.setGiaThue(phong.getGiaP() * (int) diffInDays);
-                        chiTiet.setTinhTrang(0);
-                        chiTietDatPhongBUS.add(chiTiet);
+            Map<String, PhongDTO> phongMap = new HashMap<>();
+            for (String maPhong : selectedRoomIds) {
+                PhongDTO phong = phongBUS.getPhongById(maPhong);
+                if (phong == null) {
+                    JOptionPane.showMessageDialog(parent, "Phòng " + maPhong + " không tồn tại!",
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                phongMap.put(maPhong, phong);
+            }
+
+            Map<String, DichVuDTO> dichVuMap = new HashMap<>();
+            for (String maDV : selectedServiceIds) {
+                DichVuDTO service = dichVuBUS.getDichVuById(maDV);
+                if (service == null) {
+                    JOptionPane.showMessageDialog(parent, "Dịch vụ " + maDV + " không tồn tại!",
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                dichVuMap.put(maDV, service);
+            }
+
+            // Retry logic for transaction
+            int maxRetries = 5;
+            int attempt = 0;
+            boolean success = false;
+            Connection conn = null;
+
+            while (attempt < maxRetries && !success) {
+                try {
+                    conn = ConnectDB.getConnection();
+                    if (conn == null) {
+                        JOptionPane.showMessageDialog(parent,
+                                "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra cấu hình!",
+                                "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    conn.setAutoCommit(false);
+
+                    int result = datPhongBUS.add(datPhong, conn);
+                    if (result == 0) {
+                        conn.rollback();
+                        JOptionPane.showMessageDialog(parent, "Đặt phòng thất bại! Vui lòng thử lại.",
+                                "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
-                    // Note: Services are not saved to CHITIETDATPHONG as per requirement.
-                    conn.commit(); // Hoàn tất giao dịch
-                    JOptionPane.showMessageDialog(parent, "Đặt phòng thành công! Mã đặt phòng: " + maDP,
+                    for (String maPhong : selectedRoomIds) {
+                        ChiTietDatPhongDTO chiTiet = new ChiTietDatPhongDTO();
+                        chiTiet.setMaCTDP(maDP);
+                        chiTiet.setMaP(maPhong);
+
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(checkInDate);
+                        cal.set(Calendar.HOUR_OF_DAY, 14);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        chiTiet.setNgayThue(cal.getTime());
+
+                        cal.setTime(checkOutDate);
+                        cal.set(Calendar.HOUR_OF_DAY, 12);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        chiTiet.setNgayTra(cal.getTime());
+
+                        chiTiet.setNgayCheckOut(null);
+                        chiTiet.setLoaiHinhThue(0);
+                        chiTiet.setGiaThue(phongMap.get(maPhong).getGiaP() * (int) diffInDays);
+                        chiTiet.setTinhTrang(0);
+                        chiTietDatPhongBUS.add(chiTiet, conn);
+                    }
+
+                    for (String maDV : selectedServiceIds) {
+                        ChiTietThueDichVuDTO chiTietDV = new ChiTietThueDichVuDTO();
+                        chiTietDV.setMaCTT(maDP);
+                        chiTietDV.setMaDV(maDV);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(checkInDate);
+                        cal.set(Calendar.HOUR_OF_DAY, 8);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        chiTietDV.setNgaySuDung(cal.getTime());
+                        chiTietDV.setSoLuong(1);
+                        chiTietDV.setGiaDV(dichVuMap.get(maDV).getGiaDV());
+                        chiTietThueDichVuBUS.add(chiTietDV, conn);
+                    }
+
+                    // Tạo hóa đơn
+                    HoaDonDTO hoaDon = new HoaDonDTO();
+                    String maHD = "HD" + String.format("%03d", HoaDonDAO.getInstance().getAutoIncrement());
+                    hoaDon.setMaHD(maHD);
+                    hoaDon.setMaCTT(maDP);
+                    hoaDon.setTienP(tongTienPhong);
+                    hoaDon.setTienDV(tongTienDichVu[0]);
+                    hoaDon.setGiamGia(0);
+                    hoaDon.setPhuThu(0);
+                    hoaDon.setTongTien(tongTienPhong + tongTienDichVu[0]);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(checkOutDate);
+                    cal.set(Calendar.HOUR_OF_DAY, 12);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    hoaDon.setNgayThanhToan(cal.getTime());
+                    hoaDon.setHinhThucThanhToan("Chuyển khoản"); // Đặt mặc định là "Chuyển khoản"
+                    hoaDon.setXuLy(0); // Chưa xử lý
+
+                    int hoaDonResult = hoaDonBUS.add(hoaDon, conn);
+                    if (hoaDonResult == 0) {
+                        conn.rollback();
+                        JOptionPane.showMessageDialog(parent, "Tạo hóa đơn thất bại! Vui lòng thử lại.",
+                                "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    conn.commit();
+                    success = true;
+                    JOptionPane.showMessageDialog(parent,
+                            "Đặt phòng thành công! Mã đặt phòng: " + maDP + "\nMã hóa đơn: " + maHD,
                             "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+                    // Làm mới FormHoaDon nếu đang mở
+                    HomeFrame parentFrame = (HomeFrame) SwingUtilities.getAncestorOfClass(HomeFrame.class, parent);
+                    if (homeFrame != null) {
+                        Component[] components = homeFrame.getContentPane().getComponents();
+                        for (Component comp : components) {
+                            if (comp instanceof FormHoaDon) {
+                                ((FormHoaDon) comp).loadTableData();
+                                System.out.println("Refreshed FormHoaDon for maKH=" + khachHang.getMaKhachHang());
+                                break;
+                            }
+                        }
+                    }
                     dialog.dispose();
-                } else {
-                    conn.rollback();
-                    JOptionPane.showMessageDialog(parent, "Đặt phòng thất bại!",
-                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException ex) {
+                    attempt++;
+                    try {
+                        if (conn != null && !conn.isClosed()) {
+                            conn.rollback();
+                        }
+                    } catch (SQLException rollbackEx) {
+                        rollbackEx.printStackTrace();
+                    }
+
+                    if (ex.getMessage().contains("Lock wait timeout exceeded") && attempt < maxRetries) {
+                        try {
+                            Thread.sleep(200 * attempt);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+                        continue;
+                    }
+
+                    String errorMessage = "Lỗi cơ sở dữ liệu: " + ex.getMessage();
+                    if (ex.getMessage().contains("Access denied")) {
+                        errorMessage = "Tài khoản hoặc mật khẩu cơ sở dữ liệu không đúng!";
+                    } else if (ex.getMessage().contains("Unknown database")) {
+                        errorMessage = "Cơ sở dữ liệu không tồn tại! Vui lòng kiểm tra tên cơ sở dữ liệu.";
+                    } else if (ex.getMessage().contains("Connection refused")) {
+                        errorMessage = "Không thể kết nối đến server MySQL. Vui lòng kiểm tra server!";
+                    } else if (ex.getMessage().contains("Duplicate entry")) {
+                        errorMessage = "Lỗi trùng khóa chính hoặc khóa ngoại. Vui lòng kiểm tra dữ liệu!";
+                    } else if (ex.getMessage().contains("Lock wait timeout exceeded")) {
+                        errorMessage = "Hệ thống đang bận, vui lòng thử lại sau vài giây!";
+                    }
+                    JOptionPane.showMessageDialog(parent, errorMessage, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } finally {
+                    try {
+                        if (conn != null && !conn.isClosed()) {
+                            conn.setAutoCommit(true);
+                            conn.close();
+                        }
+                    } catch (SQLException closeEx) {
+                        closeEx.printStackTrace();
+                    }
                 }
-            } catch (SQLException ex) {
-                System.err.println("SQLException in saving booking: " + ex.getMessage());
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(parent, "Lỗi khi lưu đặt phòng: " + ex.getMessage(),
+            }
+
+            if (!success) {
+                JOptionPane.showMessageDialog(parent,
+                        "Đặt phòng thất bại sau " + maxRetries + " lần thử. Vui lòng thử lại sau!",
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -784,7 +988,6 @@ public class BookingDialog {
         footerPanel.add(confirmButton);
         dialog.add(footerPanel, BorderLayout.SOUTH);
 
-        // Auto-fill customer information if available
         KhachHangDTO khachHang = khachHangBUS.selectById(String.valueOf(accountInfo.getAccountId()));
         if (khachHang != null) {
             nameField.setText(khachHang.getTenKhachHang() != null ? khachHang.getTenKhachHang() : "");

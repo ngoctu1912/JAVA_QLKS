@@ -54,6 +54,20 @@ public class TaiKhoanBUS {
     public NhomQuyenDTO getNhomQuyenDTO(int manhom) {
         return nhomQuyenDAO.selectById(String.valueOf(manhom));
     }
+
+    public boolean addAcc(TaiKhoanDTO tk) {
+        if (tk == null || TaiKhoanDAO.getInstance().selectById(String.valueOf(tk.getMaNV())) != null) {
+            return false;
+        }
+        String hashedPassword = BCrypt.hashpw(tk.getMatKhau(), BCrypt.gensalt(12));
+        tk.setMatKhau(hashedPassword);
+        int result = TaiKhoanDAO.getInstance().add(tk);
+        if (result > 0) {
+            listTaiKhoan.add(tk); // Cập nhật danh sách trong bộ nhớ
+            return true;
+        }
+        return false;
+    }
     
     public boolean addAccKH(TaiKhoanKHDTO tk) {
         if (tk == null || TaiKhoanKHDAO.getInstance().selectById(tk.getTenDangNhap()) != null) {
@@ -117,10 +131,7 @@ public class TaiKhoanBUS {
         }
         int result = TaiKhoanDAO.getInstance().delete(String.valueOf(manv));
         if (result > 0) {
-            int index = getTaiKhoanByMaNV(manv);
-            if (index != -1) {
-                listTaiKhoan.remove(index);
-            }
+            listTaiKhoan = TaiKhoanDAO.getInstance().selectAll(); // Làm mới danh sách
             return true;
         }
         return false;

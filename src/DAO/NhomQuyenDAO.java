@@ -143,7 +143,7 @@ public class NhomQuyenDAO implements DAOinterface<NhomQuyenDTO> {
             PreparedStatement prest = conn.prepareStatement(sql);
             prest.setString(1, t.getTEN());
             result = prest.executeUpdate();
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(NhomQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -160,7 +160,7 @@ public class NhomQuyenDAO implements DAOinterface<NhomQuyenDTO> {
             pst.setString(1, t.getTEN());
             pst.setInt(2, t.getMNQ());
             result = pst.executeUpdate();
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(NhomQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -176,7 +176,7 @@ public class NhomQuyenDAO implements DAOinterface<NhomQuyenDTO> {
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, t);
             result = pst.executeUpdate();
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(NhomQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -216,7 +216,7 @@ public class NhomQuyenDAO implements DAOinterface<NhomQuyenDTO> {
                 String TEN = rs.getString("TEN");
                 result = new NhomQuyenDTO(MNQ, TEN);
             }
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(NhomQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -239,7 +239,7 @@ public class NhomQuyenDAO implements DAOinterface<NhomQuyenDTO> {
 
                 }
             }
-            ConnectDB.closeConnection();
+            // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(NhomQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

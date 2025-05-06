@@ -75,7 +75,7 @@ public class ThongKeBUS {
         return thongKeDAO.getNhanVienDangHoatDong();
     }
 
-    public void closeConnection() {
-        config.ConnectDB.closeConnection();
-    }
+    // public void closeConnection() {
+    //     config.ConnectDB.closeConnection();
+    // }
 }

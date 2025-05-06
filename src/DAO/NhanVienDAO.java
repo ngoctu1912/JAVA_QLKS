@@ -379,7 +379,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (generatedKeys != null) generatedKeys.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -409,7 +409,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
         } finally {
             try {
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -433,7 +433,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
         } finally {
             try {
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -469,7 +469,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -504,7 +504,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -539,7 +539,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -575,7 +575,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -610,7 +610,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -638,7 +638,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
             try {
                 if (rs != null) rs.close();
                 if (pst != null) pst.close();
-                if (con != null) ConnectDB.closeConnection();
+                // if (con != null) ConnectDB.closeConnection();
             } catch (SQLException ex) {
                 Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
             }

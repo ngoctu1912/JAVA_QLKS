@@ -372,7 +372,7 @@ public class TaiKhoanDAO implements DAOinterface<TaiKhoanDTO> {
 
     @Override
     public int delete(String maNVStr) {
-        String sql = "UPDATE TAIKHOAN SET TT = 0 WHERE MNV = ?";
+        String sql = "DELETE FROM TAIKHOAN WHERE MNV = ?";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, Integer.parseInt(maNVStr));
