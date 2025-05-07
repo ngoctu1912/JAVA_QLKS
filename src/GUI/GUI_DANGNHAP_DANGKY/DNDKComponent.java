@@ -303,51 +303,6 @@ public class DNDKComponent {
         }
     }
 
-    // public AccountInfo checkAccount() {
-    //     String username = txtUser.getText().trim();
-    //     if (username.isEmpty() || username.equals("Tên Đăng Nhập")) {
-    //         lblErrorUser.setText("Vui lòng nhập tên đăng nhập!");
-    //         txtUser.requestFocus();
-    //         return null;
-    //     }
-    
-    //     // Kiểm tra tài khoản nhân viên
-    //     TaiKhoanDTO tkNV = TaiKhoanDAO.getInstance().selectByUser(username);
-    //     if (tkNV != null && tkNV.getTrangThai() == 1) {
-    //         NhanVienDTO nv = NhanVienDAO.getInstance().selectById(String.valueOf(tkNV.getMaNV()));
-    //         if (nv != null) {
-    //             String fullName = nv.getHOTEN();
-    //             String role;
-    //             switch (tkNV.getMaNhomQuyen()) {
-    //                 case 1:
-    //                     role = "Quản lý khách sạn";
-    //                     break;
-    //                 case 2:
-    //                     role = "Nhân viên Lễ tân";
-    //                     break;
-    //                 case 3:
-    //                     role = "Nhân viên Quản lý kho";
-    //                     break;
-    //                 default:
-    //                     role = "Nhân viên";
-    //             }
-    //             return new AccountInfo(fullName, role, "QUANLY", tkNV.getMaNV());
-    //         }
-    //     }
-    
-    //     // Kiểm tra tài khoản khách hàng
-    //     TaiKhoanKHDTO tkKH = TaiKhoanKHDAO.getInstance().selectByUser(username);
-    //     if (tkKH != null && tkKH.getTrangThai() == 1) {
-    //         KhachHangDTO kh = KhachHangDAO.getInstance().selectById(String.valueOf(tkKH.getMaKhachHang()));
-    //         String fullName = (kh != null && !kh.getTenKhachHang().isEmpty()) ? kh.getTenKhachHang() : "Khách hàng mới";
-    //         String role = "Khách hàng";
-    //         return new AccountInfo(fullName, role, "KHACHHANG", tkKH.getMaKhachHang());
-    //     }
-    
-    //     lblErrorUser.setText("Tên đăng nhập không tồn tại hoặc tài khoản bị khóa!");
-    //     txtUser.requestFocus();
-    //     return null;
-    // }
     public AccountInfo checkAccount() {
         String username = txtUser.getText().trim();
         if (username.isEmpty() || username.equals("Tên Đăng Nhập")) {

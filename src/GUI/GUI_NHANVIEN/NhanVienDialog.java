@@ -28,8 +28,8 @@ public class NhanVienDialog extends JDialog implements ActionListener {
     private boolean isViewMode;
     private HeaderTitle titlePage;
     private JPanel pnCenter, pnInfoNhanVien, pnBottom, gioitinhPanel;
-    private InputForm txtMNV, txtHoTen, txtSDT, txtEmail, txtSNP, txtLN;
-    private InputDate txtNgaysinh; // Changed to InputDate
+    private InputForm txtMNV, txtHoTen, txtSDT, txtEmail;
+    private InputDate txtNgaysinh;
     private JComboBox<String> cbGioiTinh;
     private ButtonCustom btnSave, btnCancel;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -86,15 +86,9 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtMNV = new InputForm("Mã NV");
         txtMNV.setEditable(false);
         txtHoTen = new InputForm("Họ Tên");
-        txtNgaysinh = new InputDate("Ngày Sinh"); // Changed to InputDate
+        txtNgaysinh = new InputDate("Ngày Sinh");
         txtSDT = new InputForm("Số Điện Thoại");
         txtEmail = new InputForm("Email");
-        // txtSNP = new InputForm("Số Ngày Phép");
-        // PlainDocument snpDoc = (PlainDocument) txtSNP.getTxtForm().getDocument();
-        // snpDoc.setDocumentFilter(new NumericDocumentFilter());
-        // txtLN = new InputForm("Lương");
-        // PlainDocument lnDoc = (PlainDocument) txtLN.getTxtForm().getDocument();
-        // lnDoc.setDocumentFilter(new NumericDocumentFilter());
 
         // Gender ComboBox
         cbGioiTinh = new JComboBox<>(new String[] { "Nam", "Nữ" });
@@ -140,8 +134,6 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         pnInfoNhanVien.add(txtNgaysinh);
         pnInfoNhanVien.add(txtSDT);
         pnInfoNhanVien.add(txtEmail);
-        // pnInfoNhanVien.add(txtSNP);
-        // pnInfoNhanVien.add(txtLN);
 
         // Button panel
         pnBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -181,26 +173,22 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtNgaysinh.setDate((java.util.Date) null);
         txtSDT.setText("");
         txtEmail.setText("");
-        // txtSNP.setText("0");
-        // txtLN.setText("0");
     }
 
     private void initView() {
         txtMNV.setEditable(false);
         txtHoTen.setEditable(false);
         cbGioiTinh.setEnabled(false);
-        txtNgaysinh.setDisable(); // Disable date picker
+        txtNgaysinh.setDisable();
         txtSDT.setEditable(false);
         txtEmail.setEditable(false);
-        // txtSNP.setEditable(false);
-        // txtLN.setEditable(false);
     }
 
     private void setInfo(NhanVienDTO nhanVien) {
         txtMNV.setText("NV" + String.format("%03d", nhanVien.getMNV()));
         txtHoTen.setText(nhanVien.getHOTEN() != null ? nhanVien.getHOTEN() : "");
         cbGioiTinh.setSelectedItem(nhanVien.getGIOITINH() == 1 ? "Nam" : "Nữ");
-        txtNgaysinh.setDate(nhanVien.getNGAYSINH()); // Set date in InputDate
+        txtNgaysinh.setDate(nhanVien.getNGAYSINH());
         txtSDT.setText(nhanVien.getSDT() != null ? nhanVien.getSDT() : "");
         txtEmail.setText(nhanVien.getEMAIL() != null ? nhanVien.getEMAIL() : "");
     }
@@ -212,14 +200,12 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         int gioitinh = cbGioiTinh.getSelectedItem().equals("Nam") ? 1 : 0;
         Date ngaysinh = null;
         try {
-            ngaysinh = txtNgaysinh.getDate(); // Get date from InputDate
+            ngaysinh = txtNgaysinh.getDate();
         } catch (ParseException e) {
             // Handled in validation
         }
         String sdt = txtSDT.getText();
         String email = txtEmail.getText();
-        // int snp = txtSNP.getText().isEmpty() ? 0 : Integer.parseInt(txtSNP.getText());
-        // int ln = txtLN.getText().isEmpty() ? 0 : Integer.parseInt(txtLN.getText());
         return new NhanVienDTO(mnv, hoten, gioitinh, ngaysinh, sdt, 1, email);
     }
 
@@ -237,23 +223,20 @@ public class NhanVienDialog extends JDialog implements ActionListener {
             return false;
         }
         try {
-            Date date = txtNgaysinh.getDate(); // Check if date is valid
-            if (date == null && !isEditMode) { // Require date for new employees
+            Date date = txtNgaysinh.getDate();
+            if (date == null && !isEditMode) {
                 JOptionPane.showMessageDialog(this, "Ngày sinh không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            // Kiểm tra đủ 18 tuổi
+            if (date != null && !txtNgaysinh.isAtLeast18YearsOld()) {
+                JOptionPane.showMessageDialog(this, "Nhân viên phải đủ 18 tuổi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ! Định dạng: dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        // if (!txtSNP.getText().trim().isEmpty() && !Validation.isNumber(txtSNP.getText().trim())) {
-        //     JOptionPane.showMessageDialog(this, "Số ngày phép phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        //     return false;
-        // }
-        // if (!txtLN.getText().trim().isEmpty() && !Validation.isNumber(txtLN.getText().trim())) {
-        //     JOptionPane.showMessageDialog(this, "Lương phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        //     return false;
-        // }
         return true;
     }
 

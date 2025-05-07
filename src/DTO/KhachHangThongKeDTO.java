@@ -1,7 +1,7 @@
 package DTO;
 
 public class KhachHangThongKeDTO {
-    private int maKH; // Thay đổi kiểu dữ liệu thành int để khớp với cột MKH trong bảng KHACHHANG
+    private int maKH;
     private String tenKH;
     private int soLanDatPhong;
     private long tongTien;

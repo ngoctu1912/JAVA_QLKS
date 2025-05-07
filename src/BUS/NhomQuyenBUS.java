@@ -17,7 +17,6 @@ public class NhomQuyenBUS {
 
     public NhomQuyenBUS() {
         this.listNhomQuyen = nhomQuyenDAO.selectAll();
-        // System.out.println("NhomQuyenBUS initialized, list size: " + listNhomQuyen.size());
     }
 
     public ArrayList<NhomQuyenDTO> getAll() {

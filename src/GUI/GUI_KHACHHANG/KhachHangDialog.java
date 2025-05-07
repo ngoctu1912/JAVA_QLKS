@@ -1,4 +1,3 @@
-
 package GUI_KHACHHANG;
 
 import BUS.KhachHangBUS;
@@ -310,6 +309,11 @@ public class KhachHangDialog extends JDialog implements ActionListener {
         try {
             if (txtNgaySinh.getDate() == null) {
                 JOptionPane.showMessageDialog(this, "Ngày sinh không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            // Kiểm tra đủ 18 tuổi
+            if (!txtNgaySinh.isAtLeast18YearsOld()) {
+                JOptionPane.showMessageDialog(this, "Khách hàng phải đủ 18 tuổi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (ParseException e) {

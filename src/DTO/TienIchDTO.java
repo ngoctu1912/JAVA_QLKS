@@ -3,8 +3,8 @@ package DTO;
 public class TienIchDTO {
     private String maTI;
     private String tenTI;
-    private int totalQuantity; // Số lượng tổng
-    private int remainingQuantity; // Số lượng còn lại
+    private int totalQuantity;
+    private int remainingQuantity;
     private int xuLy;
 
     // Constructor

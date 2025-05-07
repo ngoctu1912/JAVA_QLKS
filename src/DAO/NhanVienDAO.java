@@ -16,42 +16,7 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
         return new NhanVienDAO();
     }
 
-    @Override
-    // public int add(NhanVienDTO t) {
-    //     int result = 0;
-    //     Connection con = null;
-    //     PreparedStatement pst = null;
-    //     ResultSet generatedKeys = null;
-    //     try {
-    //         con = ConnectDB.getConnection();
-    //         String sql = "INSERT INTO `NHANVIEN`(`HOTEN`, `GIOITINH`, `SDT`, `NGAYSINH`, `TT`, `EMAIL`, `SNP`, `NVL`, `LN`) VALUES (?,?,?,?,?,?,0,CURDATE(),0)";
-    //         pst = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-    //         pst.setString(1, t.getHOTEN());
-    //         pst.setInt(2, t.getGIOITINH());
-    //         pst.setString(3, t.getSDT());
-    //         pst.setDate(4, t.getNGAYSINH() != null ? new java.sql.Date(t.getNGAYSINH().getTime()) : null);
-    //         pst.setInt(5, t.getTT());
-    //         pst.setString(6, t.getEMAIL());
-    //         result = pst.executeUpdate();
-
-    //         generatedKeys = pst.getGeneratedKeys();
-    //         if (generatedKeys.next()) {
-    //             t.setMNV(generatedKeys.getInt(1));
-    //         }
-    //     } catch (SQLException ex) {
-    //         Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
-    //     } finally {
-    //         try {
-    //             if (generatedKeys != null) generatedKeys.close();
-    //             if (pst != null) pst.close();
-    //             // if (con != null) ConnectDB.closeConnection();
-    //         } catch (SQLException ex) {
-    //             Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
-    //         }
-    //     }
-    //     return result;
-    // }
-  
+    @Override  
     public int add(NhanVienDTO t) {
         int result = 0;
         Connection con = null;
@@ -170,41 +135,6 @@ public class NhanVienDAO implements DAOinterface<NhanVienDTO> {
         return result;
     }
 
-    // @Override
-    // public ArrayList<NhanVienDTO> selectAll() {
-    //     ArrayList<NhanVienDTO> result = new ArrayList<>();
-    //     Connection con = null;
-    //     PreparedStatement pst = null;
-    //     ResultSet rs = null;
-    //     try {
-    //         con = ConnectDB.getConnection();
-    //         String sql = "SELECT * FROM NHANVIEN";
-    //         pst = con.prepareStatement(sql);
-    //         rs = pst.executeQuery();
-    //         while (rs.next()) {
-    //             int MNV = rs.getInt("MNV");
-    //             String HOTEN = rs.getString("HOTEN");
-    //             int GIOITINH = rs.getInt("GIOITINH");
-    //             Date NGAYSINH = rs.getDate("NGAYSINH");
-    //             String SDT = rs.getString("SDT");
-    //             int TT = rs.getInt("TT");
-    //             String EMAIL = rs.getString("EMAIL");
-    //             NhanVienDTO nv = new NhanVienDTO(MNV, HOTEN, GIOITINH, NGAYSINH, SDT, TT, EMAIL);
-    //             result.add(nv);
-    //         }
-    //     } catch (SQLException ex) {
-    //         Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
-    //     } finally {
-    //         try {
-    //             if (rs != null) rs.close();
-    //             if (pst != null) pst.close();
-    //             // if (con != null) ConnectDB.closeConnection();
-    //         } catch (SQLException ex) {
-    //             Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, ex);
-    //         }
-    //     }
-    //     return result;
-    // }
     @Override
     public ArrayList<NhanVienDTO> selectAll() {
         ArrayList<NhanVienDTO> result = new ArrayList<>();

@@ -8,7 +8,7 @@ public class ThongKeDTO {
     private long doanhThuDichVu;
     private long tongDoanhThu;
     private int soLanDat;
-    private LocalDate ngay; // Thêm thuộc tính này
+    private LocalDate ngay;
 
     // Constructor mặc định
     public ThongKeDTO() {}

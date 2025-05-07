@@ -216,6 +216,7 @@ VALUES
     (1, 7, 'create'), (1, 7, 'delete'), (1, 7, 'update'), (1, 7, 'view'),
     (1, 8, 'create'), (1, 8, 'delete'), (1, 8, 'update'), (1, 8, 'view'),
     (1, 9, 'create'), (1, 9, 'view'),
+    (1, 10, 'create'), (1, 10, 'delete'), (1, 10, 'update'), (1, 10, 'view'),
     (1, 11, 'create'), (1, 11, 'delete'), (1, 11, 'update'), (1, 11, 'view'),
     (1, 12, 'create'), (1, 12, 'delete'), (1, 12, 'update'), (1, 12, 'view'),
     (1, 13, 'create'), (1, 13, 'delete'), (1, 13, 'update'), (1, 13, 'view'),

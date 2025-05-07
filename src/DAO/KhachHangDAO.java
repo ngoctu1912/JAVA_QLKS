@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-// import java.util.Date;
 
 public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
 
@@ -23,7 +22,7 @@ public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
             pstmt.setInt(1, khachHang.getMaKhachHang());
             pstmt.setString(2, khachHang.getTenKhachHang());
             pstmt.setInt(3, khachHang.getGioiTinh());
-            pstmt.setLong(4, khachHang.getCccd()); // Sửa từ int thành long
+            pstmt.setLong(4, khachHang.getCccd());
             pstmt.setString(5, khachHang.getDiaChi());
             pstmt.setString(6, khachHang.getSoDienThoai());
             pstmt.setString(7, khachHang.getEmail());
@@ -43,7 +42,7 @@ public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, khachHang.getTenKhachHang());
             pstmt.setInt(2, khachHang.getGioiTinh());
-            pstmt.setLong(3, khachHang.getCccd()); // Sửa từ int thành long
+            pstmt.setLong(3, khachHang.getCccd());
             pstmt.setString(4, khachHang.getDiaChi());
             pstmt.setString(5, khachHang.getSoDienThoai());
             pstmt.setString(6, khachHang.getEmail());
@@ -82,7 +81,7 @@ public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
                 kh.setMaKhachHang(rs.getInt("MKH"));
                 kh.setTenKhachHang(rs.getString("TKH"));
                 kh.setGioiTinh(rs.getInt("GT"));
-                kh.setCccd(rs.getLong("CCCD")); // Sửa từ int thành long
+                kh.setCccd(rs.getLong("CCCD")); 
                 kh.setDiaChi(rs.getString("DIACHI"));
                 kh.setSoDienThoai(rs.getString("SDT"));
                 kh.setEmail(rs.getString("EMAIL"));
@@ -108,7 +107,7 @@ public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
                 kh.setMaKhachHang(rs.getInt("MKH"));
                 kh.setTenKhachHang(rs.getString("TKH"));
                 kh.setGioiTinh(rs.getInt("GT"));
-                kh.setCccd(rs.getLong("CCCD")); // Sửa từ int thành long
+                kh.setCccd(rs.getLong("CCCD")); 
                 kh.setDiaChi(rs.getString("DIACHI"));
                 kh.setSoDienThoai(rs.getString("SDT"));
                 kh.setEmail(rs.getString("EMAIL"));
@@ -134,7 +133,7 @@ public class KhachHangDAO implements DAOinterface<KhachHangDTO> {
                 kh.setMaKhachHang(rs.getInt("MKH"));
                 kh.setTenKhachHang(rs.getString("TKH"));
                 kh.setGioiTinh(rs.getInt("GT"));
-                kh.setCccd(rs.getLong("CCCD")); // Sửa từ int thành long
+                kh.setCccd(rs.getLong("CCCD"));
                 kh.setDiaChi(rs.getString("DIACHI"));
                 kh.setSoDienThoai(rs.getString("SDT"));
                 kh.setEmail(rs.getString("EMAIL"));

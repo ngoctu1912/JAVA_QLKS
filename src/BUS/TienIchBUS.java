@@ -1,7 +1,7 @@
 package BUS;
 
 import DAO.TienIchDAO;
-import config.ConnectDB; // Giả sử bạn có lớp này để quản lý kết nối
+import config.ConnectDB; 
 import DTO.TienIchDTO;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ public class TienIchBUS {
     private TienIchDAO tienIchDAO;
 
     public TienIchBUS() {
-        Connection conn = ConnectDB.getConnection(); // Lấy Connection từ ConnectDB
+        Connection conn = ConnectDB.getConnection(); 
         this.tienIchDAO = new TienIchDAO(conn);
     }
 

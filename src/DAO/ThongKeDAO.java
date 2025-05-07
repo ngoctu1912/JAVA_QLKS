@@ -79,7 +79,6 @@ public class ThongKeDAO implements DAOinterface<Object> {
             currentDate = currentDate.plusDays(1);
         }
 
-        // System.out.println("Fetched " + list.size() + " records for " + month + "/" + year);
         return list;
     }
 

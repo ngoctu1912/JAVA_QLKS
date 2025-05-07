@@ -9,6 +9,9 @@ import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,14 +30,13 @@ public class InputDate extends JPanel {
         this.setBackground(Color.white);
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
         lbltitle = new JLabel(title);
-        // Định dạng font, cỡ chữ, kiểu chữ cho nhãn
         Font timesNewRomanBold = Font.getFont("Times New Roman");
         if (timesNewRomanBold != null) {
             lbltitle.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
         } else {
             lbltitle.setFont(new Font(Font.SERIF, Font.BOLD, 20));
         }
-        lbltitle.setForeground(new Color(0, 102, 153)); // Màu xanh đậm
+        lbltitle.setForeground(new Color(0, 102, 153));
         date = new JDateChooser();
         date.setDateFormatString("dd/MM/yyyy");
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -47,14 +49,13 @@ public class InputDate extends JPanel {
         this.setBackground(Color.white);
         this.setPreferredSize(new Dimension(w, h));
         lbltitle = new JLabel(title);
-        // Định dạng font, cỡ chữ, kiểu chữ cho nhãn
         Font timesNewRomanBold = Font.getFont("Times New Roman");
         if (timesNewRomanBold != null) {
             lbltitle.setFont(new Font(timesNewRomanBold.getFamily(), Font.BOLD, 20));
         } else {
             lbltitle.setFont(new Font(Font.SERIF, Font.BOLD, 20));
         }
-        lbltitle.setForeground(new Color(0, 102, 153)); // Màu xanh đậm
+        lbltitle.setForeground(new Color(0, 102, 153));
         date = new JDateChooser();
         date.setDateFormatString("dd/MM/yyyy");
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -87,5 +88,21 @@ public class InputDate extends JPanel {
     public void setDisable() {
         JTextFieldDateEditor editor = (JTextFieldDateEditor) date.getDateEditor();
         editor.setEditable(false);
+    }
+
+    // Phương thức kiểm tra xem ngày sinh có đủ 18 tuổi hay không
+    public boolean isAtLeast18YearsOld() throws ParseException {
+        Date selectedDate = getDate();
+        if (selectedDate == null) {
+            return false; // Ngày không hợp lệ
+        }
+
+        // Chuyển Date sang LocalDate
+        LocalDate birthDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate currentDate = LocalDate.now();
+
+        // Tính tuổi
+        Period period = Period.between(birthDate, currentDate);
+        return period.getYears() >= 18;
     }
 }
