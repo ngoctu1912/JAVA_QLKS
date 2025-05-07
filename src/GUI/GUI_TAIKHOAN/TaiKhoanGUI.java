@@ -65,7 +65,6 @@ public class TaiKhoanGUI extends JPanel {
         setLayout(new BorderLayout(0, 0));
         setOpaque(true);
 
-        // Khởi tạo bảng
         tableModel = new DefaultTableModel(new String[]{"STT", "Mã NV", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -77,20 +76,18 @@ public class TaiKhoanGUI extends JPanel {
         JScrollPane scrollPane = new JScrollPane(taiKhoanTable);
         scrollPane.setBackground(Color.WHITE);
 
-        // Căn giữa các cột
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = taiKhoanTable.getColumnModel();
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            columnModel.getColumn(i).setCellRenderer(centerRenderer); // Căn giữa tất cả cột, bao gồm "Tên đăng nhập"
+            columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // Thiết lập kích thước cột
-        taiKhoanTable.getColumnModel().getColumn(0).setPreferredWidth(50); // STT
-        taiKhoanTable.getColumnModel().getColumn(1).setPreferredWidth(80); // Mã NV
-        taiKhoanTable.getColumnModel().getColumn(2).setPreferredWidth(120); // Tên đăng nhập
-        taiKhoanTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Nhóm quyền
-        taiKhoanTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Trạng thái
+        taiKhoanTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+        taiKhoanTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+        taiKhoanTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+        taiKhoanTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+        taiKhoanTable.getColumnModel().getColumn(4).setPreferredWidth(100);
         taiKhoanTable.setRowHeight(30);
         taiKhoanTable.getTableHeader().setPreferredSize(new Dimension(taiKhoanTable.getTableHeader().getPreferredSize().width, 30));
         taiKhoanTable.setShowHorizontalLines(true);
@@ -101,7 +98,6 @@ public class TaiKhoanGUI extends JPanel {
         taiKhoanTable.setAutoCreateRowSorter(true);
         taiKhoanTable.setDefaultEditor(Object.class, null);
 
-        // Tùy chỉnh tiêu đề
         taiKhoanTable.getTableHeader().setBackground(Color.WHITE);
         taiKhoanTable.getTableHeader().setForeground(Color.BLACK);
         taiKhoanTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -114,7 +110,6 @@ public class TaiKhoanGUI extends JPanel {
         contentCenter.setLayout(new BorderLayout(10, 10));
         add(contentCenter, BorderLayout.CENTER);
 
-        // Thanh chức năng
         functionBar = new PanelBorderRadius();
         functionBar.setPreferredSize(new Dimension(0, 100));
         functionBar.setLayout(new GridLayout(1, 2, 50, 0));
@@ -140,7 +135,6 @@ public class TaiKhoanGUI extends JPanel {
         }
         functionBar.add(sidebarPanel);
 
-        // Tìm kiếm
         search = new IntegratedSearch(new String[]{"Tất cả", "Mã NV", "Tên đăng nhập", "Nhóm quyền", "Trạng thái"});
         search.txtSearchForm.setPreferredSize(new Dimension(100, search.txtSearchForm.getPreferredSize().height));
         search.btnReset.setPreferredSize(new Dimension(120, 25));
@@ -159,7 +153,6 @@ public class TaiKhoanGUI extends JPanel {
 
         contentCenter.add(functionBar, BorderLayout.NORTH);
 
-        // Phần bảng
         main = new PanelBorderRadius();
         main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
         main.setBorder(new EmptyBorder(0, 0, 0, 0));

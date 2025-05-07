@@ -78,7 +78,7 @@ public class TrangChu extends JPanel {
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     FormPhong formPhong = new FormPhong(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(formPhong, BorderLayout.CENTER);
-                    System.out.println("FormPhong panel added successfully");
+                    // System.out.println("FormPhong panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải FormPhong: " + e.getMessage(), "Lỗi",
@@ -95,7 +95,7 @@ public class TrangChu extends JPanel {
                     try {
                         DatPhongFrame datPhongFrame = new DatPhongFrame();
                         currentContentPanel.add(datPhongFrame, BorderLayout.CENTER);
-                        System.out.println("DatPhongFrame panel added successfully");
+                        // System.out.println("DatPhongFrame panel added successfully");
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(this, "Lỗi khi tải DatPhongFrame: " + e.getMessage(), "Lỗi",
@@ -111,7 +111,7 @@ public class TrangChu extends JPanel {
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     KhachHangFrame khachHangFrame = new KhachHangFrame(parentFrame, maNhomQuyen, mcn, accountInfo);
                     currentContentPanel.add(khachHangFrame, BorderLayout.CENTER);
-                    System.out.println("KhachHangFrame panel added successfully");
+                    // System.out.println("KhachHangFrame panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải KhachHangFrame: " + e.getMessage(), "Lỗi",
@@ -124,7 +124,7 @@ public class TrangChu extends JPanel {
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     FormDichVu dichVuPanel = new FormDichVu(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(dichVuPanel, BorderLayout.CENTER);
-                    System.out.println("DichVuGUI panel added successfully");
+                    // System.out.println("DichVuGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải DichVuGUI: " + e.getMessage(), "Lỗi",
@@ -138,7 +138,7 @@ public class TrangChu extends JPanel {
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     NhanVienGUI nhanVienGUI = new NhanVienGUI(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(nhanVienGUI, BorderLayout.CENTER);
-                    System.out.println("NhanVienGUI panel added successfully");
+                    // System.out.println("NhanVienGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải NhanVienGUI: " + e.getMessage(), "Lỗi",
@@ -159,7 +159,7 @@ public class TrangChu extends JPanel {
                             // Tạo FormHoaDon với bộ lọc theo maKH
                             FormHoaDon hoaDonPanel = new FormHoaDon(parentFrame, maNhomQuyen, mcn, maKH);
                             currentContentPanel.add(hoaDonPanel, BorderLayout.CENTER);
-                            System.out.println("FormHoaDon panel for customer (maKH=" + maKH + ") added successfully");
+                            // System.out.println("FormHoaDon panel for customer (maKH=" + maKH + ") added successfully");
                         } else {
                             JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin khách hàng!", "Lỗi",
                                     JOptionPane.ERROR_MESSAGE);
@@ -170,7 +170,7 @@ public class TrangChu extends JPanel {
                         // Hiển thị toàn bộ hóa đơn cho quản lý hoặc các loại tài khoản khác
                         FormHoaDon hoaDonPanel = new FormHoaDon(parentFrame, maNhomQuyen, mcn);
                         currentContentPanel.add(hoaDonPanel, BorderLayout.CENTER);
-                        System.out.println("FormHoaDon panel for all invoices added successfully");
+                        // System.out.println("FormHoaDon panel for all invoices added successfully");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -185,7 +185,7 @@ public class TrangChu extends JPanel {
                     JScrollPane mainScrollPane = new JScrollPane();
                     JPanel kiemKePanel = KKTienIchFrame.createKiemKePanel(mainScrollPane);
                     currentContentPanel.add(kiemKePanel, BorderLayout.CENTER);
-                    System.out.println("KiemKeTienIchGUI panel added successfully");
+                    // System.out.println("KiemKeTienIchGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải KiemKeTienIchGUI: " + e.getMessage(), "Lỗi",
@@ -198,7 +198,7 @@ public class TrangChu extends JPanel {
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     PhanQuyenGUI phanQuyenGUI = new PhanQuyenGUI(parentFrame, maNhomQuyen, mcn);
                     currentContentPanel.add(phanQuyenGUI, BorderLayout.CENTER);
-                    System.out.println("PhanQuyenGUI panel added successfully");
+                    // System.out.println("PhanQuyenGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải PhanQuyenGUI: " + e.getMessage(), "Lỗi",
@@ -211,7 +211,7 @@ public class TrangChu extends JPanel {
                 try {
                     TaiKhoanGUI taiKhoanGUI = new TaiKhoanGUI(accountInfo);
                     currentContentPanel.add(taiKhoanGUI, BorderLayout.CENTER);
-                    System.out.println("TaiKhoanGUI panel added successfully");
+                    // System.out.println("TaiKhoanGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải TaiKhoanGUI: " + e.getMessage(), "Lỗi",
@@ -224,7 +224,7 @@ public class TrangChu extends JPanel {
                 try {
                     TaiKhoanKHGUI taiKhoanKHGUI = new TaiKhoanKHGUI(accountInfo);
                     currentContentPanel.add(taiKhoanKHGUI, BorderLayout.CENTER);
-                    System.out.println("TaiKhoanKHGUI panel added successfully");
+                    // System.out.println("TaiKhoanKHGUI panel added successfully");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Lỗi khi tải TaiKhoanKHGUI: " + e.getMessage(), "Lỗi",

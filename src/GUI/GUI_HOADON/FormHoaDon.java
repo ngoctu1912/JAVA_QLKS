@@ -45,7 +45,7 @@ public class FormHoaDon extends JPanel {
     public FormHoaDon(JFrame parentFrame, int manhomquyen, String chucnang, String maKH) {
         this.owner = parentFrame;
         this.maKH = maKH;
-        System.out.println("FormHoaDon initialized with maKH: " + maKH);
+        // System.out.println("FormHoaDon initialized with maKH: " + maKH);
         initComponent(manhomquyen, chucnang);
         this.eventHandler = new HoaDonEventHandler(this);
         loadTableData();
@@ -208,7 +208,7 @@ public class FormHoaDon extends JPanel {
     private void loadDataTable(ArrayList<HoaDonDTO> result) {
         tblModel.setRowCount(0);
         if (result == null) {
-            System.out.println("loadDataTable: result is null");
+            // System.out.println("loadDataTable: result is null");
             return;
         }
         int stt = 1;
@@ -266,8 +266,8 @@ public class FormHoaDon extends JPanel {
                     "",
                     "");
 
-            System.out.println("Search result for type=" + type + ", keyword=" + keyword + ", maKH=" + maKH + ": " +
-                    (result != null ? result.size() : 0) + " invoices");
+            // // System.out.println("Search result for type=" + type + ", keyword=" + keyword + ", maKH=" + maKH + ": " +
+            //         (result != null ? result.size() : 0) + " invoices");
 
             if (result.isEmpty()) {
                 JOptionPane.showMessageDialog(this,

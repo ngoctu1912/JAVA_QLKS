@@ -16,7 +16,7 @@ public class PhongEventHandler {
     public PhongEventHandler(FormPhong form) {
         this.form = form;
         this.phongBUS = form.getPhongBUS();
-        System.out.println("PhongEventHandler initialized"); // Debug log
+        // System.out.println("PhongEventHandler initialized"); // Debug log
 
         // Gắn sự kiện bấm đúp vào bảng
         form.getTable().addMouseListener(new MouseAdapter() {
@@ -27,7 +27,7 @@ public class PhongEventHandler {
                     if (row >= 0) {
                         String maP = form.getTable().getValueAt(row, 1).toString();
                         PhongDTO room = phongBUS.getPhongById(maP);
-                        System.out.println("Double-click: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
+                        // System.out.println("Double-click: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
                         if (room != null) {
                             new PhongDialog(form.getOwner(), room, false, true);
                         } else {
@@ -47,7 +47,7 @@ public class PhongEventHandler {
     }
 
     public void openAddDialog() {
-        System.out.println("openAddDialog called"); // Debug log
+        // System.out.println("openAddDialog called"); // Debug log
         new PhongDialog(form.getOwner(), null, false, false);
         form.loadTableData();
     }
@@ -61,7 +61,7 @@ public class PhongEventHandler {
 
         String maP = (String) form.getTable().getValueAt(row, 1);
         PhongDTO room = phongBUS.getPhongById(maP);
-        System.out.println("openEditDialog: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
+        // System.out.println("openEditDialog: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
         if (room == null) {
             JOptionPane.showMessageDialog(form, "Không tìm thấy phòng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
@@ -105,7 +105,7 @@ public class PhongEventHandler {
 
         String maP = (String) form.getTable().getValueAt(row, 1);
         PhongDTO room = phongBUS.getPhongById(maP);
-        System.out.println("openDetailDialog: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
+        // System.out.println("openDetailDialog: maP=" + maP + ", room=" + (room != null ? room.getMaP() : "null")); // Debug log
         if (room != null) {
             new PhongDialog(form.getOwner(), room, false, true);
         } else {

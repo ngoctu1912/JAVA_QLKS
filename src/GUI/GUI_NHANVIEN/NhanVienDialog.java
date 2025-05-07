@@ -89,12 +89,12 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtNgaysinh = new InputDate("Ngày Sinh"); // Changed to InputDate
         txtSDT = new InputForm("Số Điện Thoại");
         txtEmail = new InputForm("Email");
-        txtSNP = new InputForm("Số Ngày Phép");
-        PlainDocument snpDoc = (PlainDocument) txtSNP.getTxtForm().getDocument();
-        snpDoc.setDocumentFilter(new NumericDocumentFilter());
-        txtLN = new InputForm("Lương");
-        PlainDocument lnDoc = (PlainDocument) txtLN.getTxtForm().getDocument();
-        lnDoc.setDocumentFilter(new NumericDocumentFilter());
+        // txtSNP = new InputForm("Số Ngày Phép");
+        // PlainDocument snpDoc = (PlainDocument) txtSNP.getTxtForm().getDocument();
+        // snpDoc.setDocumentFilter(new NumericDocumentFilter());
+        // txtLN = new InputForm("Lương");
+        // PlainDocument lnDoc = (PlainDocument) txtLN.getTxtForm().getDocument();
+        // lnDoc.setDocumentFilter(new NumericDocumentFilter());
 
         // Gender ComboBox
         cbGioiTinh = new JComboBox<>(new String[] { "Nam", "Nữ" });
@@ -140,8 +140,8 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         pnInfoNhanVien.add(txtNgaysinh);
         pnInfoNhanVien.add(txtSDT);
         pnInfoNhanVien.add(txtEmail);
-        pnInfoNhanVien.add(txtSNP);
-        pnInfoNhanVien.add(txtLN);
+        // pnInfoNhanVien.add(txtSNP);
+        // pnInfoNhanVien.add(txtLN);
 
         // Button panel
         pnBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -181,8 +181,8 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtNgaysinh.setDate((java.util.Date) null);
         txtSDT.setText("");
         txtEmail.setText("");
-        txtSNP.setText("0");
-        txtLN.setText("0");
+        // txtSNP.setText("0");
+        // txtLN.setText("0");
     }
 
     private void initView() {
@@ -192,8 +192,8 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         txtNgaysinh.setDisable(); // Disable date picker
         txtSDT.setEditable(false);
         txtEmail.setEditable(false);
-        txtSNP.setEditable(false);
-        txtLN.setEditable(false);
+        // txtSNP.setEditable(false);
+        // txtLN.setEditable(false);
     }
 
     private void setInfo(NhanVienDTO nhanVien) {
@@ -218,8 +218,8 @@ public class NhanVienDialog extends JDialog implements ActionListener {
         }
         String sdt = txtSDT.getText();
         String email = txtEmail.getText();
-        int snp = txtSNP.getText().isEmpty() ? 0 : Integer.parseInt(txtSNP.getText());
-        int ln = txtLN.getText().isEmpty() ? 0 : Integer.parseInt(txtLN.getText());
+        // int snp = txtSNP.getText().isEmpty() ? 0 : Integer.parseInt(txtSNP.getText());
+        // int ln = txtLN.getText().isEmpty() ? 0 : Integer.parseInt(txtLN.getText());
         return new NhanVienDTO(mnv, hoten, gioitinh, ngaysinh, sdt, 1, email);
     }
 
@@ -246,14 +246,14 @@ public class NhanVienDialog extends JDialog implements ActionListener {
             JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ! Định dạng: dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (!txtSNP.getText().trim().isEmpty() && !Validation.isNumber(txtSNP.getText().trim())) {
-            JOptionPane.showMessageDialog(this, "Số ngày phép phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (!txtLN.getText().trim().isEmpty() && !Validation.isNumber(txtLN.getText().trim())) {
-            JOptionPane.showMessageDialog(this, "Lương phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+        // if (!txtSNP.getText().trim().isEmpty() && !Validation.isNumber(txtSNP.getText().trim())) {
+        //     JOptionPane.showMessageDialog(this, "Số ngày phép phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        //     return false;
+        // }
+        // if (!txtLN.getText().trim().isEmpty() && !Validation.isNumber(txtLN.getText().trim())) {
+        //     JOptionPane.showMessageDialog(this, "Lương phải là số không âm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        //     return false;
+        // }
         return true;
     }
 

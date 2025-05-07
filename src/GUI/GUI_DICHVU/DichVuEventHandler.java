@@ -15,7 +15,7 @@ public class DichVuEventHandler {
     public DichVuEventHandler(FormDichVu form) {
         this.form = form;
         this.dichVuBUS = form.getDichVuBUS();
-        System.out.println("DichVuEventHandler initialized");
+        // System.out.println("DichVuEventHandler initialized");
 
         form.getTable().addMouseListener(new MouseAdapter() {
             @Override
@@ -25,7 +25,7 @@ public class DichVuEventHandler {
                     if (row >= 0) {
                         String maDV = form.getTable().getValueAt(row, 1).toString();
                         DichVuDTO dichVu = dichVuBUS.getDichVuById(maDV);
-                        System.out.println("Double-click: maDV=" + maDV + ", dichVu=" + (dichVu != null ? dichVu.getMaDV() : "null"));
+                        // System.out.println("Double-click: maDV=" + maDV + ", dichVu=" + (dichVu != null ? dichVu.getMaDV() : "null"));
                         if (dichVu != null) {
                             openDetailDialog(dichVu); // Gọi hàm chi tiết (sẽ xử lý sau)
                         } else {
@@ -53,7 +53,7 @@ public class DichVuEventHandler {
     }
 
     public void openAddDialog() {
-        System.out.println("openAddDialog called");
+        // System.out.println("openAddDialog called");
         DichVuComponents components = new DichVuComponents(form.getOwner());
         components.getTxtMaDV().setText("DV" + String.format("%03d", dichVuBUS.getAutoIncrement()));
         components.getBtnOK().addActionListener(e -> {
@@ -80,7 +80,7 @@ public class DichVuEventHandler {
 
         String maDV = (String) form.getTable().getValueAt(row, 1);
         DichVuDTO dichVu = dichVuBUS.getDichVuById(maDV);
-        System.out.println("openEditDialog: maDV=" + maDV + ", dichVu=" + (dichVu != null ? dichVu.getMaDV() : "null"));
+        // System.out.println("openEditDialog: maDV=" + maDV + ", dichVu=" + (dichVu != null ? dichVu.getMaDV() : "null"));
         if (dichVu == null) {
             JOptionPane.showMessageDialog(form, "Không tìm thấy dịch vụ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;

@@ -60,7 +60,7 @@ public class PhongDialog extends JDialog implements ActionListener {
             imageDir.mkdirs();
         }
 
-        System.out.println("PhongDialog initialized: isEditMode=" + isEditMode + ", isViewMode=" + isViewMode + ", phong=" + (phong != null ? phong.getMaP() : "null"));
+        // System.out.println("PhongDialog initialized: isEditMode=" + isEditMode + ", isViewMode=" + isViewMode + ", phong=" + (phong != null ? phong.getMaP() : "null"));
 
         initComponents(isViewMode ? "CHI TIẾT PHÒNG" : (isEditMode ? "SỬA PHÒNG" : "THÊM PHÒNG MỚI"));
         if (isEditMode || isViewMode) {
@@ -277,7 +277,7 @@ public class PhongDialog extends JDialog implements ActionListener {
         txtChiTietLoaiPhong.setText("1 giường đơn"); // Tương ứng với "Đơn"
         cbTinhTrang.setSelectedItem("0 - Trống");
         hinhAnh.setUrl_img(null);
-        System.out.println("initCreate called: maP=" + txtMaP.getText());
+        // System.out.println("initCreate called: maP=" + txtMaP.getText());
     }
 
     private void initView() {
@@ -287,7 +287,7 @@ public class PhongDialog extends JDialog implements ActionListener {
         txtGiaP.setEditable(false);
         txtChiTietLoaiPhong.setEditable(false);
         cbTinhTrang.setEnabled(false);
-        System.out.println("initView called");
+        // System.out.println("initView called");
     }
 
     private void setInfo(PhongDTO phong) {
@@ -298,7 +298,7 @@ public class PhongDialog extends JDialog implements ActionListener {
         txtChiTietLoaiPhong.setText(phong.getChiTietLoaiPhong() != null ? phong.getChiTietLoaiPhong() : "");
         cbTinhTrang.setSelectedItem(phong.getTinhTrang() == 0 ? "0 - Trống" : "1 - Đã đặt");
         hinhAnh.setUrl_img(phong.getHinhAnh() != null && !phong.getHinhAnh().isEmpty() ? phong.getHinhAnh() : null);
-        System.out.println("setInfo called: maP=" + phong.getMaP() + ", tenP=" + phong.getTenP());
+        // System.out.println("setInfo called: maP=" + phong.getMaP() + ", tenP=" + phong.getTenP());
     }
 
     private PhongDTO getInfo() {

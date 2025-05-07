@@ -85,17 +85,17 @@ public class ChiTietQuyenDAO implements ChiTietInterface<ChiTietQuyenDTO> {
             String sql = "SELECT * FROM CTQUYEN WHERE MNQ = ?";
             PreparedStatement prest = conn.prepareStatement(sql);
             prest.setString(1, t);
-            System.out.println("Executing query: " + sql + " with MNQ = " + t);
+            // System.out.println("Executing query: " + sql + " with MNQ = " + t);
             ResultSet rs = prest.executeQuery();
             while (rs.next()) {
                 int MNQ = rs.getInt("MNQ");
                 int MCN = rs.getInt("MCN");
                 String HANHDONG = rs.getString("HANHDONG");
-                System.out.println("Found permission: MNQ=" + MNQ + ", MCN=" + MCN + ", HANHDONG=" + HANHDONG);
+                // System.out.println("Found permission: MNQ=" + MNQ + ", MCN=" + MCN + ", HANHDONG=" + HANHDONG);
                 ChiTietQuyenDTO dvt = new ChiTietQuyenDTO(MNQ, MCN, HANHDONG);
                 result.add(dvt);
             }
-            System.out.println("Total permissions found: " + result.size());
+            // System.out.println("Total permissions found: " + result.size());
             // ConnectDB.closeConnection();
         } catch (SQLException ex) {
             Logger.getLogger(ChiTietQuyenDAO.class.getName()).log(Level.SEVERE, null, ex);

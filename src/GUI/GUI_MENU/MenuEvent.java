@@ -89,7 +89,7 @@ public class MenuEvent {
 
     private void createMenuItems() {
         NhomQuyenBUS nhomQuyenBUS = new NhomQuyenBUS();
-        System.out.println("Creating menu items...");
+        // System.out.println("Creating menu items...");
 
         String[][] menuItems = components.getMenuItems();
         String[] mcnMapping = new String[menuItems.length];
@@ -148,11 +148,11 @@ public class MenuEvent {
             boolean hasPermission = mcn.equals("0");
             if (!hasPermission) {
                 hasPermission = nhomQuyenBUS.checkPermission(maNhomQuyen, mcn, "view");
-                System.out.println("Checking permission: maNhomQuyen=" + maNhomQuyen + ", mcn=" + mcn + ", menu=" + menuText + ", hasPermission=" + hasPermission);
+                // System.out.println("Checking permission: maNhomQuyen=" + maNhomQuyen + ", mcn=" + mcn + ", menu=" + menuText + ", hasPermission=" + hasPermission);
             }
 
             if (!hasPermission) {
-                System.out.println("Skipping menu item: " + menuText + " due to no permission");
+                // System.out.println("Skipping menu item: " + menuText + " due to no permission");
                 continue;
             }
 
@@ -161,7 +161,7 @@ public class MenuEvent {
                     : components.getCenterPanel();
 
             JButton menuItem = components.addMenuItem(menuText, iconPath, actionCommand, parent);
-            System.out.println("Added menu item: " + menuText);
+            // System.out.println("Added menu item: " + menuText);
 
             menuItem.addMouseListener(new MouseAdapter() {
                 @Override
@@ -225,7 +225,7 @@ public class MenuEvent {
             }
         }
 
-        System.out.println("Menu items added, revalidating centerPanel...");
+        // System.out.println("Menu items added, revalidating centerPanel...");
         components.getCenterPanel().revalidate();
         components.getCenterPanel().repaint();
         components.getBottomPanel().revalidate();
